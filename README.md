@@ -16,7 +16,5 @@ TARGUS uses JavaFX and additional UI libraries. However, they are installed usin
 Problem | Solution
 --- | ---
 Red J Circle on Bottom-Left Corner of a File After Importing The Project | [Link](https://stackoverflow.com/questions/4904052/what-does-this-symbol-mean-in-intellij-red-circle-on-bottom-left-corner-of-fil)
-
 Error: java: invalid source release 8 | [Link](https://stackoverflow.com/questions/46280859/intellij-idea-error-java-invalid-source-release-1-9)
-
 LF will be replaced by CRLF in Git | [Link](https://stackoverflow.com/questions/5834014/lf-will-be-replaced-by-crlf-in-git-what-is-that-and-is-it-important)
