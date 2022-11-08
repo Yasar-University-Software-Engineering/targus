@@ -30,6 +30,29 @@ public class WSN implements ProblemModel {
         otherPositionsInCommRange = new HashMap<>();
         otherPositionsInSensRange = new HashMap<>();
         otherTargetsInSensRange = new HashMap<>();
+
+        generateHashMap(potentialPositionSet, potentialPositionSet, otherPositionsInCommRange, commRange);
+        generateHashMap(targetSet, potentialPositionSet, otherPositionsInSensRange, sensRange);
+        generateHashMap(potentialPositionSet, targetSet, otherTargetsInSensRange, sensRange);
+    }
+
+    private void generateHashMap(
+            Point2D[] coordinateSet1,
+            Point2D[] coordinateSet2,
+            HashMap<Point2D, HashSet<Point2D>> container,
+            double distance) {
+
+        HashSet<Point2D> point2Ds;
+        for (int i = 0; i < coordinateSet1.length; i++) {
+            point2Ds = new HashSet<>();
+            for (int j = 0; j < coordinateSet2.length; j++) {
+                if (coordinateSet1[i] == coordinateSet2[j]) { continue; }
+                if (coordinateSet1[i].distance(coordinateSet2[j]) <= distance) {
+                    point2Ds.add(coordinateSet2[j]);
+                }
+            }
+            container.put(coordinateSet1[i], point2Ds);
+        }
     }
 
     @Override
