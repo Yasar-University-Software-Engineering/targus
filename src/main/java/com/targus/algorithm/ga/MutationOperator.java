@@ -5,6 +5,7 @@ import com.targus.base.Solution;
 
 import java.util.List;
 
-public interface CrossOverOperator {
+public interface MutationOperator {
+
     List<Solution> apply(OptimizationProblem problem, List<Solution> solutions);
 }
