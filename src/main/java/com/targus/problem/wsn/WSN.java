@@ -6,6 +6,7 @@ import javafx.geometry.Point2D;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public class WSN implements ProblemModel {
@@ -36,6 +37,7 @@ public class WSN implements ProblemModel {
         generateHashMap(targetSet, potentialPositionSet, otherPositionsInSensRange, sensRange);
         generateHashMap(potentialPositionSet, targetSet, otherTargetsInSensRange, sensRange);
     }
+    /*
     public int mConnPenSum(Representation r) { // Ignore bitset for now
         int penSum = 0;
 
@@ -49,6 +51,18 @@ public class WSN implements ProblemModel {
         }
 
         return penSum;
+    }*/
+
+    public int mConnSensors(Integer sensor, List<Integer> sensors) {
+        HashSet<Point2D> connSensors = otherPositionsInCommRange.get(potentialPositionSet[sensor]);
+        int count =0;
+        for (Integer i:sensors)
+        {
+            if (i==sensor) continue;
+            if (connSensors.contains(potentialPositionSet[i]))
+                count++;
+        }
+        return count;
     }
 
     public int kCoverPenSum(Representation r) { // Ignore bitset for now
@@ -89,4 +103,10 @@ public class WSN implements ProblemModel {
     public boolean isFeasible(Representation r) {
         return false;
     }
+
+    public int getM() {
+        return m;
+    }
+
+
 }
