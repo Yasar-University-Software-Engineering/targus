@@ -35,4 +35,13 @@ public class BitString implements Representation {
     public Representation clone() {
         return new BitString((BitSet) bitSet.clone());
     }
+
+    public List<Integer> ones() {
+        List<Integer> ones= new ArrayList<>();
+        for (int i = 0; i < bitSet.size(); i++) {
+            if (bitSet.get(i))
+                ones.add(i);
+        }
+        return ones;
+    }
 }
