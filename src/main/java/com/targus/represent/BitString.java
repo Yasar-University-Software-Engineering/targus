@@ -22,7 +22,17 @@ public class BitString implements Representation {
     }
 
     @Override
+    public int hashCode() {
+        return bitSet.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return bitSet.equals(((BitString) obj).bitSet);
+    }
+
+    @Override
     public Representation clone() {
-        return new BitString(bitSet);
+        return new BitString((BitSet) bitSet.clone());
     }
 }
