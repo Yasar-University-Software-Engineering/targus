@@ -5,7 +5,10 @@ import com.targus.algorithm.TerminalState;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class GA {
 
@@ -22,6 +25,9 @@ public class GA {
     }
 
     public void perform() {
+        if (!isRunnable()) {
+            throw new NullPointerException("There are null members in GA class. Did you call GABuilder class before perform() method?");
+        }
         population.init(problem);
 
         // evaluate fitness value for each individual
@@ -43,6 +49,12 @@ public class GA {
 
             terminalState.nextState();
         }
+    }
+
+    private boolean isRunnable() {
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        return Arrays.stream(fields).anyMatch(Objects::isNull);
     }
 
     public void setProblem(OptimizationProblem problem) {
@@ -72,13 +84,5 @@ public class GA {
     public void setTerminalState(TerminalState terminalState) {
         this.terminalState = terminalState;
     }
-
-//    public static void main(String[] args) {
-//        GA ga = new GA(null);
-//        GABuilder builder = new GABuilder(ga);
-//
-//        ga = builder.build();
-//        ga.perform();
-//    }
 
 }
