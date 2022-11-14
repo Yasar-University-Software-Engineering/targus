@@ -2,10 +2,10 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.represent.BitString;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 
@@ -21,7 +21,7 @@ public class OneBitMutation implements MutationOperator{
         List<Solution> newSolutions = new ArrayList<>();
         for (Solution s : solutions) {
             if (random.nextDouble() < GA.MUTATION_PROBABILITY) {
-                BitSet individual = (BitSet) s.getRepresentation();
+                BitString individual = (BitString) s.getRepresentation();
                 individual.flip(random.nextInt(individual.size()));
                 newSolutions.add((Solution) individual);
             }
