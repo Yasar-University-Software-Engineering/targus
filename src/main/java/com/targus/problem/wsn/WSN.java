@@ -1,69 +1,96 @@
 package com.targus.problem.wsn;
 
 import com.targus.base.ProblemModel;
-import com.targus.base.Representation;
 import javafx.geometry.Point2D;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class WSN implements ProblemModel {
-    Point2D[] targetSet;
-    Point2D[] potentialPositionSet;
-    int m;
-    int k;
-    double commRange;
-    double sensRange;
+    private final Point2D[] targets;
+    private final Point2D[] potentialPositions;
+    private final int m;
+    private final int k;
+    private final double commRange;
+    private final double sensRange;
+    private int generationCount;
+    private double mutationRate;
 
-    HashMap<Point2D, HashSet<Point2D>> otherPositionsInCommRange;   // Potential Position to Potential Position Set
-    HashMap<Point2D, HashSet<Point2D>> otherPositionsInSensRange;   // Target to Potential Position Set
-    HashMap<Point2D, HashSet<Point2D>> otherTargetsInSensRange;     // Potential Position to Target Set
+    HashMap<Point2D, HashSet<Point2D>> positionsInCommRange;   // Potential Position to Potential Position Collection
+    HashMap<Point2D, HashSet<Point2D>> positionsInSensRange;   // Target to Potential Position Collection
+    HashMap<Point2D, HashSet<Point2D>> targetsInSensRange;     // Potential Position to Target Collection
 
-    public WSN(Point2D[] targetSet, Point2D[] potentialPositionSet, int m, int k, int commRange, int sensRange) {
-        this.targetSet = targetSet;
-        this.potentialPositionSet = potentialPositionSet;
+    public WSN(
+            Point2D[] targets,
+            Point2D[] potentialPositions,
+            int m,
+            int k,
+            int commRange,
+            int sensRange,
+            int generationCount,
+            double mutationRate) {
+
+        this.targets = targets;
+        this.potentialPositions = potentialPositions;
         this.m = m;
         this.k = k;
         this.commRange = commRange;
         this.sensRange = sensRange;
+        this.generationCount = generationCount;
+        this.mutationRate = mutationRate;
 
-        otherPositionsInCommRange = new HashMap<>();
-        otherPositionsInSensRange = new HashMap<>();
-        otherTargetsInSensRange = new HashMap<>();
+        positionsInCommRange = new HashMap<>();
+        positionsInSensRange = new HashMap<>();
+        targetsInSensRange = new HashMap<>();
 
-        generateHashMap(potentialPositionSet, potentialPositionSet, otherPositionsInCommRange, commRange);
-        generateHashMap(targetSet, potentialPositionSet, otherPositionsInSensRange, sensRange);
-        generateHashMap(potentialPositionSet, targetSet, otherTargetsInSensRange, sensRange);
-    }
-    public int mConnPenSum(Representation r) { // Ignore bitset for now
-        int penSum = 0;
-
-        for(Map.Entry<Point2D, HashSet<Point2D>> entry : otherPositionsInCommRange.entrySet()) {
-            Point2D key = entry.getKey();
-            HashSet<Point2D> hashSet = entry.getValue();
-
-            if (hashSet.size() < m) {
-                penSum += m - hashSet.size();
-            }
-        }
-
-        return penSum;
+        generateHashMap(potentialPositions, potentialPositions, positionsInCommRange, commRange);
+        generateHashMap(targets, potentialPositions, positionsInSensRange, sensRange);
+        generateHashMap(potentialPositions, targets, targetsInSensRange, sensRange);
     }
 
-    public int kCoverPenSum(Representation r) { // Ignore bitset for now
-        int penSum = 0;
+    public int mConnSensors(Integer sensor, List<Integer> sensors) {
+        int count = 0;
+        HashSet<Point2D> connSensors = positionsInCommRange.get(potentialPositions[sensor]);
 
-        for(Map.Entry<Point2D, HashSet<Point2D>> entry : otherPositionsInSensRange.entrySet()) {
-            Point2D key = entry.getKey();
-            HashSet<Point2D> hashSet = entry.getValue();
-
-            if (hashSet.size() < k) {
-                penSum += k - hashSet.size();
-            }
+        for (Point2D obj : connSensors) {
+            Integer index = Arrays.asList(potentialPositions).indexOf(obj);
+            if (sensors.contains(index))
+                count++;
         }
 
-        return penSum;
+        return count;
+    }
+
+    public int kCovTargets(Integer target, List<Integer> sensors) {
+        int count = 0;
+        HashSet<Point2D> covSensors = positionsInSensRange.get(targets[target]);
+
+        for (Point2D obj : covSensors) {
+            Integer index = Arrays.asList(potentialPositions).indexOf(obj);
+            if (sensors.contains(index))
+                count++;
+        }
+
+        return count;
+    }
+
+    public int getM() {
+        return m;
+    }
+
+    public int getK() {
+        return k;
+    }
+
+    public int getGenerationCount() {
+        return generationCount;
+    }
+
+    public double getMutationRate() {
+        return mutationRate;
+    }
+
+    public int targetsSize() {
+        return targets.length;
     }
 
     private void generateHashMap(
@@ -73,20 +100,18 @@ public class WSN implements ProblemModel {
             double distance) {
 
         HashSet<Point2D> point2Ds;
-        for (int i = 0; i < coordinateSet1.length; i++) {
+        for (Point2D point2D : coordinateSet1) {
             point2Ds = new HashSet<>();
-            for (int j = 0; j < coordinateSet2.length; j++) {
-                if (coordinateSet1[i] == coordinateSet2[j]) { continue; }
-                if (coordinateSet1[i].distance(coordinateSet2[j]) <= distance) {
-                    point2Ds.add(coordinateSet2[j]);
+            for (Point2D d : coordinateSet2) {
+                if (point2D == d) {
+                    continue;
+                }
+                if (point2D.distance(d) <= distance) {
+                    point2Ds.add(d);
                 }
             }
-            container.put(coordinateSet1[i], point2Ds);
+            container.put(point2D, point2Ds);
         }
     }
 
-    @Override
-    public boolean isFeasible(Representation r) {
-        return false;
-    }
 }
