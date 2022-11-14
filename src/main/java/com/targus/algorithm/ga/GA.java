@@ -17,14 +17,8 @@ public class GA {
     MutationOperator mutationOperator;
     TerminalState terminalState;
 
-    public GA(OptimizationProblem problem, Population population, SelectionPolicy selectionPolicy, SurvivalPolicy survivalPolicy, CrossOverOperator crossOverOperator, MutationOperator mutationOperator, TerminalState terminalState) {
+    public GA(OptimizationProblem problem) {
         this.problem = problem;
-        this.population = population;
-        this.selectionPolicy = selectionPolicy;
-        this.survivalPolicy = survivalPolicy;
-        this.crossOverOperator = crossOverOperator;
-        this.mutationOperator = mutationOperator;
-        this.terminalState = terminalState;
     }
 
     public void perform() {
@@ -50,5 +44,41 @@ public class GA {
             terminalState.nextState();
         }
     }
+
+    public void setProblem(OptimizationProblem problem) {
+        this.problem = problem;
+    }
+
+    public void setPopulation(Population population) {
+        this.population = population;
+    }
+
+    public void setSelectionPolicy(SelectionPolicy selectionPolicy) {
+        this.selectionPolicy = selectionPolicy;
+    }
+
+    public void setSurvivalPolicy(SurvivalPolicy survivalPolicy) {
+        this.survivalPolicy = survivalPolicy;
+    }
+
+    public void setCrossOverOperator(CrossOverOperator crossOverOperator) {
+        this.crossOverOperator = crossOverOperator;
+    }
+
+    public void setMutationOperator(MutationOperator mutationOperator) {
+        this.mutationOperator = mutationOperator;
+    }
+
+    public void setTerminalState(TerminalState terminalState) {
+        this.terminalState = terminalState;
+    }
+
+//    public static void main(String[] args) {
+//        GA ga = new GA(null);
+//        GABuilder builder = new GABuilder(ga);
+//
+//        ga = builder.build();
+//        ga.perform();
+//    }
 
 }
