@@ -1,15 +1,17 @@
 package com.targus.problem.wsn;
 
+import com.targus.algorithm.ga.GA;
 import com.targus.base.SingleObjectiveOA;
 import com.targus.base.Solution;
+import com.targus.problem.BitStringSolution;
 import com.targus.represent.BitString;
 import javafx.geometry.Point2D;
 
 import java.util.List;
 
 public class WSNSensorOptimizationSolver {
-    private SingleObjectiveOA singleObjectiveOA;
-    private Solution solution;
+    private GA ga;
+    private BitStringSolution bitStringSolution;
     private WSN wsn;
     private WSNMinimumSensorObjective wsnMinimumSensorObjective;
     private WSNOptimizationProblem wsnOptimizationProblem;
@@ -28,12 +30,14 @@ public class WSNSensorOptimizationSolver {
         wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
         wsnOptimizationProblem = new WSNOptimizationProblem(wsn, wsnMinimumSensorObjective);
 
+        ga = new GA(wsnOptimizationProblem);
+
     }
 
     public List<Integer> solve() {
-        solution = singleObjectiveOA.perform(wsnOptimizationProblem);
+        bitStringSolution = (BitStringSolution) ga.perform();
 
-        BitString bitString = (BitString) solution.getRepresentation();
+        BitString bitString = (BitString) bitStringSolution.getRepresentation();
         return bitString.ones();
     }
 
