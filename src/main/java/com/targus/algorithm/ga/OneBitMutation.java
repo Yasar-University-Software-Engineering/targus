@@ -1,5 +1,6 @@
 package com.targus.algorithm.ga;
 
+import com.targus.algorithm.BitStringSolution;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.represent.BitString;
@@ -23,7 +24,8 @@ public class OneBitMutation implements MutationOperator{
             if (random.nextDouble() < GA.MUTATION_PROBABILITY) {
                 BitString individual = (BitString) s.getRepresentation();
                 individual.flip(random.nextInt(individual.length()));
-                newSolutions.add((Solution) individual);
+                BitStringSolution mutatedSolution = new BitStringSolution(individual, problem.objectiveValue(individual));
+                newSolutions.add(mutatedSolution);
             }
             else {
                 newSolutions.add(s);
