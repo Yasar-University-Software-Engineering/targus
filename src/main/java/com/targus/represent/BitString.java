@@ -21,6 +21,18 @@ public class BitString implements Representation {
         return ones;
     }
 
+    public void flip(int bitIndex) {
+        bitSet.flip(bitIndex);
+    }
+
+    public int length() {
+        return bitSet.length();
+    }
+
+    public boolean get(int bitIndex) {
+        return bitSet.get(bitIndex);
+    }
+
     @Override
     public int hashCode() {
         return bitSet.hashCode();
