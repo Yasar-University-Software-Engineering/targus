@@ -24,11 +24,13 @@ public class GA {
         this.problem = problem;
     }
 
-    public void perform() {
+    public Solution perform() {
         if (!isRunnable()) {
-            throw new NullPointerException("There are null members in GA class. Did you call GABuilder class before perform() method?");
+            throw new NullPointerException("There are unassigned members in GA class. Did you call GABuilder class before perform() method?");
         }
         population.init(problem);
+
+        population.sortIndividuals();
 
         while (!terminalState.isTerminal()) {
             List<Solution> parents = selectionPolicy.apply(problem, population.getIndividuals());
@@ -37,6 +39,7 @@ public class GA {
 
             population.addAll(problem, mating);
             population.addAll(problem, mutation);
+            population.sortIndividuals();
 
             List<Solution> survivors = survivalPolicy.apply(problem, population.getIndividuals());
 
@@ -45,6 +48,8 @@ public class GA {
 
             terminalState.nextState();
         }
+
+        return population.getBestIndividual();
     }
 
     private boolean isRunnable() {

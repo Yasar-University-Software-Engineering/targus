@@ -25,16 +25,12 @@ public class BitString implements Representation {
         bitSet.flip(bitIndex);
     }
 
-    public int size() {
-        return bitSet.size();
-    }
-
     public int length() {
         return bitSet.length();
     }
 
-    public BitSet get(int fromIndex, int toIndex) {
-        return bitSet.get(fromIndex, toIndex);
+    public boolean get(int bitIndex) {
+        return bitSet.get(bitIndex);
     }
 
     @Override
