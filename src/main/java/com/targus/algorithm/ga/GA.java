@@ -32,22 +32,18 @@ public class GA {
         }
         population.init(problem);
 
-        // evaluate fitness value for each individual
-
         while (!terminalState.isTerminal()) {
             List<Solution> parents = selectionPolicy.apply(problem, population.getIndividuals());
             List<Solution> mating = crossOverOperator.apply(problem, parents);
             List<Solution> mutation = mutationOperator.apply(problem, population.getIndividuals());
 
-            population.add(problem, mating);
-            population.add(problem, mutation);
-
-            // evaluate fitness value for each individual
+            population.addAll(problem, mating);
+            population.addAll(problem, mutation);
 
             List<Solution> survivers = survivalPolicy.apply(problem, population.getIndividuals());
 
             population.clear();
-            population.add(problem, survivers);
+            population.addAll(problem, survivers);
 
             terminalState.nextState();
         }

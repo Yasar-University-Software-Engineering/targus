@@ -9,7 +9,9 @@ public interface Population {
 
     void init(OptimizationProblem problem);
 
-    void add(OptimizationProblem problem, List<Solution> solutions);
+    void add(OptimizationProblem problem, Solution solution);
+
+    void addAll(OptimizationProblem problem, List<Solution> solutions);
 
     List<Solution> getIndividuals();
 
