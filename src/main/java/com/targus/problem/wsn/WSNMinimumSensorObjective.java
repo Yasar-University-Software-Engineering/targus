@@ -14,7 +14,7 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
     public double value(ProblemModel model, Representation r) {
         WSN wsn = (WSN) model;
         BitString bitString = (BitString) r;
-        BitSet bitSet = bitString.bitSet;
+        BitSet bitSet = bitString.getBitSet();
 
         List<Integer> sensors = bitString.ones();
 
