@@ -22,7 +22,7 @@ public class OneBitMutation implements MutationOperator{
         for (Solution s : solutions) {
             if (random.nextDouble() < GA.MUTATION_PROBABILITY) {
                 BitString individual = (BitString) s.getRepresentation();
-                individual.flip(random.nextInt(individual.size()));
+                individual.flip(random.nextInt(individual.length()));
                 newSolutions.add((Solution) individual);
             }
             else {
