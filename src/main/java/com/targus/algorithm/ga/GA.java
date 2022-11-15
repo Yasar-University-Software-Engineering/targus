@@ -40,10 +40,10 @@ public class GA {
             population.addAll(problem, mating);
             population.addAll(problem, mutation);
 
-            List<Solution> survivers = survivalPolicy.apply(problem, population.getIndividuals());
+            List<Solution> survivors = survivalPolicy.apply(problem, population.getIndividuals());
 
             population.clear();
-            population.addAll(problem, survivers);
+            population.addAll(problem, survivors);
 
             terminalState.nextState();
         }

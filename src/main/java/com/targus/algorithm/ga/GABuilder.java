@@ -40,7 +40,7 @@ public class GABuilder {
     }
 
     public void buildSurvivalPolicy() {
-        // ga.setSurvivalPolicy(new SurvivalPolicy());
+        ga.setSurvivalPolicy(new SimpleSurvival());
     }
 
 }
