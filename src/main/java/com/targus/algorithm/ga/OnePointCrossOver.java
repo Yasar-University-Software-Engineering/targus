@@ -23,7 +23,7 @@ public class OnePointCrossOver implements CrossOverOperator{
     public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
         List<Solution> children = new ArrayList<>();
         int parentSize = solutions.size() % 2 == 1 ? solutions.size() - 1 : solutions.size();
-        for (int i = 0; i < parentSize; i++) {
+        for (int i = 0; i < parentSize; i+=2) {
             BitString parentOne = (BitString) solutions.get(i);
             BitString parentTwo = (BitString) solutions.get(i+1);
 
