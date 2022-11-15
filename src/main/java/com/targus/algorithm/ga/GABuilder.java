@@ -20,7 +20,7 @@ public class GABuilder {
     }
 
     public void buildPopulation() {
-        // ga.setPopulation(new Population);
+        // ga.setPopulation(new SimplePopulation());
     }
 
     public void buildCrossOverOperator() {
@@ -36,7 +36,7 @@ public class GABuilder {
     }
 
     public void buildSelectionPolicy() {
-        // ga.setSelectionPolicy(new SelectionPolicy());
+        ga.setSelectionPolicy(new ElitismSelection());
     }
 
     public void buildSurvivalPolicy() {
