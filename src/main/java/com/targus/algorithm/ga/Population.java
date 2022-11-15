@@ -1,4 +1,4 @@
-package com.targus.algorithm;
+package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
@@ -14,6 +14,8 @@ public interface Population {
     void addAll(OptimizationProblem problem, List<Solution> solutions);
 
     List<Solution> getIndividuals();
+
+    int getPopulationSize();
 
     void clear();
 

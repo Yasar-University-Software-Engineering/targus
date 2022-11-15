@@ -1,7 +1,5 @@
 package com.targus.algorithm.ga;
 
-import com.targus.algorithm.TerminalState;
-
 public class IterativeTerminal implements TerminalState {
 
     private int startIndex;

@@ -1,7 +1,5 @@
 package com.targus.algorithm.ga;
 
-import com.targus.algorithm.Population;
-import com.targus.algorithm.TerminalState;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 

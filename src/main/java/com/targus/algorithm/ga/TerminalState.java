@@ -1,4 +1,4 @@
-package com.targus.algorithm;
+package com.targus.algorithm.ga;
 
 public interface TerminalState {
 
