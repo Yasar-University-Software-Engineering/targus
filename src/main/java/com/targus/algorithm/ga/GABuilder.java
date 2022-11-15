@@ -32,7 +32,7 @@ public class GABuilder {
     }
 
     public void buildTerminalState() {
-        // ga.setTerminalState(new TerminalState());
+        ga.setTerminalState(new IterativeTerminal());
     }
 
     public void buildSelectionPolicy() {
