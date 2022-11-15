@@ -26,7 +26,7 @@ public class GA {
 
     public Solution perform() {
         if (!isRunnable()) {
-            throw new NullPointerException("There are assigned members in GA class. Did you call GABuilder class before perform() method?");
+            throw new NullPointerException("There are unassigned members in GA class. Did you call GABuilder class before perform() method?");
         }
         population.init(problem);
 
