@@ -7,7 +7,7 @@ import java.util.BitSet;
 import java.util.List;
 
 public class BitString implements Representation {
-    public BitSet bitSet;
+    private BitSet bitSet;
     public BitString(BitSet bitSet) {
         this.bitSet = bitSet;
     }
@@ -31,6 +31,10 @@ public class BitString implements Representation {
 
     public boolean get(int bitIndex) {
         return bitSet.get(bitIndex);
+    }
+
+    public BitSet getBitSet() {
+        return bitSet;
     }
 
     @Override

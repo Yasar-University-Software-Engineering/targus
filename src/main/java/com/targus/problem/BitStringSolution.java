@@ -1,4 +1,4 @@
-package com.targus.algorithm;
+package com.targus.problem;
 
 import com.targus.base.Representation;
 import com.targus.base.Solution;
@@ -30,17 +30,5 @@ public class BitStringSolution implements Solution {
     @Override
     public double objectiveValue() {
         return objectiveValue;
-    }
-
-    // will be deleted
-    @Override
-    public double[] objectiveValues() {
-        return new double[0];
-    }
-
-    // will be deleted
-    @Override
-    public double objectiveValue(int index) {
-        return 0;
     }
 }
