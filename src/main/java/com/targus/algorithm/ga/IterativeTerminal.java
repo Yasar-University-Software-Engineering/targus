@@ -5,9 +5,9 @@ public class IterativeTerminal implements TerminalState {
     private int startIndex;
     private int endIndex;
 
-    public IterativeTerminal() {
-        startIndex = 0;
-        endIndex = 1000;
+    public IterativeTerminal(int endIndex) {
+        this.startIndex = 0;
+        this.endIndex = endIndex;
     }
 
     @Override
