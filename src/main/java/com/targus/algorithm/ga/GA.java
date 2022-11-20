@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class GA {
-
-    public final static double MUTATION_PROBABILITY = .2;
-
     OptimizationProblem problem;
     Population population;
     SelectionPolicy selectionPolicy;

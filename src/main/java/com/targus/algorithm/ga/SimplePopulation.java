@@ -10,26 +10,27 @@ import java.util.*;
 
 public class SimplePopulation implements Population {
 
-    private final int POPULATION_SIZE = 50;  // I do not think I should decide the population size
-    private List<Solution> individuals;  // keeps the solution sorted
+    private int populationSize;
+    private List<Solution> individuals;
     private Random random;
 
-    public SimplePopulation() {
+    public SimplePopulation(int populationSize) {
+        this.populationSize = populationSize;
         individuals = new ArrayList<>();
         random = new SecureRandom();
     }
 
     @Override
     public void init(OptimizationProblem problem) {
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < populationSize; i++) {
             BitString random = generateRandomIndividual();
             individuals.add(new BitStringSolution(random, problem.objectiveValue(random)));
         }
     }
 
     private BitString generateRandomIndividual() {
-        BitSet bitSet = new BitSet(POPULATION_SIZE);
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        BitSet bitSet = new BitSet(populationSize);
+        for (int i = 0; i < populationSize; i++) {
             // set random bits
             bitSet.set(random.nextInt(2));
         }

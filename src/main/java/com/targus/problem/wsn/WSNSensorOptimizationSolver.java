@@ -1,6 +1,7 @@
 package com.targus.problem.wsn;
 
 import com.targus.algorithm.ga.GA;
+import com.targus.algorithm.ga.GABuilder;
 import com.targus.base.SingleObjectiveOA;
 import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
@@ -30,8 +31,8 @@ public class WSNSensorOptimizationSolver {
         wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
         wsnOptimizationProblem = new WSNOptimizationProblem(wsn, wsnMinimumSensorObjective);
 
-        ga = new GA(wsnOptimizationProblem);
-
+        GABuilder gaBuilder = new GABuilder(new GA(wsnOptimizationProblem));
+        ga = gaBuilder.build();
     }
 
     public List<Integer> solve() {

@@ -1,5 +1,7 @@
 package com.targus.algorithm.ga;
 
+import com.targus.problem.wsn.WSN;
+
 public class GABuilder {
 
     private GA ga;
@@ -20,7 +22,8 @@ public class GABuilder {
     }
 
     public void buildPopulation() {
-        ga.setPopulation(new SimplePopulation());
+        WSN model = (WSN) ga.problem.model();
+        ga.setPopulation(new SimplePopulation(model.getPopulationSize()));
     }
 
     public void buildCrossOverOperator() {
@@ -32,7 +35,8 @@ public class GABuilder {
     }
 
     public void buildTerminalState() {
-        ga.setTerminalState(new IterativeTerminal());
+        WSN model = (WSN) ga.problem.model();
+        ga.setTerminalState(new IterativeTerminal(model.getGenerationCount()));
     }
 
     public void buildSelectionPolicy() {
