@@ -24,8 +24,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'com.targus'
-    mainClass = 'com.targus.HelloApplication'
+    mainModule = 'com.targus.ui'
+    mainClass = 'com.targus.ui.Main'
 }
 
 javafx {
