@@ -81,6 +81,10 @@ public class WSN implements ProblemModel {
         return k;
     }
 
+    public int getPopulationSize() {
+        return potentialPositions.length;
+    }
+
     public int getGenerationCount() {
         return generationCount;
     }

@@ -22,7 +22,8 @@ public class GABuilder {
     }
 
     public void buildPopulation() {
-        ga.setPopulation(new SimplePopulation());
+        WSN model = (WSN) ga.problem.model();
+        ga.setPopulation(new SimplePopulation(model.getPopulationSize()));
     }
 
     public void buildCrossOverOperator() {
