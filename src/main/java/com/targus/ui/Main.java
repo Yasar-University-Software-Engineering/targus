@@ -12,7 +12,8 @@ import java.util.Objects;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("com/targus/sample.fxml")));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/sample.fxml"));
+        Parent root = loader.load();
         primaryStage.setTitle("Targus");
         primaryStage.setScene(new Scene(root, 1800, 850));
         primaryStage.setMaximized(true);

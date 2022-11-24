@@ -52,7 +52,7 @@ public class GA {
     private boolean isRunnable() {
         Field[] fields = this.getClass().getDeclaredFields();
 
-        return Arrays.stream(fields).anyMatch(Objects::isNull);
+        return Arrays.stream(fields).noneMatch(Objects::isNull);
     }
 
     public void setProblem(OptimizationProblem problem) {
