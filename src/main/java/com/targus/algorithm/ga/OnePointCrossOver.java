@@ -3,6 +3,7 @@ package com.targus.algorithm.ga;
 import com.targus.problem.BitStringSolution;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
 
 import java.security.SecureRandom;
@@ -22,12 +23,15 @@ public class OnePointCrossOver implements CrossOverOperator{
     @Override
     public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
         List<Solution> children = new ArrayList<>();
+        WSN model = (WSN) problem.model();
+        // TODO: replace this with model.getIndividualSize()
+        int individualSize = model.getPopulationSize();
         int parentSize = solutions.size() % 2 == 1 ? solutions.size() - 1 : solutions.size();
         for (int i = 0; i < parentSize; i+=2) {
             BitString parentOne = (BitString) solutions.get(i).getRepresentation();
             BitString parentTwo = (BitString) solutions.get(i+1).getRepresentation();
 
-            int crossOverPoint = random.nextInt(parentOne.length());
+            int crossOverPoint = random.nextInt(individualSize);
             BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint);
             BitString childTwo = generateChild(parentTwo, parentOne, crossOverPoint);
 
