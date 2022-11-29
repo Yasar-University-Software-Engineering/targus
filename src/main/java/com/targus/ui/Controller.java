@@ -88,7 +88,8 @@ public class Controller {
         mainPane.setMaxWidth(paneWidth);
         mainPane.setMaxHeight(paneHeight);
         mainPane.setStyle("-fx-background-color: lightGray;");
-
+        mainPane.setLayoutX(25);
+        mainPane.setLayoutY((25));
     }
     //create menu items
     MenuItem item1 = new MenuItem("Create Target");
@@ -247,6 +248,9 @@ public class Controller {
             mainPane.setMaxWidth(scale * dimensions[0].getX());
             mainPane.setMaxHeight(scale * dimensions[0].getY());
             mainPane.setStyle("-fx-background-color: lightGray;");
+
+            mainPane.setLayoutX(25);
+            mainPane.setLayoutY((25));
 
             for (Point2D point2D: targetArray) {
                 mainPane.getChildren().add(new Target(scale * point2D.getX(), scale * point2D.getY()));

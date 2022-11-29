@@ -23,6 +23,7 @@ public class GABuilder {
 
     public void buildPopulation() {
         WSN model = (WSN) ga.problem.model();
+        // TODO: model.getPopulationSize() -> replace with solution size
         ga.setPopulation(new SimplePopulation(model.getPopulationSize()));
     }
 

@@ -31,4 +31,9 @@ public class BitStringSolution implements Solution {
     public double objectiveValue() {
         return objectiveValue;
     }
+
+    public String toString() {
+        // TODO: limit 2 decimal places after the dot
+        return representation.toString() + " " + objectiveValue;
+    }
 }

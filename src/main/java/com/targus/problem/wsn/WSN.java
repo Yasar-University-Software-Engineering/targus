@@ -81,6 +81,7 @@ public class WSN implements ProblemModel {
         return k;
     }
 
+    // TODO: change the name to getIndividualSize()
     public int getPopulationSize() {
         return potentialPositions.length;
     }

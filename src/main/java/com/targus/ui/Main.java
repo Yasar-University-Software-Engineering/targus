@@ -15,7 +15,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/sample.fxml"));
         Parent root = loader.load();
         primaryStage.setTitle("Targus");
-        primaryStage.setScene(new Scene(root, 1800, 850));
+        primaryStage.setScene(new Scene(root, 900, 700));
         primaryStage.setMaximized(true);
         primaryStage.show();
 
