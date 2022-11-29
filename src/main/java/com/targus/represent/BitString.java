@@ -21,6 +21,10 @@ public class BitString implements Representation {
         return ones;
     }
 
+    public String toString() {
+        return bitSet.toString();
+    }
+
     public void flip(int bitIndex) {
         bitSet.flip(bitIndex);
     }
