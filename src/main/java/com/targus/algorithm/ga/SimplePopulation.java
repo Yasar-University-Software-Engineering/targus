@@ -32,7 +32,7 @@ public class SimplePopulation implements Population {
         BitSet bitSet = new BitSet(populationSize);
         for (int i = 0; i < populationSize; i++) {
             // set random bits
-            bitSet.set(random.nextInt(2));
+            bitSet.set(i, random.nextBoolean());
         }
         return new BitString(bitSet);
     }
@@ -70,5 +70,14 @@ public class SimplePopulation implements Population {
     @Override
     public void clear() {
         individuals.clear();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder res = new StringBuilder("*Population*\n");
+        for ( Solution s : individuals) {
+            res.append(s).append("\n");
+        }
+        return res.toString();
     }
 }
