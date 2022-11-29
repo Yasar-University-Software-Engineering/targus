@@ -36,6 +36,7 @@
         <TextField fx:id="kValue" layoutX="464.0" layoutY="709.0" prefHeight="25.0" prefWidth="71.0" />
         <TextField fx:id="mValue" layoutX="357.0" layoutY="709.0" prefHeight="25.0" prefWidth="71.0" />
         <Button fx:id="solveButton" layoutX="686.0" layoutY="732.0" mnemonicParsing="false" onAction="#solveButtonClicked" text="SOLVE" />
+        <Button fx:id="loadFromFileButton" layoutX="786.0" layoutY="732.0" mnemonicParsing="false" onAction="#loadFromFileButtonClicked" text="LOAD FROM FILE" />
         <Circle fill="RED" layoutX="775.0" layoutY="595.0" radius="8.0" stroke="RED" strokeType="INSIDE" />
         <Circle fill="WHITE" layoutX="775.0" layoutY="633.0" radius="15.0" stroke="RED" strokeType="INSIDE" />
         <Label layoutX="797.0" layoutY="587.0" text=": Target" />

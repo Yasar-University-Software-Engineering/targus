@@ -1,14 +1,24 @@
 package com.targus.ui;
 
-import com.targus.problem.wsn.WSNSensorOptimizationSolver;
+import com.targus.algorithm.ga.GA;
+import com.targus.algorithm.ga.GABuilder;
+import com.targus.base.Solution;
+import com.targus.problem.BitStringSolution;
+import com.targus.problem.wsn.*;
+import com.targus.represent.BitString;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.effect.Light;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,7 +179,7 @@ public class Controller {
         }
 
     }
-    //gets 3 values from user to be solved
+
     @FXML
     void solveButtonClicked(ActionEvent event){
         int valueM = Integer.parseInt(mValue.getText());
@@ -199,8 +209,6 @@ public class Controller {
                rateMutation);
 
         List<Integer> indexes = wsnSensorOptimizationSolver.solve();
-       /* indexes.add(0);
-        indexes.add(2);*/
         Sensor.setRadii(rangeComm,rangeSens);
 
         for (Integer index: indexes ) {
@@ -209,9 +217,90 @@ public class Controller {
             mainPane.getChildren().add(sensor);
         }
 
-      // draw(indexes);
-//m = 3 dersek her sensörümün en az 3 farklı sensör ile aynı sensörde commRange içinde bulunmasını istiyorum
-        //k= 2 girersek her target en az 2 sensör tarafından cover edilmesi gerektiği anlamına gelir (sensRange)
+    }
 
+    @FXML
+    void loadFromFileButtonClicked() {
+
+        final int scale = 4;
+
+        WSNOptimizationProblem wsnOptimizationProblem;
+
+        Point2D[] dimensions;
+        Point2D[] targetArray;
+        Point2D[] potentialPositionArray;
+
+        BufferedReader bufferedReader;
+        try {
+            bufferedReader = new BufferedReader(new FileReader("input.txt"));
+
+            dimensions = extractCoordinates(read(bufferedReader));
+            targetArray = extractCoordinates(read(bufferedReader));
+            potentialPositionArray = extractCoordinates(read(bufferedReader));
+            int m = Integer.parseInt(read(bufferedReader)[0]);
+            int k = Integer.parseInt(read(bufferedReader)[0]);
+            int commRange = Integer.parseInt(read(bufferedReader)[0]);
+            int sensRange = Integer.parseInt(read(bufferedReader)[0]);
+            int generationCount = Integer.parseInt(read(bufferedReader)[0]);
+            double mutationRate = Double.parseDouble(read(bufferedReader)[0]);
+
+            mainPane.setMaxWidth(scale * dimensions[0].getX());
+            mainPane.setMaxHeight(scale * dimensions[0].getY());
+            mainPane.setStyle("-fx-background-color: lightGray;");
+
+            for (Point2D point2D: targetArray) {
+                mainPane.getChildren().add(new Target(scale * point2D.getX(), scale * point2D.getY()));
+            }
+
+            for (Point2D point2D: potentialPositionArray) {
+                mainPane.getChildren().add(new PotentialPosition(scale * point2D.getX(), scale * point2D.getY()));
+            }
+
+            WSN wsn = new WSN(targetArray,
+                    potentialPositionArray,
+                    m,
+                    k,
+                    scale * commRange,
+                    scale * sensRange,
+                    generationCount,
+                    mutationRate);
+
+             wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        GABuilder gaBuilder = new GABuilder(new GA(wsnOptimizationProblem));
+        GA ga = gaBuilder.build();
+
+        Solution bitStringSolution = ga.perform();
+
+        BitString bitString = (BitString) bitStringSolution.getRepresentation();
+        List<Integer> indexes = bitString.ones();
+
+        for (Integer index: indexes ) {
+            Point2D potentialPosition = potentialPositions.get(index);
+            Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
+            mainPane.getChildren().add(sensor);
+        }
+    }
+
+    private Point2D[] extractCoordinates(String[] snippet) {
+        Point2D[] coordinates = new Point2D[snippet.length];
+
+        for (int i = 0; i < snippet.length; i++) {
+            String text = snippet[i].trim();
+
+            double x = Double.parseDouble(text.split("\\s")[0]);
+            double y = Double.parseDouble(text.split("\\s")[1]);
+
+            coordinates[i] = new Point2D(x, y);
+        }
+
+        return coordinates;
+    }
+
+    private String[] read(BufferedReader bufferedReader) throws IOException {
+        return bufferedReader.readLine().split(",");
     }
 }
