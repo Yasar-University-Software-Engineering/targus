@@ -13,6 +13,7 @@ public class SimplePopulation implements Population {
     private int populationSize;
     private List<Solution> individuals;
     private Random random;
+    private static final int POPULATION_SIZE = 10;
 
     public SimplePopulation(int populationSize) {
         this.populationSize = populationSize;
@@ -22,13 +23,14 @@ public class SimplePopulation implements Population {
 
     @Override
     public void init(OptimizationProblem problem) {
-        for (int i = 0; i < populationSize; i++) {
+        for (int i = 0; i < POPULATION_SIZE; i++) {
             BitString random = generateRandomIndividual();
             individuals.add(new BitStringSolution(random, problem.objectiveValue(random)));
         }
     }
 
     private BitString generateRandomIndividual() {
+        // TODO: replace populationSize with individualSize
         BitSet bitSet = new BitSet(populationSize);
         for (int i = 0; i < populationSize; i++) {
             // set random bits
@@ -37,9 +39,22 @@ public class SimplePopulation implements Population {
         return new BitString(bitSet);
     }
 
+    // TODO: refactor below.
+    /*
+    *   Search for a better data structure to hold unique elements: Set, Map etc
+    *   Get rid of adding duplicate elements if possible
+    * */
     @Override
     public void add(OptimizationProblem problem, Solution solution) {
-        individuals.add(solution);
+        boolean found = false;
+        for (Solution s : individuals) {
+            if (s.getRepresentation().equals(solution.getRepresentation()))
+                found = true;
+        }
+
+        if (!found) {
+            individuals.add(solution);
+        }
     }
 
     @Override
