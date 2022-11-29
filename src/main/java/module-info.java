@@ -6,6 +6,7 @@ module com.targus {
     requires com.dlsc.formsfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
+    requires java.logging;
 /*
     opens com.targus to javafx.fxml;
     exports com.targus;
