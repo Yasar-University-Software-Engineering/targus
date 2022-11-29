@@ -283,7 +283,7 @@ public class Controller {
         List<Integer> indexes = bitString.ones();
 
         for (Integer index: indexes ) {
-            Point2D potentialPosition = potentialPositions.get(index);
+            Point2D potentialPosition = potentialPositionArray[index].multiply(scale);
             Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
             mainPane.getChildren().add(sensor);
         }
