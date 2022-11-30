@@ -24,14 +24,13 @@ public class OnePointCrossOver implements CrossOverOperator{
     public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
         List<Solution> children = new ArrayList<>();
         WSN model = (WSN) problem.model();
-        // TODO: replace this with model.getIndividualSize()
-        int individualSize = model.getPopulationSize();
+        int solutionSize = model.getSolutionSize();
         int parentSize = solutions.size() % 2 == 1 ? solutions.size() - 1 : solutions.size();
         for (int i = 0; i < parentSize; i+=2) {
             BitString parentOne = (BitString) solutions.get(i).getRepresentation();
             BitString parentTwo = (BitString) solutions.get(i+1).getRepresentation();
 
-            int crossOverPoint = random.nextInt(individualSize);
+            int crossOverPoint = random.nextInt(solutionSize);
             BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint);
             BitString childTwo = generateChild(parentTwo, parentOne, crossOverPoint);
 

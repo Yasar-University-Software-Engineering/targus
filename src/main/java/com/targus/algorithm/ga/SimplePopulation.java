@@ -3,6 +3,7 @@ package com.targus.algorithm.ga;
 import com.targus.problem.BitStringSolution;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
 
 import java.security.SecureRandom;
@@ -23,17 +24,17 @@ public class SimplePopulation implements Population {
 
     @Override
     public void init(OptimizationProblem problem) {
+        WSN model = (WSN) problem.model();
+        int solutionSize = model.getSolutionSize();
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            BitString random = generateRandomIndividual();
+            BitString random = generateRandomIndividual(solutionSize);
             individuals.add(new BitStringSolution(random, problem.objectiveValue(random)));
         }
     }
 
-    private BitString generateRandomIndividual() {
-        // TODO: replace populationSize with individualSize
-        BitSet bitSet = new BitSet(populationSize);
-        for (int i = 0; i < populationSize; i++) {
-            // set random bits
+    private BitString generateRandomIndividual(int individualSize) {
+        BitSet bitSet = new BitSet(individualSize);
+        for (int i = 0; i < individualSize; i++) {
             bitSet.set(i, random.nextBoolean());
         }
         return new BitString(bitSet);
