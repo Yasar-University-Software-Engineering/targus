@@ -2,10 +2,13 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.utils.CustomLogger;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GA {
     OptimizationProblem problem;
@@ -16,16 +19,20 @@ public class GA {
     MutationOperator mutationOperator;
     TerminalState terminalState;
 
-    Log logger;
+    Logger logger;
 
     public GA(OptimizationProblem problem) {
         this.problem = problem;
-        // TODO: refactor this
-        logger = new Log("ga.log");
-        logger.logger.setLevel(Level.SEVERE);
+        try {
+            CustomLogger customLogger = new CustomLogger("java.com.targus.algorithm.ga.Ga", "GA.log", true);
+            logger = customLogger.getLogger();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        logger.setLevel(Level.SEVERE);
     }
 
-    public static String printListOfSolutions(List<Solution> solutions) {
+    private static String printListOfSolutions(List<Solution> solutions) {
         StringBuilder res = new StringBuilder("\n");
         for (Solution s : solutions) {
             res.append(s).append("\n");
@@ -39,52 +46,61 @@ public class GA {
         }
 
         population.init(problem);
-        logger.logger.info("After the initialization of the population...");
-        logger.logger.info(population.toString());
+        logger.info("After the initialization of the population...");
+        logger.info(population.toString());
 
         population.sortIndividuals();
-        logger.logger.info("After the sorting of the population...");
-        logger.logger.info(population.toString());
+        logger.info("After the sorting of the population...");
+        logger.info(population.toString());
+
+        Solution bestSolution = population.getBestIndividual();
+        Solution temp = population.getBestIndividual();
+        System.out.println("The best individual is " + bestSolution);
 
         while (!terminalState.isTerminal()) {
+            if (bestSolution.objectiveValue() < temp.objectiveValue()) {
+                bestSolution = temp;
+                System.out.println("The best individual is change to: " + bestSolution);
+            }
+
             List<Solution> parents = selectionPolicy.apply(problem, population.getIndividuals());
 
-            logger.logger.info("*Parents*");
-            logger.logger.info(printListOfSolutions(parents));
+            logger.info("*Parents*");
+            logger.info(printListOfSolutions(parents));
 
             List<Solution> mating = crossOverOperator.apply(problem, parents);
 
-            logger.logger.info("*Mating*");
-            logger.logger.info(printListOfSolutions(mating));
+            logger.info("*Mating*");
+            logger.info(printListOfSolutions(mating));
 
             List<Solution> mutation = mutationOperator.apply(problem, population.getIndividuals());
 
-            logger.logger.info("*Mutation*");
-            logger.logger.info(printListOfSolutions(mutation));
+            logger.info("*Mutation*");
+            logger.info(printListOfSolutions(mutation));
 
             population.addAll(problem, mating);
             population.addAll(problem, mutation);
 
-            logger.logger.info("*Removing duplicates*");
-            logger.logger.info(population.toString());
+            logger.info("*Removing duplicates*");
+            logger.info(population.toString());
 
             population.sortIndividuals();
 
-            logger.logger.info("*Removing duplicates : Sorted*");
-            logger.logger.info(population.toString());
+            logger.info("*Removing duplicates : Sorted*");
+            logger.info(population.toString());
 
             List<Solution> survivors = survivalPolicy.apply(problem, population.getIndividuals());
 
             population.clear();
             population.addAll(problem, survivors);
 
-            logger.logger.info("*Survivors*");
-            logger.logger.info(population.toString());
+            logger.info("*Survivors*");
+            logger.info(population.toString());
 
             terminalState.nextState();
         }
-
-        return population.getBestIndividual();
+        System.out.println("The execution of GA is finished: " + bestSolution);
+        return bestSolution;
     }
 
     private boolean isRunnable() {
