@@ -81,8 +81,15 @@ public class WSN implements ProblemModel {
         return k;
     }
 
-    // TODO: change the name to getIndividualSize()
+    /*
+    * TODO: There is a duplicate of this method. I could not rename it
+    *  to something meaningful. Therefore, left it that way.
+    * */
     public int getPopulationSize() {
+        return potentialPositions.length;
+    }
+
+    public int getSolutionSize() {
         return potentialPositions.length;
     }
 

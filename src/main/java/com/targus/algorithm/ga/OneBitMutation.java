@@ -23,12 +23,11 @@ public class OneBitMutation implements MutationOperator{
         List<Solution> newSolutions = new ArrayList<>();
         WSN model = (WSN) problem.model();
         double mutationProbability = model.getMutationRate();
-        // TODO: replace this with model.getIndividualSize()
-        int individualSize = model.getPopulationSize();
+        int solutionSize = model.getSolutionSize();
         for (Solution s : solutions) {
             if (random.nextDouble() < mutationProbability) {
                 BitString individual = (BitString) s.getRepresentation();
-                individual.flip(random.nextInt(individualSize));
+                individual.flip(random.nextInt(solutionSize));
                 BitStringSolution mutatedSolution = new BitStringSolution(individual, problem.objectiveValue(individual));
                 newSolutions.add(mutatedSolution);
             }
