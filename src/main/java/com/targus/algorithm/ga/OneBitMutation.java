@@ -26,7 +26,7 @@ public class OneBitMutation implements MutationOperator{
         int solutionSize = model.getSolutionSize();
         for (Solution s : solutions) {
             if (random.nextDouble() < mutationProbability) {
-                BitString individual = (BitString) s.getRepresentation();
+                BitString individual = (BitString) s.clone().getRepresentation();
                 individual.flip(random.nextInt(solutionSize));
                 BitStringSolution mutatedSolution = new BitStringSolution(individual, problem.objectiveValue(individual));
                 newSolutions.add(mutatedSolution);

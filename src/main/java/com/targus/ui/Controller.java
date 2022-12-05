@@ -252,12 +252,20 @@ public class Controller {
             mainPane.setLayoutX(25);
             mainPane.setLayoutY((25));
 
+            for (int i = 0; i < potentialPositionArray.length; i++) {
+                potentialPositionArray[i] = potentialPositionArray[i].multiply(scale);
+            }
+
+            for (int i = 0; i < targetArray.length; i++) {
+                targetArray[i] = targetArray[i].multiply(scale);
+            }
+
             for (Point2D point2D: targetArray) {
-                mainPane.getChildren().add(new Target(scale * point2D.getX(), scale * point2D.getY()));
+                mainPane.getChildren().add(new Target(point2D.getX(), point2D.getY()));
             }
 
             for (Point2D point2D: potentialPositionArray) {
-                mainPane.getChildren().add(new PotentialPosition(scale * point2D.getX(), scale * point2D.getY()));
+                mainPane.getChildren().add(new PotentialPosition(point2D.getX(), point2D.getY()));
             }
 
             WSN wsn = new WSN(targetArray,
@@ -283,7 +291,7 @@ public class Controller {
         List<Integer> indexes = bitString.ones();
 
         for (Integer index: indexes ) {
-            Point2D potentialPosition = potentialPositionArray[index].multiply(scale);
+            Point2D potentialPosition = potentialPositionArray[index];
             Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
             mainPane.getChildren().add(sensor);
         }

@@ -21,8 +21,8 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
         double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
                 (double) bitSet.cardinality() / wsn.getPopulationSize() : 0;
 
-        double mConnPenValueScaled = wsn.getPopulationSize() * wsn.getM() != 0 ?
-                (double) mConnPenSum(wsn, sensors) / (wsn.getPopulationSize() * wsn.getM()) : 0;
+        double mConnPenValueScaled = sensors.size() * wsn.getM() != 0 ?
+                (double) mConnPenSum(wsn, sensors) / (sensors.size() * wsn.getM()) : 0;
 
         double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
                 (double) kCovPenSum(wsn, sensors) / (wsn.targetsSize() * wsn.getK()) : 0;
