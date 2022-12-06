@@ -58,8 +58,8 @@ public class GA {
         System.out.println("The best individual is " + bestSolution);
 
         while (!terminalState.isTerminal()) {
-            if (bestSolution.objectiveValue() < temp.objectiveValue()) {
-                bestSolution = temp;
+            if (bestSolution.objectiveValue() < population.getBestIndividual().objectiveValue()) {
+                bestSolution = population.getBestIndividual();
                 System.out.println("The best individual is change to: " + bestSolution);
             }
 
