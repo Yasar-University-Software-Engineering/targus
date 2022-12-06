@@ -97,6 +97,7 @@ public class GA {
             logger.info("*Survivors*");
             logger.info(population.toString());
 
+            bestSolution = population.getBestIndividual();
             terminalState.nextState();
         }
         System.out.println("The execution of GA is finished: " + bestSolution);

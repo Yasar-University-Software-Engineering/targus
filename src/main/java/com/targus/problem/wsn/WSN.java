@@ -24,8 +24,8 @@ public class WSN implements ProblemModel {
             Point2D[] potentialPositions,
             int m,
             int k,
-            int commRange,
-            int sensRange,
+            double commRange,
+            double sensRange,
             int generationCount,
             double mutationRate) {
 

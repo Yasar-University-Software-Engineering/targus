@@ -27,8 +27,8 @@ public class OnePointCrossOver implements CrossOverOperator{
         int solutionSize = model.getSolutionSize();
         int parentSize = solutions.size() % 2 == 1 ? solutions.size() - 1 : solutions.size();
         for (int i = 0; i < parentSize; i+=2) {
-            BitString parentOne = (BitString) solutions.get(i).getRepresentation();
-            BitString parentTwo = (BitString) solutions.get(i+1).getRepresentation();
+            BitString parentOne = (BitString) solutions.get(i).clone().getRepresentation();
+            BitString parentTwo = (BitString) solutions.get(i+1).clone().getRepresentation();
 
             int crossOverPoint = random.nextInt(solutionSize);
             BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint);
