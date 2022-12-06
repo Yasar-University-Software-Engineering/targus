@@ -14,6 +14,9 @@ import javafx.scene.control.*;
 import javafx.scene.effect.Light;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -245,6 +248,7 @@ public class Controller {
             int generationCount = Integer.parseInt(read(bufferedReader)[0]);
             double mutationRate = Double.parseDouble(read(bufferedReader)[0]);
 
+            Sensor.setRadii(sensRange, commRange);
             mainPane.setMaxWidth(scale * dimensions[0].getX());
             mainPane.setMaxHeight(scale * dimensions[0].getY());
             mainPane.setStyle("-fx-background-color: lightGray;");
@@ -285,6 +289,10 @@ public class Controller {
         for (Integer index: indexes ) {
             Point2D potentialPosition = potentialPositionArray[index].multiply(scale);
             Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
+            Circle c = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getSensingRangeRadius());
+            c.setFill(Color.TRANSPARENT);
+            c.setStroke(Color.WHITE);
+            mainPane.getChildren().add(c);
             mainPane.getChildren().add(sensor);
         }
     }
