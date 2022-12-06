@@ -10,6 +10,11 @@ import java.util.BitSet;
 import java.util.List;
 
 public class WSNMinimumSensorObjective implements ObjectiveFunction {
+
+    public final static double weightSensor = 1;
+    public final static double weightMComm = 10;
+    public final static double weightKCov = 10;
+
     @Override
     public double value(ProblemModel model, Representation r) {
         WSN wsn = (WSN) model;
@@ -27,7 +32,7 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
         double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
                 (double) kCovPenSum(wsn, sensors) / (wsn.targetsSize() * wsn.getK()) : 0;
 
-        return sensorPenValueScaled + mConnPenValueScaled + kCoverPenValueScaled;
+        return sensorPenValueScaled * weightSensor + mConnPenValueScaled * weightMComm + kCoverPenValueScaled * weightKCov;
     }
 
     private int mConnPenSum(WSN wsn, List<Integer> sensors) {

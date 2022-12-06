@@ -37,6 +37,14 @@ public class Sensor extends Circle {
 
     }
 
+    public double getSensingRangeRadius() {
+        return sensingRangeRadius;
+    }
+
+    public double getCommunicationRangeRadius() {
+        return communicationRangeRadius;
+    }
+
     public static void setRadii(int communicationRangeRadius, int sensingRangeRadius){
         Sensor.communicationRangeRadius = communicationRangeRadius;
         Sensor.sensingRangeRadius = sensingRangeRadius;
