@@ -40,22 +40,9 @@ public class SimplePopulation implements Population {
         return new BitString(bitSet);
     }
 
-    // TODO: refactor below.
-    /*
-    *   Search for a better data structure to hold unique elements: Set, Map etc
-    *   Get rid of adding duplicate elements if possible
-    * */
     @Override
     public void add(OptimizationProblem problem, Solution solution) {
-        boolean found = false;
-        for (Solution s : individuals) {
-            if (s.getRepresentation().equals(solution.getRepresentation()))
-                found = true;
-        }
-
-        if (!found) {
-            individuals.add(solution);
-        }
+        individuals.add(solution);
     }
 
     @Override
@@ -75,7 +62,7 @@ public class SimplePopulation implements Population {
         if (individuals.isEmpty()) {
             return null;
         }
-        return individuals.get(0).clone();  // return the last element since the list will always be sorted
+        return individuals.get(0).clone();  // return the first element since the list will always be sorted
     }
 
     @Override
