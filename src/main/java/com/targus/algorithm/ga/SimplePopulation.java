@@ -62,7 +62,7 @@ public class SimplePopulation implements Population {
         if (individuals.isEmpty()) {
             return null;
         }
-        return individuals.get(0).clone();  // return the first element since the list will always be sorted
+        return individuals.get(individuals.size() - 1);  // return the last element since the list will always be sorted
     }
 
     @Override
