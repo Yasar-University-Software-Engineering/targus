@@ -29,6 +29,16 @@ public class Controller {
 
     private static final int potentialPositionRadius = 15;
     private static final int targetRadius = 10;
+    public Label sensorObjective;
+    public Label connectivityObjective;
+    public Label coverageObjective;
+    public Label weightSensorObjective;
+    public Label weightConnectivityObjective;
+    public Label weightCoverageObjective;
+    public Label weightSensorObjectiveResult;
+    public Label weightConnectivityObjectiveResult;
+    public Label weightCoverageObjectiveResult;
+    public Label total;
 
     @FXML
     private TextField setAreaHeightTextField;
@@ -92,7 +102,7 @@ public class Controller {
         mainPane.setMaxHeight(paneHeight);
         mainPane.setStyle("-fx-background-color: lightGray;");
         mainPane.setLayoutX(25);
-        mainPane.setLayoutY((25));
+        mainPane.setLayoutY(25);
     }
     //create menu items
     MenuItem item1 = new MenuItem("Create Target");
@@ -224,7 +234,9 @@ public class Controller {
     }
 
     @FXML
-    void loadFromFileButtonClicked() {
+    void loadFromFileButtonClicked() throws Exception {
+
+        resetComponentsClicked(new ActionEvent());
 
         final int scale = 4;
 
@@ -233,6 +245,8 @@ public class Controller {
         Point2D[] dimensions;
         Point2D[] targetArray;
         Point2D[] potentialPositionArray;
+
+        WSN wsn;
 
         BufferedReader bufferedReader;
         try {
@@ -248,13 +262,13 @@ public class Controller {
             int generationCount = Integer.parseInt(read(bufferedReader)[0]);
             double mutationRate = Double.parseDouble(read(bufferedReader)[0]);
 
-            Sensor.setRadii(sensRange, commRange);
+            Sensor.setRadii(scale * commRange, scale * sensRange);
             mainPane.setMaxWidth(scale * dimensions[0].getX());
             mainPane.setMaxHeight(scale * dimensions[0].getY());
             mainPane.setStyle("-fx-background-color: lightGray;");
 
             mainPane.setLayoutX(25);
-            mainPane.setLayoutY((25));
+            mainPane.setLayoutY(25);
 
             for (int i = 0; i < potentialPositionArray.length; i++) {
                 potentialPositionArray[i] = potentialPositionArray[i].multiply(scale);
@@ -272,7 +286,7 @@ public class Controller {
                 mainPane.getChildren().add(new PotentialPosition(point2D.getX(), point2D.getY()));
             }
 
-            WSN wsn = new WSN(targetArray,
+            wsn = new WSN(targetArray,
                     potentialPositionArray,
                     m,
                     k,
@@ -294,13 +308,43 @@ public class Controller {
         BitString bitString = (BitString) bitStringSolution.getRepresentation();
         List<Integer> indexes = bitString.ones();
 
+        WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
+        double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
+                1 - ((double) bitString.getBitSet().cardinality() / wsn.getPopulationSize()) : 0;
+
+        double mConnPenValueScaled = indexes.size() * wsn.getM() != 0 ?
+                (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM()) : 0;
+
+        double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
+                (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 0;
+
+        sensorObjective.setText(String.valueOf(sensorPenValueScaled));
+        connectivityObjective.setText(String.valueOf(mConnPenValueScaled));
+        coverageObjective.setText(String.valueOf(kCoverPenValueScaled));
+
+        weightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
+        weightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
+        weightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
+
+        weightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
+        weightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
+        weightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
+
+        total.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
+                mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +
+                kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
+
         for (Integer index: indexes ) {
             Point2D potentialPosition = potentialPositionArray[index];
             Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
-            Circle c = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getSensingRangeRadius());
-            c.setFill(Color.TRANSPARENT);
-            c.setStroke(Color.WHITE);
-            mainPane.getChildren().add(c);
+            Circle sensingRadius = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getSensingRangeRadius());
+            sensingRadius.setFill(Color.TRANSPARENT);
+            sensingRadius.setStroke(Color.BLUE);
+            Circle commRadius = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getCommunicationRangeRadius());
+            commRadius.setFill(Color.TRANSPARENT);
+            commRadius.setStroke(Color.ORANGE);
+            mainPane.getChildren().add(commRadius);
+            mainPane.getChildren().add(sensingRadius);
             mainPane.getChildren().add(sensor);
         }
     }
