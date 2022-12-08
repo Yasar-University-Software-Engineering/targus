@@ -14,7 +14,7 @@ public class SimplePopulation implements Population {
     private int populationSize;
     private List<Solution> individuals;
     private Random random;
-    private static final int POPULATION_SIZE = 10;
+    private static final int POPULATION_SIZE = 1000;
 
     public SimplePopulation(int populationSize) {
         this.populationSize = populationSize;
