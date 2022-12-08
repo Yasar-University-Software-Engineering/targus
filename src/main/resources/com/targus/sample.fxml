@@ -48,6 +48,31 @@
         <Label layoutX="354.0" layoutY="638.0" prefHeight="17.0" prefWidth="85.0" text="Sensing Range" />
         <Label layoutX="450.0" layoutY="638.0" prefHeight="17.0" prefWidth="99.0" text="Generation Count" />
         <Label layoutX="570.0" layoutY="638.0" prefHeight="17.0" prefWidth="85.0" text="Mutation Rate" />
+        <Label layoutX="570.0" layoutY="638.0" prefHeight="17.0" prefWidth="85.0" text="Mutation Rate" />
+
+        <Label layoutX="800.0" layoutY="138.0" prefHeight="17.0" prefWidth="150.0" text="Sensor objective" />
+        <Label layoutX="800.0" layoutY="188.0" prefHeight="17.0" prefWidth="150.0" text="Connectivity objective" />
+        <Label layoutX="800.0" layoutY="238.0" prefHeight="17.0" prefWidth="150.0" text="Coverage objective" />
+
+        <Label fx:id="sensorObjective" layoutX="950.0" layoutY="138.0" prefHeight="17.0" prefWidth="80.0" text="Placeholder" />
+        <Label fx:id="connectivityObjective" layoutX="950.0" layoutY="188.0" prefHeight="17.0" prefWidth="80.0" text="Placeholder" />
+        <Label fx:id="coverageObjective" layoutX="950.0" layoutY="238.0" prefHeight="17.0" prefWidth="80.0" text="Placeholder" />
+
+        <Label layoutX="1030.0" layoutY="138.0" prefHeight="17.0" prefWidth="20.0" text="X" />
+        <Label layoutX="1030.0" layoutY="188.0" prefHeight="17.0" prefWidth="20.0" text="X" />
+        <Label layoutX="1030.0" layoutY="238.0" prefHeight="17.0" prefWidth="20.0" text="X" />
+
+        <Label fx:id="weightSensorObjective" layoutX="1050.0" layoutY="138.0" prefHeight="17.0" prefWidth="40.0" text="Weight" />
+        <Label fx:id="weightConnectivityObjective" layoutX="1050.0" layoutY="188.0" prefHeight="17.0" prefWidth="40.0" text="Weight" />
+        <Label fx:id="weightCoverageObjective" layoutX="1050.0" layoutY="238.0" prefHeight="17.0" prefWidth="40.0" text="Weight" />
+
+        <Label fx:id="weightSensorObjectiveResult" layoutX="1100.0" layoutY="138.0" prefHeight="17.0" prefWidth="80.0" text="Result" />
+        <Label fx:id="weightConnectivityObjectiveResult" layoutX="1100.0" layoutY="188.0" prefHeight="17.0" prefWidth="80.0" text="Result" />
+        <Label fx:id="weightCoverageObjectiveResult" layoutX="1100.0" layoutY="238.0" prefHeight="17.0" prefWidth="80.0" text="Result" />
+
+        <Label layoutX="1050.0" layoutY="300.0" prefHeight="17.0" prefWidth="50.0" text="Total:" />
+        <Label fx:id="total" layoutX="1100.0" layoutY="300.0" prefHeight="17.0" prefWidth="80.0" text="TotalResult" />
+
         <Circle fill="GREEN" layoutX="775.0" layoutY="579.0" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
         <Label layoutX="797.0" layoutY="571.0" prefHeight="17.0" prefWidth="51.0" text=": Sensor" />
     </children>

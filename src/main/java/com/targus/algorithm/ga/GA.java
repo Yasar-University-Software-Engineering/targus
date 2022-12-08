@@ -74,11 +74,11 @@ public class GA {
             logger.info(printListOfSolutions(mating));
 
             List<Solution> mutation = mutationOperator.apply(problem, mating);
-
-            logger.info("*Mutation*");
-            logger.info(printListOfSolutions(mutation));
-
-            population.addAll(problem, mutation);
+//
+//            logger.info("*Mutation*");
+//            logger.info(printListOfSolutions(mutation));
+//
+//            population.addAll(problem, mutation);
 
             logger.info("*Removing duplicates*");
             logger.info(population.toString());
