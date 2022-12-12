@@ -6,11 +6,6 @@ import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
-import com.targus.utils.ProgressTask;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -90,12 +85,6 @@ public class Controller {
 
     @FXML
     private TextField userTargetYLocation;
-
-    @FXML
-    private ProgressBar progressBar;
-
-    @FXML
-    private Label gaProgressLabel;
 
     private int paneWidth;
     private int paneHeight;
@@ -314,70 +303,50 @@ public class Controller {
         GABuilder gaBuilder = new GABuilder(new GA(wsnOptimizationProblem));
         GA ga = gaBuilder.build();
 
-        ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
-        progressTask.valueProperty().addListener((observable, oldValue, newValue) -> gaProgressLabel.setText(String.valueOf(newValue)));
-        progressBar.progressProperty().bind(progressTask.progressProperty());
+        Solution bitStringSolution = ga.perform();
 
-        Thread thread = new Thread(progressTask);
-        thread.setDaemon(true);
-        thread.start();
+        BitString bitString = (BitString) bitStringSolution.getRepresentation();
+        List<Integer> indexes = bitString.ones();
 
-        Task<Solution> gaTask = new Task<Solution>() {
-            @Override
-            protected Solution call() throws Exception {
-                return ga.perform();
-            }
-        };
+        WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
+        double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
+                1 - ((double) bitString.getBitSet().cardinality() / wsn.getPopulationSize()) : 0;
 
-        gaTask.setOnSucceeded(e -> {
-            gaProgressLabel.setText("GA is completed!");
-            Solution bitStringSolution = gaTask.getValue();
-            BitString bitString = (BitString) bitStringSolution.getRepresentation();
-            List<Integer> indexes = bitString.ones();
+        double mConnPenValueScaled = indexes.size() * wsn.getM() != 0 ?
+                (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM()) : 0;
 
-            WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
-            double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
-                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getPopulationSize()) : 0;
+        double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
+                (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 0;
 
-            double mConnPenValueScaled = indexes.size() * wsn.getM() != 0 ?
-                    (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM()) : 0;
+        sensorObjective.setText(String.valueOf(sensorPenValueScaled));
+        connectivityObjective.setText(String.valueOf(mConnPenValueScaled));
+        coverageObjective.setText(String.valueOf(kCoverPenValueScaled));
 
-            double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
-                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 0;
+        weightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
+        weightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
+        weightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
 
-            sensorObjective.setText(String.valueOf(sensorPenValueScaled));
-            connectivityObjective.setText(String.valueOf(mConnPenValueScaled));
-            coverageObjective.setText(String.valueOf(kCoverPenValueScaled));
+        weightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
+        weightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
+        weightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
 
-            weightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
-            weightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
-            weightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
+        total.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
+                mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +
+                kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
 
-            weightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
-            weightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
-            weightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
-
-            total.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
-                    mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +
-                    kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
-
-            for (Integer index: indexes ) {
-                Point2D potentialPosition = potentialPositionArray[index];
-                Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
-                Circle sensingRadius = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getSensingRangeRadius());
-                sensingRadius.setFill(Color.TRANSPARENT);
-                sensingRadius.setStroke(Color.BLUE);
-                Circle commRadius = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getCommunicationRangeRadius());
-                commRadius.setFill(Color.TRANSPARENT);
-                commRadius.setStroke(Color.ORANGE);
-                mainPane.getChildren().add(commRadius);
-                mainPane.getChildren().add(sensingRadius);
-                mainPane.getChildren().add(sensor);
-            }
-        });
-        new Thread(gaTask).start();
-        // Below line is duplicated on purpose. It will be removed in the refactoring phase
-        gaProgressLabel.setText("GA is completed!");
+        for (Integer index: indexes ) {
+            Point2D potentialPosition = potentialPositionArray[index];
+            Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
+            Circle sensingRadius = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getSensingRangeRadius());
+            sensingRadius.setFill(Color.TRANSPARENT);
+            sensingRadius.setStroke(Color.BLUE);
+            Circle commRadius = new Circle(sensor.getLayoutX(), sensor.getLayoutY(), sensor.getCommunicationRangeRadius());
+            commRadius.setFill(Color.TRANSPARENT);
+            commRadius.setStroke(Color.ORANGE);
+            mainPane.getChildren().add(commRadius);
+            mainPane.getChildren().add(sensingRadius);
+            mainPane.getChildren().add(sensor);
+        }
     }
 
     private Point2D[] extractCoordinates(String[] snippet) {

@@ -19,14 +19,4 @@ public class IterativeTerminal implements TerminalState {
     public void nextState() {
         startIndex++;
     }
-
-    @Override
-    public int getCurrentState() {
-        return startIndex;
-    }
-
-    @Override
-    public int getFinishState() {
-        return endIndex;
-    }
 }

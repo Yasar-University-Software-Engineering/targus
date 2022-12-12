@@ -103,10 +103,6 @@ public class GA {
         return bestSolution;
     }
 
-    public TerminalState getTerminalState() {
-        return terminalState;
-    }
-
     private boolean isRunnable() {
         Field[] fields = this.getClass().getDeclaredFields();
 
