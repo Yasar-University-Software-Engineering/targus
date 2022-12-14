@@ -1,9 +1,27 @@
+
+dimensions:
 100 100
+
+targets: 
 40 5, 25 10, 5 40, 50 40, 75 45, 20 65, 95 60, 45 80, 80 85, 35 85, 70 90
+
+potential positions: 
 30 15, 55 15, 80 15, 30 40, 55 40, 80 40, 30 65, 55 65, 80 65
+
+m: 
 3
+
+k: 
 1
+
+communication radius: 
 10
+
+sensing radius: 
 10
+
+generation count: 
 1000
+
+mutation rate: 
 0.03

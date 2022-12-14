@@ -18,9 +18,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,9 +49,9 @@ public class Controller {
     @FXML
     private TextField txtSensRange;
     @FXML
-    private TextField mValue;
+    private TextField txtM;
     @FXML
-    private TextField kValue;
+    private TextField txtK;
 
     @FXML
     private TextField txtMutationRate;
@@ -92,8 +90,8 @@ public class Controller {
     @FXML
     private Label gaProgressLabel;
 
-    private double paneWidth;
-    private double paneHeight;
+    private int paneWidth;
+    private int paneHeight;
 
     private ArrayList<Point2D> potentialPositions = new ArrayList<>();
     private ArrayList<Point2D> targets = new ArrayList<>();
@@ -358,6 +356,54 @@ public class Controller {
     }
 
     @FXML
+    void exportToFileButtonClicked() throws Exception {
+        try {
+            new File("export.txt");
+            FileWriter myWriter = new FileWriter("export.txt");
+
+
+            myWriter.write("\ndimensions:\n");
+            myWriter.write(paneWidth + " " + paneHeight);
+            myWriter.write("\n");
+
+            myWriter.write("\ntargets:\n");
+            for (int i = 0; i < targets.size() - 1; i++) {
+                myWriter.write(targets.get(i).getX() + " " + targets.get(i).getX() + ", ");
+            }
+            myWriter.write(targets.get(targets.size() - 1).getX() + " " + targets.get(targets.size() - 1).getX());
+            myWriter.write("\n");
+
+            myWriter.write("\npotential positions:\n");
+            for (int i = 0; i < potentialPositions.size() - 1; i++) {
+                myWriter.write(potentialPositions.get(i).getX() + " " + potentialPositions.get(i).getX() + ", ");
+            }
+            myWriter.write(potentialPositions.get(potentialPositions.size() - 1).getX() + " " + potentialPositions.get(potentialPositions.size() - 1).getX());
+            myWriter.write("\n");
+
+            myWriter.write("\nm:\n");
+            myWriter.write(Integer.toString(m));
+            myWriter.write("\n");
+
+            myWriter.write("\nk:\n");
+            myWriter.write(Integer.toString(k));
+            myWriter.write("\n");
+
+            myWriter.write("\ngeneration count:\n");
+            myWriter.write(Integer.toString(generationCount));
+            myWriter.write("\n");
+
+            myWriter.write("\nmutation rate:\n");
+            myWriter.write(Double.toString(mutationRate));
+            myWriter.write("\n");
+
+
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     void loadFromFileButtonClicked() throws Exception {
         resetRegionButtonClicked();
 
@@ -370,22 +416,39 @@ public class Controller {
         try {
             bufferedReader = new BufferedReader(new FileReader("input.txt"));
 
+            moveLine(bufferedReader, 2);
             dimensions = extractCoordinates(read(bufferedReader));
+
+            moveLine(bufferedReader, 2);
             targetArray = extractCoordinates(read(bufferedReader));
+
+            moveLine(bufferedReader, 2);
             potentialPositionArray = extractCoordinates(read(bufferedReader));
+
+            moveLine(bufferedReader, 2);
             m = Integer.parseInt(read(bufferedReader)[0]);
+
+            moveLine(bufferedReader, 2);
             k = Integer.parseInt(read(bufferedReader)[0]);
+
+            moveLine(bufferedReader, 2);
             commRange = Double.parseDouble(read(bufferedReader)[0]);
+
+            moveLine(bufferedReader, 2);
             sensRange = Double.parseDouble(read(bufferedReader)[0]);
+
+            moveLine(bufferedReader, 2);
             generationCount = Integer.parseInt(read(bufferedReader)[0]);
+
+            moveLine(bufferedReader, 2);
             mutationRate = Double.parseDouble(read(bufferedReader)[0]);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        paneWidth = dimensions[0].getX();
-        paneHeight = dimensions[0].getY();
+        paneWidth = (int) dimensions[0].getX();
+        paneHeight = (int) dimensions[0].getY();
 
         Collections.addAll(targets, targetArray);
         Collections.addAll(potentialPositions, potentialPositionArray);
@@ -410,5 +473,11 @@ public class Controller {
 
     private String[] read(BufferedReader bufferedReader) throws IOException {
         return bufferedReader.readLine().split(",");
+    }
+
+    private void moveLine(BufferedReader bufferedReader, int n) throws IOException {
+        for (int i = 0; i < n; i++) {
+            bufferedReader.readLine();
+        }
     }
 }
