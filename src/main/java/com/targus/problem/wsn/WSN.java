@@ -73,6 +73,10 @@ public class WSN implements ProblemModel {
         return count;
     }
 
+    public Point2D[] getPotentialPositions() {
+        return potentialPositions;
+    }
+
     public int getM() {
         return m;
     }
