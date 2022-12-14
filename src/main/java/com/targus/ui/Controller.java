@@ -215,12 +215,29 @@ public class Controller {
 
     @FXML
     void setParametersButtonClicked() {
-        m = Integer.parseInt(mValue.getText());
-        k = Integer.parseInt(kValue.getText());
-        commRange = Double.parseDouble(txtCommRange.getText());
-        sensRange = Double.parseDouble(txtSensRange.getText());
-        generationCount = Integer.parseInt(txtGenerationCount.getText());
-        mutationRate = Double.parseDouble(txtMutationRate.getText());
+        if (!txtM.getText().isEmpty()) {
+            m = Integer.parseInt(txtM.getText());
+        }
+
+        if (!txtK.getText().isEmpty()) {
+            k = Integer.parseInt(txtK.getText());
+        }
+
+        if (!txtCommRange.getText().isEmpty()) {
+            commRange = Double.parseDouble(txtCommRange.getText());
+        }
+
+        if (!txtSensRange.getText().isEmpty()) {
+            sensRange = Double.parseDouble(txtSensRange.getText());
+        }
+
+        if (!txtGenerationCount.getText().isEmpty()) {
+            generationCount = Integer.parseInt(txtGenerationCount.getText());
+        }
+
+        if (!txtMutationRate.getText().isEmpty()) {
+            mutationRate = Double.parseDouble(txtMutationRate.getText());
+        }
     }
 
     @FXML
@@ -304,8 +321,6 @@ public class Controller {
 
     void initProblemInstance() throws Exception {
 
-        resetRegionButtonClicked();
-
         final int scale = 1;
 
         Sensor.setRadii(scale * commRange, scale * sensRange);
@@ -316,13 +331,9 @@ public class Controller {
         mainPane.setLayoutX(25);
         mainPane.setLayoutY(25);
 
-        for (int i = 0; i < potentialPositions.size(); i++) {
-            potentialPositions.set(i, potentialPositions.get(i).multiply(scale));
-        }
+        potentialPositions.replaceAll(point2D -> point2D.multiply(scale));
 
-        for (int i = 0; i < targets.size(); i++) {
-            targets.set(i, targets.get(i).multiply(scale));
-        }
+        targets.replaceAll(point2D -> point2D.multiply(scale));
 
         for (Point2D point2D: targets) {
             mainPane.getChildren().add(new Target(point2D.getX(), point2D.getY()));

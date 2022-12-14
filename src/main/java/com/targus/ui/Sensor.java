@@ -14,12 +14,11 @@ public class Sensor extends Circle {
 
     public Sensor(double layoutX, double layoutY) {
 
-
         setLayoutX(layoutX);
         setLayoutY(layoutY);
         setRadius(4);
         setFill(Color.GREEN);
-//çemberler gelmiyor
+
         Circle communicationRangeCircle = new Circle();
         communicationRangeCircle.setLayoutX(layoutX);
         communicationRangeCircle.setLayoutX(layoutX);
