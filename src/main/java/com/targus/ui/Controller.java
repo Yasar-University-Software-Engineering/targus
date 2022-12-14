@@ -2,32 +2,27 @@ package com.targus.ui;
 
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
+import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
 import com.targus.utils.ProgressTask;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
-import javafx.scene.effect.Light;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Controller {
@@ -52,17 +47,17 @@ public class Controller {
     private Button resetButton;
 
     @FXML
-    private TextField commRange;
+    private TextField txtCommRange;
     @FXML
-    private TextField sensRange;
+    private TextField txtSensRange;
     @FXML
     private TextField mValue;
     @FXML
     private TextField kValue;
 
     @FXML
-    private TextField mutationRate;
-    @FXML private TextField generationCount;
+    private TextField txtMutationRate;
+    @FXML private TextField txtGenerationCount;
 
     @FXML
     private Pane mainPane;
@@ -97,11 +92,22 @@ public class Controller {
     @FXML
     private Label gaProgressLabel;
 
-    private int paneWidth;
-    private int paneHeight;
+    private double paneWidth;
+    private double paneHeight;
 
     private ArrayList<Point2D> potentialPositions = new ArrayList<>();
     private ArrayList<Point2D> targets = new ArrayList<>();
+
+    private int m;
+    private int k;
+
+    private double commRange;
+    private double sensRange;
+
+    private int generationCount;
+    private double mutationRate;
+    private OptimizationProblem optimizationProblem;
+
 
     //create region according to user's size preference
     @FXML
@@ -155,19 +161,20 @@ public class Controller {
     }
     //resets region and removes child nodes
     @FXML
-    void resetRegionButtonClicked(ActionEvent event) throws Exception {
+    void resetRegionButtonClicked() throws Exception {
         //check if there exists a node in mainPane's observable list) -> then remove all and reset the size
         if(mainPane.getChildren().size()>0){
             mainPane.getChildren().removeAll(mainPane.getChildren());
             mainPane.setMaxSize(0,0);
-            //targets ve pps' removelanmalı
+            potentialPositions.clear();
+            targets.clear();
 
         }
 
     }
     //resets child nodes
     @FXML
-    void resetComponentsClicked(ActionEvent event) throws Exception {
+    void resetComponentsClicked() throws Exception {
         //check if there exists a node in mainPane's observable list) -> then remove all and reset the size
         if(mainPane.getChildren().size()>0){
             mainPane.getChildren().removeAll(mainPane.getChildren());
@@ -176,15 +183,17 @@ public class Controller {
     }
     //user manually sets pp location if texts are not empty and if pane is created
     @FXML
-    void setPotentialPosButtonClicked(ActionEvent event) {
+    void setPotentialPosButtonClicked() {
         if (mainPane.getMaxHeight() > 0 && mainPane.getMaxWidth() > 0) {
 
             if (!(userPPXLocation.getText().trim().isEmpty()) && !(userPPYLocation.getText().trim().isEmpty())) {
                 int PotentialPosX = Integer.parseInt(userPPXLocation.getText());
                 int PotentialPosY = Integer.parseInt(userPPYLocation.getText());
                 if (PotentialPosX < paneWidth - potentialPositionRadius && PotentialPosX > potentialPositionRadius && PotentialPosY < paneHeight - potentialPositionRadius && PotentialPosY > 0)
+                {
                     mainPane.getChildren().add(new PotentialPosition(PotentialPosX, PotentialPosY));
                     potentialPositions.add(new Point2D(PotentialPosX,PotentialPosY));
+                }
             }
         }
     }
@@ -197,121 +206,33 @@ public class Controller {
                 int TargetPosX = Integer.parseInt(userTargetXLocation.getText());
                 int TargetPosY = Integer.parseInt(userTargetYLocation.getText());
                 if(TargetPosX < paneWidth-targetRadius && TargetPosX > targetRadius && TargetPosY < paneHeight-targetRadius && TargetPosY > 0)
+                {
                     mainPane.getChildren().add(new Target(TargetPosX,TargetPosY));
                     targets.add(new Point2D(TargetPosX,TargetPosY));
-
+                }
             }
         }
 
     }
 
     @FXML
-    void solveButtonClicked(ActionEvent event){
-        int valueM = Integer.parseInt(mValue.getText());
-        int valueK = Integer.parseInt(kValue.getText());
-        int rangeComm = Integer.parseInt(commRange.getText());
-        int rangeSens = Integer.parseInt(sensRange.getText());
-        int countGeneration = Integer.parseInt(generationCount.getText());
-        double rateMutation = Double.parseDouble(mutationRate.getText());
-
-        Point2D[] targetArray = new Point2D[targets.size()];
-        for (int i = 0; i < targets.size(); i++) {
-            targetArray[i] = targets.get(i);
-        }
-
-        Point2D[] potentialPositionArray = new Point2D[potentialPositions.size()];
-        for (int i = 0; i < potentialPositions.size(); i++) {
-            potentialPositionArray[i] = potentialPositions.get(i);
-        }
-       WSNSensorOptimizationSolver wsnSensorOptimizationSolver = new WSNSensorOptimizationSolver(
-               targetArray,
-               potentialPositionArray,
-               valueM,
-               valueK,
-               rangeComm,
-               rangeSens,
-               countGeneration,
-               rateMutation);
-
-        List<Integer> indexes = wsnSensorOptimizationSolver.solve();
-        Sensor.setRadii(rangeComm,rangeSens);
-
-        for (Integer index: indexes ) {
-            Point2D potentialPosition = potentialPositions.get(index);
-            Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
-            mainPane.getChildren().add(sensor);
-        }
-
+    void setParametersButtonClicked() {
+        m = Integer.parseInt(mValue.getText());
+        k = Integer.parseInt(kValue.getText());
+        commRange = Double.parseDouble(txtCommRange.getText());
+        sensRange = Double.parseDouble(txtSensRange.getText());
+        generationCount = Integer.parseInt(txtGenerationCount.getText());
+        mutationRate = Double.parseDouble(txtMutationRate.getText());
     }
 
     @FXML
-    void loadFromFileButtonClicked() throws Exception {
+    void solveButtonClicked() throws Exception {
 
-        resetComponentsClicked(new ActionEvent());
+        initProblemInstance();
 
-        final int scale = 4;
+        WSN wsn = (WSN) optimizationProblem.model();
 
-        WSNOptimizationProblem wsnOptimizationProblem;
-
-        Point2D[] dimensions;
-        Point2D[] targetArray;
-        Point2D[] potentialPositionArray;
-
-        WSN wsn;
-
-        BufferedReader bufferedReader;
-        try {
-            bufferedReader = new BufferedReader(new FileReader("input.txt"));
-
-            dimensions = extractCoordinates(read(bufferedReader));
-            targetArray = extractCoordinates(read(bufferedReader));
-            potentialPositionArray = extractCoordinates(read(bufferedReader));
-            int m = Integer.parseInt(read(bufferedReader)[0]);
-            int k = Integer.parseInt(read(bufferedReader)[0]);
-            int commRange = Integer.parseInt(read(bufferedReader)[0]);
-            int sensRange = Integer.parseInt(read(bufferedReader)[0]);
-            int generationCount = Integer.parseInt(read(bufferedReader)[0]);
-            double mutationRate = Double.parseDouble(read(bufferedReader)[0]);
-
-            Sensor.setRadii(scale * commRange, scale * sensRange);
-            mainPane.setMaxWidth(scale * dimensions[0].getX());
-            mainPane.setMaxHeight(scale * dimensions[0].getY());
-            mainPane.setStyle("-fx-background-color: lightGray;");
-
-            mainPane.setLayoutX(25);
-            mainPane.setLayoutY(25);
-
-            for (int i = 0; i < potentialPositionArray.length; i++) {
-                potentialPositionArray[i] = potentialPositionArray[i].multiply(scale);
-            }
-
-            for (int i = 0; i < targetArray.length; i++) {
-                targetArray[i] = targetArray[i].multiply(scale);
-            }
-
-            for (Point2D point2D: targetArray) {
-                mainPane.getChildren().add(new Target(point2D.getX(), point2D.getY()));
-            }
-
-            for (Point2D point2D: potentialPositionArray) {
-                mainPane.getChildren().add(new PotentialPosition(point2D.getX(), point2D.getY()));
-            }
-
-            wsn = new WSN(targetArray,
-                    potentialPositionArray,
-                    m,
-                    k,
-                    scale * commRange,
-                    scale * sensRange,
-                    generationCount,
-                    mutationRate);
-
-             wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        GABuilder gaBuilder = new GABuilder(new GA(wsnOptimizationProblem));
+        GABuilder gaBuilder = new GABuilder(new GA(optimizationProblem));
         GA ga = gaBuilder.build();
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
@@ -361,6 +282,8 @@ public class Controller {
                     mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +
                     kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
 
+            Point2D[] potentialPositionArray = wsn.getPotentialPositions();
+
             for (Integer index: indexes ) {
                 Point2D potentialPosition = potentialPositionArray[index];
                 Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
@@ -378,6 +301,96 @@ public class Controller {
         new Thread(gaTask).start();
         // Below line is duplicated on purpose. It will be removed in the refactoring phase
         gaProgressLabel.setText("GA is completed!");
+
+    }
+
+    void initProblemInstance() throws Exception {
+
+        resetRegionButtonClicked();
+
+        final int scale = 1;
+
+        Sensor.setRadii(scale * commRange, scale * sensRange);
+        mainPane.setMaxWidth(scale * paneWidth);
+        mainPane.setMaxHeight(scale * paneHeight);
+        mainPane.setStyle("-fx-background-color: lightGray;");
+
+        mainPane.setLayoutX(25);
+        mainPane.setLayoutY(25);
+
+        for (int i = 0; i < potentialPositions.size(); i++) {
+            potentialPositions.set(i, potentialPositions.get(i).multiply(scale));
+        }
+
+        for (int i = 0; i < targets.size(); i++) {
+            targets.set(i, targets.get(i).multiply(scale));
+        }
+
+        for (Point2D point2D: targets) {
+            mainPane.getChildren().add(new Target(point2D.getX(), point2D.getY()));
+        }
+
+        for (Point2D point2D: potentialPositions) {
+            mainPane.getChildren().add(new PotentialPosition(point2D.getX(), point2D.getY()));
+        }
+
+        Point2D[] targetArray = new Point2D[targets.size()];
+        Point2D[] potentialPositionArray = new Point2D[potentialPositions.size()];
+
+        for (int i = 0; i < targetArray.length; i++) {
+            targetArray[i] = targets.get(i);
+        }
+
+        for (int i = 0; i < potentialPositionArray.length; i++) {
+            potentialPositionArray[i] = potentialPositions.get(i);
+        }
+
+        WSN wsn = new WSN(targetArray,
+                potentialPositionArray,
+                m,
+                k,
+                scale * commRange,
+                scale * sensRange,
+                generationCount,
+                mutationRate);
+
+        optimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
+    }
+
+    @FXML
+    void loadFromFileButtonClicked() throws Exception {
+        resetRegionButtonClicked();
+
+        BufferedReader bufferedReader;
+
+        Point2D[] dimensions;
+        Point2D[] targetArray;
+        Point2D[] potentialPositionArray;
+
+        try {
+            bufferedReader = new BufferedReader(new FileReader("input.txt"));
+
+            dimensions = extractCoordinates(read(bufferedReader));
+            targetArray = extractCoordinates(read(bufferedReader));
+            potentialPositionArray = extractCoordinates(read(bufferedReader));
+            m = Integer.parseInt(read(bufferedReader)[0]);
+            k = Integer.parseInt(read(bufferedReader)[0]);
+            commRange = Double.parseDouble(read(bufferedReader)[0]);
+            sensRange = Double.parseDouble(read(bufferedReader)[0]);
+            generationCount = Integer.parseInt(read(bufferedReader)[0]);
+            mutationRate = Double.parseDouble(read(bufferedReader)[0]);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        paneWidth = dimensions[0].getX();
+        paneHeight = dimensions[0].getY();
+
+        Collections.addAll(targets, targetArray);
+        Collections.addAll(potentialPositions, potentialPositionArray);
+
+        initProblemInstance();
     }
 
     private Point2D[] extractCoordinates(String[] snippet) {
