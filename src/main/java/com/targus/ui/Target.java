@@ -9,7 +9,7 @@ public class Target extends Circle {
 
         setLayoutX(layoutX);
         setLayoutY(layoutY);
-        setRadius(5.0);
+        setRadius(2.0);
         setFill(Color.RED);
 
     }
