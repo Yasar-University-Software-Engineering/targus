@@ -31,18 +31,26 @@
         <TextField fx:id="setAreaHeightTextField" layoutX="40.0" layoutY="600.0" promptText="Set The Height Of Region" />
         <Label layoutX="35.0" layoutY="579.0" text="Please enter the height of region" />
         <Button fx:id="resetComponents" layoutX="40.0" layoutY="669.0" mnemonicParsing="false" onAction="#resetComponentsClicked" prefHeight="25.0" prefWidth="149.0" text="Reset Components" />
-        <TextField fx:id="commRange" layoutX="577.0" layoutY="611.0" prefHeight="25.0" prefWidth="71.0" />
-        <TextField fx:id="kValue" layoutX="464.0" layoutY="611.0" prefHeight="25.0" prefWidth="71.0" />
-        <TextField fx:id="mValue" layoutX="357.0" layoutY="611.0" prefHeight="25.0" prefWidth="71.0" />
-        <Button fx:id="solveButton" layoutX="686.0" layoutY="634.0" mnemonicParsing="false" onAction="#solveButtonClicked" text="SOLVE" />
+        <TextField fx:id="txtCommRange" layoutX="577.0" layoutY="611.0" prefHeight="25.0" prefWidth="71.0" />
+        <TextField fx:id="txtK" layoutX="464.0" layoutY="611.0" prefHeight="25.0" prefWidth="71.0" />
+        <TextField fx:id="txtM" layoutX="357.0" layoutY="611.0" prefHeight="25.0" prefWidth="71.0" />
+        <Button fx:id="setParametersButton" layoutX="686.0" layoutY="634.0" mnemonicParsing="false" onAction="#setParametersButtonClicked" text="SET" />
+        <Button fx:id="solveButton" layoutX="900.0" layoutY="634.0" mnemonicParsing="false" onAction="#solveButtonClicked" text="SOLVE" />
         <Button fx:id="loadFromFileButton" layoutX="786.0" layoutY="634.0" mnemonicParsing="false" onAction="#loadFromFileButtonClicked" text="LOAD FROM FILE" />
+        <Button fx:id="exportToFileButton" layoutX="786.0" layoutY="600.0" mnemonicParsing="false" onAction="#exportToFileButtonClicked" text="EXPORT TO FILE" />
         <Circle fill="RED" layoutX="775.0" layoutY="497.0" radius="8.0" stroke="RED" strokeType="INSIDE" />
         <Circle fill="WHITE" layoutX="775.0" layoutY="535.0" radius="15.0" stroke="RED" strokeType="INSIDE" />
+        <Circle fill="GREEN" layoutX="775.0" layoutY="579.0" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
+        <Circle fill="WHITE" layoutX="950.0" layoutY="500.0" radius="14.0" stroke="BLUE" strokeType="INSIDE" />
+        <Circle fill="WHITE" layoutX="950.0" layoutY="550.0" radius="14.0" stroke="ORANGE" strokeType="INSIDE" />
         <Label layoutX="797.0" layoutY="489.0" text=": Target" />
         <Label layoutX="797.0" layoutY="527.0" text=": Potential Position" />
-        <TextField fx:id="mutationRate" layoutX="577.0" layoutY="658.0" prefHeight="25.0" prefWidth="71.0" />
-        <TextField fx:id="generationCount" layoutX="464.0" layoutY="658.0" prefHeight="25.0" prefWidth="71.0" />
-        <TextField fx:id="sensRange" layoutX="357.0" layoutY="658.0" prefHeight="25.0" prefWidth="71.0" />
+        <Label layoutX="797.0" layoutY="571.0" prefHeight="17.0" prefWidth="51.0" text=": Sensor" />
+        <Label layoutX="975.0" layoutY="490.0" prefHeight="17.0" prefWidth="150.0" text=": Sensing Range" />
+        <Label layoutX="975.0" layoutY="540.0" prefHeight="17.0" prefWidth="150.0" text=": Communication Range" />
+        <TextField fx:id="txtMutationRate" layoutX="577.0" layoutY="658.0" prefHeight="25.0" prefWidth="71.0" />
+        <TextField fx:id="txtGenerationCount" layoutX="464.0" layoutY="658.0" prefHeight="25.0" prefWidth="71.0" />
+        <TextField fx:id="txtSensRange" layoutX="357.0" layoutY="658.0" prefHeight="25.0" prefWidth="71.0" />
         <Label layoutX="357.0" layoutY="592.0" prefHeight="17.0" prefWidth="78.0" text="m value" />
         <Label layoutX="461.0" layoutY="592.0" prefHeight="17.0" prefWidth="78.0" text="k value" />
         <Label layoutX="550.0" layoutY="592.0" prefHeight="17.0" prefWidth="125.0" text="Communication Range" />
@@ -74,8 +82,7 @@
         <Label layoutX="1050.0" layoutY="300.0" prefHeight="17.0" prefWidth="50.0" text="Total:" />
         <Label fx:id="total" layoutX="1100.0" layoutY="300.0" prefHeight="17.0" prefWidth="80.0" text="TotalResult" />
 
-        <Circle fill="GREEN" layoutX="775.0" layoutY="579.0" radius="14.0" stroke="BLACK" strokeType="INSIDE" />
-        <Label layoutX="797.0" layoutY="571.0" prefHeight="17.0" prefWidth="51.0" text=": Sensor" />
+
       <ProgressBar fx:id="progressBar" layoutX="940.0" layoutY="97.0" prefWidth="200.0" progress="0.0" />
       <Label fx:id="gaProgressLabel" layoutX="801.0" layoutY="98.0" text="GA progress:" />
     </children>

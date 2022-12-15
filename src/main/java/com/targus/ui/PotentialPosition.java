@@ -10,7 +10,7 @@ public class PotentialPosition extends Circle {
 
         setLayoutX(layoutX);
         setLayoutY(layoutY);
-        setRadius(10.0);
+        setRadius(4.0);
         setFill(Color.WHITE);
         setStroke(Color.RED);
         setStrokeType(StrokeType.INSIDE);

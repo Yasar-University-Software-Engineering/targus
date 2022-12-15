@@ -14,12 +14,11 @@ public class Sensor extends Circle {
 
     public Sensor(double layoutX, double layoutY) {
 
-
         setLayoutX(layoutX);
         setLayoutY(layoutY);
-        setRadius(9);
+        setRadius(4);
         setFill(Color.GREEN);
-//çemberler gelmiyor
+
         Circle communicationRangeCircle = new Circle();
         communicationRangeCircle.setLayoutX(layoutX);
         communicationRangeCircle.setLayoutX(layoutX);
@@ -45,7 +44,7 @@ public class Sensor extends Circle {
         return communicationRangeRadius;
     }
 
-    public static void setRadii(int communicationRangeRadius, int sensingRangeRadius){
+    public static void setRadii(double communicationRangeRadius, double sensingRangeRadius){
         Sensor.communicationRangeRadius = communicationRangeRadius;
         Sensor.sensingRangeRadius = sensingRangeRadius;
     }
