@@ -398,7 +398,6 @@ public class Controller {
     @FXML
     void exportToFileButtonClicked() {
         try {
-            // write with json prettifier
             BufferedWriter writer = Files.newBufferedWriter(Paths.get("output.json"));
             ObjectMapper objectMapper = new ObjectMapper();
 
