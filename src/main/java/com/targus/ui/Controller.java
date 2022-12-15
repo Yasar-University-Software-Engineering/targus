@@ -1,11 +1,18 @@
 package com.targus.ui;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
+import com.targus.utils.Constants;
 import com.targus.utils.ProgressTask;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -19,9 +26,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class Controller {
 
@@ -367,48 +374,41 @@ public class Controller {
     }
 
     @FXML
-    void exportToFileButtonClicked() throws Exception {
+    void exportToFileButtonClicked() {
         try {
-            new File("export.txt");
-            FileWriter myWriter = new FileWriter("export.txt");
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get("output.json"));
+            ObjectMapper objectMapper = new ObjectMapper();
 
+            Map<String, Object> problemInfo = new HashMap<>();
+            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(paneWidth, paneWidth));
 
-            myWriter.write("\ndimensions:\n");
-            myWriter.write(paneWidth + " " + paneHeight);
-            myWriter.write("\n");
-
-            myWriter.write("\ntargets:\n");
-            for (int i = 0; i < targets.size() - 1; i++) {
-                myWriter.write(targets.get(i).getX() + " " + targets.get(i).getX() + ", ");
+            List<double[]> targetList = new ArrayList<>();
+            for (Point2D target : targets) {
+                double[] coords = new double[2];
+                coords[0] = target.getX();
+                coords[1] = target.getY();
+                targetList.add(coords);
             }
-            myWriter.write(targets.get(targets.size() - 1).getX() + " " + targets.get(targets.size() - 1).getX());
-            myWriter.write("\n");
+            problemInfo.put(Constants.TARGETS, targetList);
 
-            myWriter.write("\npotential positions:\n");
-            for (int i = 0; i < potentialPositions.size() - 1; i++) {
-                myWriter.write(potentialPositions.get(i).getX() + " " + potentialPositions.get(i).getX() + ", ");
+            List<double[]> potentialPositionList = new ArrayList<>();
+            for (Point2D potentialPosition : potentialPositions) {
+                double[] coords = new double[2];
+                coords[0] = potentialPosition.getX();
+                coords[1] = potentialPosition.getY();
+                potentialPositionList.add(coords);
             }
-            myWriter.write(potentialPositions.get(potentialPositions.size() - 1).getX() + " " + potentialPositions.get(potentialPositions.size() - 1).getX());
-            myWriter.write("\n");
+            problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
 
-            myWriter.write("\nm:\n");
-            myWriter.write(Integer.toString(m));
-            myWriter.write("\n");
+            problemInfo.put(Constants.COMMUNICATION_RADIUS, commRange);
+            problemInfo.put(Constants.SENSING_RADIUS, sensRange);
+            problemInfo.put(Constants.M, m);
+            problemInfo.put(Constants.K, k);
+            problemInfo.put(Constants.GENERATION_COUNT, generationCount);
+            problemInfo.put(Constants.MUTATION_RATE, mutationRate);
 
-            myWriter.write("\nk:\n");
-            myWriter.write(Integer.toString(k));
-            myWriter.write("\n");
-
-            myWriter.write("\ngeneration count:\n");
-            myWriter.write(Integer.toString(generationCount));
-            myWriter.write("\n");
-
-            myWriter.write("\nmutation rate:\n");
-            myWriter.write(Double.toString(mutationRate));
-            myWriter.write("\n");
-
-
-            myWriter.close();
+            writer.write(objectMapper.writeValueAsString(problemInfo));
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -418,77 +418,51 @@ public class Controller {
     void loadFromFileButtonClicked() throws Exception {
         resetRegionButtonClicked();
 
-        BufferedReader bufferedReader;
-
-        Point2D[] dimensions;
+        Point2D dimensions;
         Point2D[] targetArray;
         Point2D[] potentialPositionArray;
 
         try {
-            bufferedReader = new BufferedReader(new FileReader("input.txt"));
+            Reader reader = Files.newBufferedReader(Paths.get("output.json"));
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode parser = objectMapper.readTree(reader);
 
-            moveLine(bufferedReader, 2);
-            dimensions = extractCoordinates(read(bufferedReader));
+            JsonNode dimensionsNode = parser.path(Constants.DIMENSIONS);
+            dimensions = new Point2D(dimensionsNode.get(0).asDouble(), dimensionsNode.get(1).asDouble());
 
-            moveLine(bufferedReader, 2);
-            targetArray = extractCoordinates(read(bufferedReader));
+            JsonNode targetsNode = parser.path(Constants.TARGETS);
+            targetArray = new Point2D[targetsNode.size()];
+            for (int i = 0; i < targetsNode.size(); i++) {
+                JsonNode node = targetsNode.get(i);
+                Point2D target = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
+                targetArray[i] = target;
+            }
 
-            moveLine(bufferedReader, 2);
-            potentialPositionArray = extractCoordinates(read(bufferedReader));
+            JsonNode potentialPositionsNode = parser.path(Constants.POTENTIAL_POSITIONS);
+            potentialPositionArray = new Point2D[potentialPositionsNode.size()];
+            for (int i = 0; i < potentialPositionsNode.size(); i++) {
+                JsonNode node = potentialPositionsNode.get(i);
+                Point2D potentialPos = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
+                potentialPositionArray[i] = potentialPos;
+            }
 
-            moveLine(bufferedReader, 2);
-            m = Integer.parseInt(read(bufferedReader)[0]);
-
-            moveLine(bufferedReader, 2);
-            k = Integer.parseInt(read(bufferedReader)[0]);
-
-            moveLine(bufferedReader, 2);
-            commRange = Double.parseDouble(read(bufferedReader)[0]);
-
-            moveLine(bufferedReader, 2);
-            sensRange = Double.parseDouble(read(bufferedReader)[0]);
-
-            moveLine(bufferedReader, 2);
-            generationCount = Integer.parseInt(read(bufferedReader)[0]);
-
-            moveLine(bufferedReader, 2);
-            mutationRate = Double.parseDouble(read(bufferedReader)[0]);
+            m = parser.path(Constants.M).asInt();
+            k = parser.path(Constants.K).asInt();
+            generationCount = parser.path(Constants.GENERATION_COUNT).asInt();
+            mutationRate = Double.parseDouble(parser.path(Constants.MUTATION_RATE).asText());
+            sensRange = Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText());
+            commRange = Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        paneWidth = (int) dimensions[0].getX();
-        paneHeight = (int) dimensions[0].getY();
+        paneWidth = (int) dimensions.getX();
+        paneHeight = (int) dimensions.getY();
 
         Collections.addAll(targets, targetArray);
         Collections.addAll(potentialPositions, potentialPositionArray);
 
         initProblemInstance();
-    }
-
-    private Point2D[] extractCoordinates(String[] snippet) {
-        Point2D[] coordinates = new Point2D[snippet.length];
-
-        for (int i = 0; i < snippet.length; i++) {
-            String text = snippet[i].trim();
-
-            double x = Double.parseDouble(text.split("\\s")[0]);
-            double y = Double.parseDouble(text.split("\\s")[1]);
-
-            coordinates[i] = new Point2D(x, y);
-        }
-
-        return coordinates;
-    }
-
-    private String[] read(BufferedReader bufferedReader) throws IOException {
-        return bufferedReader.readLine().split(",");
-    }
-
-    private void moveLine(BufferedReader bufferedReader, int n) throws IOException {
-        for (int i = 0; i < n; i++) {
-            bufferedReader.readLine();
-        }
     }
 }
