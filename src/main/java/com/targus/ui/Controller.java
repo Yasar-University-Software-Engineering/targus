@@ -1,11 +1,7 @@
 package com.targus.ui;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
 import com.targus.base.OptimizationProblem;
@@ -434,7 +430,7 @@ public class Controller {
             problemInfo.put(Constants.GENERATION_COUNT, generationCount);
             problemInfo.put(Constants.MUTATION_RATE, mutationRate);
 
-            writer.write(objectMapper.writeValueAsString(problemInfo));
+            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
