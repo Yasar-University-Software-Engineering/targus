@@ -2,12 +2,11 @@ package com.targus.problem.wsn;
 
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
-import com.targus.base.SingleObjectiveOA;
-import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
 import com.targus.represent.BitString;
 import javafx.geometry.Point2D;
 
+import java.util.HashSet;
 import java.util.List;
 
 public class WSNSensorOptimizationSolver {
@@ -35,7 +34,7 @@ public class WSNSensorOptimizationSolver {
         ga = gaBuilder.build();
     }
 
-    public List<Integer> solve() {
+    public HashSet<Integer> solve() {
         bitStringSolution = (BitStringSolution) ga.perform();
 
         BitString bitString = (BitString) bitStringSolution.getRepresentation();

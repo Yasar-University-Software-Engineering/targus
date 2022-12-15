@@ -2,12 +2,14 @@ package com.targus.problem.wsn;
 
 import com.targus.base.ProblemModel;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.Light;
 
 import java.util.*;
 
 public class WSN implements ProblemModel {
     private final Point2D[] targets;
     private final Point2D[] potentialPositions;
+    private HashMap<Point2D, Integer> potentialPositionsMap;
     private final int m;
     private final int k;
     private final double commRange;
@@ -45,14 +47,22 @@ public class WSN implements ProblemModel {
         generateHashMap(potentialPositions, potentialPositions, positionsInCommRange, commRange);
         generateHashMap(targets, potentialPositions, positionsInSensRange, sensRange);
         generateHashMap(potentialPositions, targets, targetsInSensRange, sensRange);
+        initPotentialPositionMap();
     }
 
-    public int mConnSensors(Integer sensor, List<Integer> sensors) {
+    private void initPotentialPositionMap() {
+        potentialPositionsMap = new HashMap<>();
+        for (int i = 0; i < potentialPositions.length; i++) {
+            potentialPositionsMap.put(potentialPositions[i], i);
+        }
+    }
+
+    public int mConnSensors(Integer sensor, HashSet<Integer> sensors) {
         int count = 0;
         HashSet<Point2D> connSensors = positionsInCommRange.get(potentialPositions[sensor]);
 
         for (Point2D obj : connSensors) {
-            Integer index = Arrays.asList(potentialPositions).indexOf(obj);
+            Integer index = potentialPositionsMap.get(obj);
             if (sensors.contains(index))
                 count++;
         }
@@ -60,12 +70,12 @@ public class WSN implements ProblemModel {
         return count;
     }
 
-    public int kCovTargets(Integer target, List<Integer> sensors) {
+    public int kCovTargets(Integer target, HashSet<Integer> sensors) {
         int count = 0;
         HashSet<Point2D> covSensors = positionsInSensRange.get(targets[target]);
 
         for (Point2D obj : covSensors) {
-            Integer index = Arrays.asList(potentialPositions).indexOf(obj);
+            Integer index = potentialPositionsMap.get(obj);
             if (sensors.contains(index))
                 count++;
         }

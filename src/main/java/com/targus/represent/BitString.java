@@ -4,6 +4,7 @@ import com.targus.base.Representation;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashSet;
 import java.util.List;
 
 public class BitString implements Representation {
@@ -12,8 +13,8 @@ public class BitString implements Representation {
         this.bitSet = bitSet;
     }
 
-    public List<Integer> ones() {
-        List<Integer> ones= new ArrayList<>();
+    public HashSet<Integer> ones() {
+        HashSet<Integer> ones= new HashSet<>();
         for (int i = 0; i < bitSet.size(); i++) {
             if (bitSet.get(i))
                 ones.add(i);

@@ -220,8 +220,8 @@ public class Controller {
 
     @FXML
     void generateGrid() throws Exception {
-        for (int i = 5; i < paneHeight; i += 100) {
-            for (int j = 10; j < paneWidth; j += 100) {
+        for (int i = 5; i < paneHeight; i += 25) {
+            for (int j = 10; j < paneWidth; j += 25) {
                 potentialPositions.add(new Point2D(j, i));
             }
         }
@@ -286,7 +286,7 @@ public class Controller {
             gaProgressLabel.setText("GA is completed!");
             Solution bitStringSolution = gaTask.getValue();
             BitString bitString = (BitString) bitStringSolution.getRepresentation();
-            List<Integer> indexes = bitString.ones();
+            HashSet<Integer> indexes = bitString.ones();
 
             WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
             double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
@@ -402,6 +402,7 @@ public class Controller {
     @FXML
     void exportToFileButtonClicked() {
         try {
+            // write with json prettifier
             BufferedWriter writer = Files.newBufferedWriter(Paths.get("output.json"));
             ObjectMapper objectMapper = new ObjectMapper();
 
