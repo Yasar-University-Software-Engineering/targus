@@ -72,7 +72,6 @@ public class SimplePopulation implements Population {
             return null;
         }
         return Collections.max(individuals, Comparator.comparingDouble(Solution::objectiveValue));
-        //return individuals.get(individuals.size() - 1);  // return the last element since the list will always be sorted
     }
 
     @Override
