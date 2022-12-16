@@ -7,10 +7,8 @@ import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OnePointCrossOver implements CrossOverOperator{
 
@@ -22,23 +20,34 @@ public class OnePointCrossOver implements CrossOverOperator{
 
     @Override
     public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
-        List<Solution> children = new ArrayList<>();
+        List<Solution> result = new ArrayList<>();
         WSN model = (WSN) problem.model();
         int solutionSize = model.getSolutionSize();
         int parentSize = solutions.size() % 2 == 1 ? solutions.size() - 1 : solutions.size();
         for (int i = 0; i < parentSize; i+=2) {
-            BitString parentOne = (BitString) solutions.get(i).clone().getRepresentation();
-            BitString parentTwo = (BitString) solutions.get(i+1).clone().getRepresentation();
+            Solution pOne = solutions.get(i).clone();
+            Solution pTwo = solutions.get(i+1).clone();
+            BitString parentOne = (BitString) pOne.getRepresentation();
+            BitString parentTwo = (BitString) pTwo.getRepresentation();
 
             int crossOverPoint = random.nextInt(solutionSize);
             BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint);
             BitString childTwo = generateChild(parentTwo, parentOne, crossOverPoint);
 
-            children.add(new BitStringSolution(childOne, problem.objectiveValue(childOne)));
-            children.add(new BitStringSolution(childTwo, problem.objectiveValue(childTwo)));
+            Solution solutionOne = new BitStringSolution(generateChild(parentOne, parentTwo, crossOverPoint), problem.objectiveValue(childOne));
+            Solution solutionTwo = new BitStringSolution(generateChild(parentTwo, parentOne, crossOverPoint), problem.objectiveValue(childTwo));
+
+            List<Solution> allSolutions = new ArrayList<>(List.of(pOne, pTwo, solutionOne, solutionTwo));
+            List<Solution> bestSolutions = allSolutions
+                    .stream()
+                    .sorted(Comparator.comparingDouble(Solution::objectiveValue).reversed())
+                    .limit(2)
+                    .collect(Collectors.toList());
+
+            result.addAll(bestSolutions);
         }
 
-        return children;
+        return result;
     }
 
     private BitString generateChild(BitString parentOne, BitString parentTwo, int crossOverPoint) {

@@ -40,7 +40,7 @@ public class GABuilder {
     }
 
     public void buildSelectionPolicy() {
-        ga.setSelectionPolicy(new ElitismSelection());
+        ga.setSelectionPolicy(new RouletteWheelSelection());
     }
 
     public void buildSurvivalPolicy() {
