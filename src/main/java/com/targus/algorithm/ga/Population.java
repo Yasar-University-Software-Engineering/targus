@@ -13,6 +13,10 @@ public interface Population {
 
     void addAll(OptimizationProblem problem, List<Solution> solutions);
 
+    void remove(int i);
+
+    void remove(Solution o);
+
     void sortIndividuals();
 
     Solution getBestIndividual();
