@@ -27,8 +27,7 @@ public class RouletteWheelSelection implements SelectionPolicy {
 
         Random random = new SecureRandom();
         List<Solution> selected = new ArrayList<>();
-        // TODO: remove magic variable 10
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             double prob = random.nextDouble();
             int index = Arrays.binarySearch(probabilitiesArray, prob);
             if (index < 0) {
