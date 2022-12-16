@@ -7,7 +7,7 @@ import com.targus.problem.ObjectiveType;
 import com.targus.represent.BitString;
 
 import java.util.BitSet;
-import java.util.List;
+import java.util.HashSet;
 
 public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
@@ -21,7 +21,7 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
         BitString bitString = (BitString) r;
         BitSet bitSet = bitString.getBitSet();
 
-        List<Integer> sensors = bitString.ones();
+        HashSet<Integer> sensors = bitString.ones();
 
         double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
                 1 - ((double) bitSet.cardinality() / wsn.getPopulationSize()) : 0;
@@ -35,7 +35,7 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
         return sensorPenValueScaled * weightSensor + mConnPenValueScaled * weightMComm + kCoverPenValueScaled * weightKCov;
     }
 
-    public int mConnPenSum(WSN wsn, List<Integer> sensors) {
+    public int mConnPenSum(WSN wsn, HashSet<Integer> sensors) {
         int penSum = 0;
         int m = wsn.getM();
 
@@ -52,7 +52,7 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
         return penSum;
     }
 
-    public int kCovPenSum(WSN wsn, List<Integer> sensors) {
+    public int kCovPenSum(WSN wsn, HashSet<Integer> sensors) {
         int penSum = 0;
         int k = wsn.getK();
 
@@ -70,6 +70,6 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
     @Override
     public ObjectiveType type() {
-        return ObjectiveType.Minimization;
+        return ObjectiveType.Maximization;
     }
 }

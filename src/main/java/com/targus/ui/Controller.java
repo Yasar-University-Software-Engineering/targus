@@ -1,11 +1,7 @@
 package com.targus.ui;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
 import com.targus.base.OptimizationProblem;
@@ -113,6 +109,9 @@ public class Controller {
     private double mutationRate;
     private OptimizationProblem optimizationProblem;
 
+    private ArrayList<Sensor> sensors = new ArrayList<>();
+    private ArrayList<Circle> radii = new ArrayList<>();
+
 
     //create region according to user's size preference
     @FXML
@@ -167,15 +166,10 @@ public class Controller {
     //resets region and removes child nodes
     @FXML
     void resetRegionButtonClicked() throws Exception {
-        //check if there exists a node in mainPane's observable list) -> then remove all and reset the size
-        if(mainPane.getChildren().size()>0){
-            mainPane.getChildren().removeAll(mainPane.getChildren());
-            mainPane.setMaxSize(0,0);
-            potentialPositions.clear();
-            targets.clear();
-
-        }
-
+        mainPane.getChildren().removeAll(mainPane.getChildren());
+        mainPane.setMaxSize(0,0);
+        potentialPositions.clear();
+        targets.clear();
     }
     //resets child nodes
     @FXML
@@ -221,6 +215,17 @@ public class Controller {
     }
 
     @FXML
+    void generateGrid() throws Exception {
+        for (int i = 5; i < paneHeight; i += 25) {
+            for (int j = 10; j < paneWidth; j += 25) {
+                potentialPositions.add(new Point2D(j, i));
+            }
+        }
+
+        initProblemInstance();
+    }
+
+    @FXML
     void setParametersButtonClicked() {
         if (!txtM.getText().isEmpty()) {
             m = Integer.parseInt(txtM.getText());
@@ -250,6 +255,7 @@ public class Controller {
     @FXML
     void solveButtonClicked() throws Exception {
 
+        cleanSolution();
         initProblemInstance();
 
         WSN wsn = (WSN) optimizationProblem.model();
@@ -276,7 +282,7 @@ public class Controller {
             gaProgressLabel.setText("GA is completed!");
             Solution bitStringSolution = gaTask.getValue();
             BitString bitString = (BitString) bitStringSolution.getRepresentation();
-            List<Integer> indexes = bitString.ones();
+            HashSet<Integer> indexes = bitString.ones();
 
             WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
             double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
@@ -318,12 +324,28 @@ public class Controller {
                 mainPane.getChildren().add(commRadius);
                 mainPane.getChildren().add(sensingRadius);
                 mainPane.getChildren().add(sensor);
+
+                radii.add(commRadius);
+                radii.add(sensingRadius);
+                sensors.add(sensor);
             }
         });
         new Thread(gaTask).start();
         // Below line is duplicated on purpose. It will be removed in the refactoring phase
         gaProgressLabel.setText("GA is completed!");
 
+    }
+
+    void cleanSolution() {
+        for (Sensor sensor : sensors) {
+            mainPane.getChildren().remove(sensor);
+        }
+        sensors.clear();
+
+        for (Circle radius : radii) {
+            mainPane.getChildren().remove(radius);
+        }
+        radii.clear();
     }
 
     void initProblemInstance() throws Exception {
@@ -407,7 +429,7 @@ public class Controller {
             problemInfo.put(Constants.GENERATION_COUNT, generationCount);
             problemInfo.put(Constants.MUTATION_RATE, mutationRate);
 
-            writer.write(objectMapper.writeValueAsString(problemInfo));
+            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
