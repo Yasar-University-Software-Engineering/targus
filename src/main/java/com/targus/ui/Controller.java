@@ -10,113 +10,114 @@ import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
 import com.targus.utils.Constants;
 import com.targus.utils.ProgressTask;
+import javafx.beans.property.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+import javafx.util.converter.NumberStringConverter;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Controller {
-
-    private static final int potentialPositionRadius = 15;
-    private static final int targetRadius = 10;
-    public Label sensorObjective;
-    public Label connectivityObjective;
-    public Label coverageObjective;
-    public Label weightSensorObjective;
-    public Label weightConnectivityObjective;
-    public Label weightCoverageObjective;
-    public Label weightSensorObjectiveResult;
-    public Label weightConnectivityObjectiveResult;
-    public Label weightCoverageObjectiveResult;
-    public Label total;
+public class Controller implements Initializable {
+    @FXML
+    private TextField txtSensorObjective;
+    @FXML
+    private TextField txtWeightSensorObjective;
+    @FXML
+    private TextField txtWeightSensorObjectiveResult;
+    @FXML
+    private TextField txtConnectivityObjective;
+    @FXML
+    private TextField txtWeightConnectivityObjective;
+    @FXML
+    private TextField txtWeightConnectivityObjectiveResult;
+    @FXML
+    private TextField txtCoverageObjective;
+    @FXML
+    private TextField txtWeightCoverageObjective;
+    @FXML
+    private TextField txtWeightCoverageObjectiveResult;
+    @FXML
+    private TextField txtTotalResult;
 
     @FXML
     private TextField setAreaHeightTextField;
 
     @FXML
-    private Button resetButton;
-
+    private TextField txtCommunicationRange;
     @FXML
-    private TextField txtCommRange;
-    @FXML
-    private TextField txtSensRange;
+    private TextField txtSensingRange;
     @FXML
     private TextField txtM;
     @FXML
     private TextField txtK;
-
     @FXML
     private TextField txtMutationRate;
     @FXML private TextField txtGenerationCount;
-
     @FXML
     private Pane mainPane;
 
     @FXML
-    private Button setAreaButton;
-
-    @FXML
     private TextField setAreaWidthTextField;
-
-    @FXML
-    private Button setPotentialPosButton;
-
-    @FXML
-    private Button setTargetPosButton;
-
-    @FXML
-    private TextField userPPXLocation;
-
-    @FXML
-    private TextField userPPYLocation;
-
-    @FXML
-    private TextField userTargetXLocation;
-
-    @FXML
-    private TextField userTargetYLocation;
-
     @FXML
     private ProgressBar progressBar;
-
     @FXML
     private Label gaProgressLabel;
-
     private int paneWidth;
     private int paneHeight;
+    MenuItem item1 = new MenuItem("Create Target");
+    MenuItem item2 = new MenuItem("Create Potential Position");
 
-    private ArrayList<Point2D> potentialPositions = new ArrayList<>();
-    private ArrayList<Point2D> targets = new ArrayList<>();
 
-    private int m;
-    private int k;
+    private final ArrayList<Point2D> potentialPositions = new ArrayList<>();
+    private final ArrayList<Point2D> targets = new ArrayList<>();
 
-    private double commRange;
-    private double sensRange;
+    private final IntegerProperty mProperty = new SimpleIntegerProperty(1);
+    private final IntegerProperty kProperty = new SimpleIntegerProperty(1);
+    private final DoubleProperty communicationRangeProperty = new SimpleDoubleProperty(100);
+    private final DoubleProperty sensingRangeProperty = new SimpleDoubleProperty(50);
+    private final IntegerProperty generationCountProperty = new SimpleIntegerProperty(1000);
+    private final DoubleProperty mutationRateProperty = new SimpleDoubleProperty(0.3);
 
-    private int generationCount;
-    private double mutationRate;
     private OptimizationProblem optimizationProblem;
 
-    private ArrayList<Sensor> sensors = new ArrayList<>();
-    private ArrayList<Circle> radii = new ArrayList<>();
+    private final ArrayList<Sensor> sensors = new ArrayList<>();
+    private final ArrayList<Circle> radii = new ArrayList<>();
 
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        txtM.textProperty().bindBidirectional(mProperty, new NumberStringConverter());
+        txtK.textProperty().bindBidirectional(kProperty, new NumberStringConverter());
+        txtCommunicationRange.textProperty().bindBidirectional(communicationRangeProperty, new NumberStringConverter());
+        txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
+        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
+        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
+    }
 
-    //create region according to user's size preference
+    private void changeDisable(boolean bool) {
+        txtM.setDisable(bool);
+        txtK.setDisable(bool);
+        txtCommunicationRange.setDisable(bool);
+        txtSensingRange.setDisable(bool);
+        txtGenerationCount.setDisable(bool);
+        txtMutationRate.setDisable(bool);
+    }
+
     @FXML
-    public void setAreaButtonClicked(ActionEvent event) {
-
+    public void setAreaButtonClicked() {
         paneWidth = Integer.parseInt(setAreaWidthTextField.getText());
         paneHeight = Integer.parseInt(setAreaHeightTextField.getText());
         mainPane.setMaxWidth(paneWidth);
@@ -125,9 +126,6 @@ public class Controller {
         mainPane.setLayoutX(25);
         mainPane.setLayoutY(25);
     }
-    //create menu items
-    MenuItem item1 = new MenuItem("Create Target");
-    MenuItem item2 = new MenuItem("Create Potential Position");
 
     @FXML
     void paneClicked(javafx.scene.input.MouseEvent event) {
@@ -163,59 +161,22 @@ public class Controller {
 
         }
     }
-    //resets region and removes child nodes
+
     @FXML
-    void resetRegionButtonClicked() throws Exception {
+    void resetRegionButtonClicked() {
         mainPane.getChildren().removeAll(mainPane.getChildren());
         mainPane.setMaxSize(0,0);
         potentialPositions.clear();
         targets.clear();
     }
-    //resets child nodes
+
     @FXML
-    void resetComponentsClicked() throws Exception {
-        //check if there exists a node in mainPane's observable list) -> then remove all and reset the size
-        if(mainPane.getChildren().size()>0){
-            mainPane.getChildren().removeAll(mainPane.getChildren());
-        }
-
-    }
-    //user manually sets pp location if texts are not empty and if pane is created
-    @FXML
-    void setPotentialPosButtonClicked() {
-        if (mainPane.getMaxHeight() > 0 && mainPane.getMaxWidth() > 0) {
-
-            if (!(userPPXLocation.getText().trim().isEmpty()) && !(userPPYLocation.getText().trim().isEmpty())) {
-                int PotentialPosX = Integer.parseInt(userPPXLocation.getText());
-                int PotentialPosY = Integer.parseInt(userPPYLocation.getText());
-                if (PotentialPosX < paneWidth - potentialPositionRadius && PotentialPosX > potentialPositionRadius && PotentialPosY < paneHeight - potentialPositionRadius && PotentialPosY > 0)
-                {
-                    mainPane.getChildren().add(new PotentialPosition(PotentialPosX, PotentialPosY));
-                    potentialPositions.add(new Point2D(PotentialPosX,PotentialPosY));
-                }
-            }
-        }
-    }
-
-    //user manually sets target location if texts are not empty and if pane is created
-    @FXML
-    void setTargetPosButtonClicked(ActionEvent event) {
-        if(mainPane.getMaxHeight() > 0 && mainPane.getMaxWidth() > 0){
-            if(!(userTargetXLocation.getText().trim().isEmpty()) && !(userTargetYLocation.getText().trim().isEmpty())) {
-                int TargetPosX = Integer.parseInt(userTargetXLocation.getText());
-                int TargetPosY = Integer.parseInt(userTargetYLocation.getText());
-                if(TargetPosX < paneWidth-targetRadius && TargetPosX > targetRadius && TargetPosY < paneHeight-targetRadius && TargetPosY > 0)
-                {
-                    mainPane.getChildren().add(new Target(TargetPosX,TargetPosY));
-                    targets.add(new Point2D(TargetPosX,TargetPosY));
-                }
-            }
-        }
-
+    void resetComponentsClicked() {
+        mainPane.getChildren().removeAll(mainPane.getChildren());
     }
 
     @FXML
-    void generateGrid() throws Exception {
+    void generateGrid() {
         for (int i = 5; i < paneHeight; i += 25) {
             for (int j = 10; j < paneWidth; j += 25) {
                 potentialPositions.add(new Point2D(j, i));
@@ -226,34 +187,8 @@ public class Controller {
     }
 
     @FXML
-    void setParametersButtonClicked() {
-        if (!txtM.getText().isEmpty()) {
-            m = Integer.parseInt(txtM.getText());
-        }
-
-        if (!txtK.getText().isEmpty()) {
-            k = Integer.parseInt(txtK.getText());
-        }
-
-        if (!txtCommRange.getText().isEmpty()) {
-            commRange = Double.parseDouble(txtCommRange.getText());
-        }
-
-        if (!txtSensRange.getText().isEmpty()) {
-            sensRange = Double.parseDouble(txtSensRange.getText());
-        }
-
-        if (!txtGenerationCount.getText().isEmpty()) {
-            generationCount = Integer.parseInt(txtGenerationCount.getText());
-        }
-
-        if (!txtMutationRate.getText().isEmpty()) {
-            mutationRate = Double.parseDouble(txtMutationRate.getText());
-        }
-    }
-
-    @FXML
-    void solveButtonClicked() throws Exception {
+    void solveButtonClicked()  {
+        changeDisable(true);
 
         cleanSolution();
         initProblemInstance();
@@ -271,9 +206,9 @@ public class Controller {
         thread.setDaemon(true);
         thread.start();
 
-        Task<Solution> gaTask = new Task<Solution>() {
+        Task<Solution> gaTask = new Task<>() {
             @Override
-            protected Solution call() throws Exception {
+            protected Solution call() {
                 return ga.perform();
             }
         };
@@ -288,27 +223,29 @@ public class Controller {
             double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
                     1 - ((double) bitString.getBitSet().cardinality() / wsn.getPopulationSize()) : 0;
 
-            double mConnPenValueScaled = indexes.size() * wsn.getM() != 0 ?
-                    (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM()) : 0;
+            double mConnPenValueScaled = indexes.size() == 0 || wsn.getM() == 0 ?
+                    1 : (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM());
 
             double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
-                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 0;
+                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 1;
 
-            sensorObjective.setText(String.valueOf(sensorPenValueScaled));
-            connectivityObjective.setText(String.valueOf(mConnPenValueScaled));
-            coverageObjective.setText(String.valueOf(kCoverPenValueScaled));
+            txtSensorObjective.setText(String.valueOf(sensorPenValueScaled));
+            txtConnectivityObjective.setText(String.valueOf(mConnPenValueScaled));
+            txtCoverageObjective.setText(String.valueOf(kCoverPenValueScaled));
 
-            weightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
-            weightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
-            weightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
+            txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
+            txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
+            txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
 
-            weightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
-            weightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
-            weightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
+            txtWeightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
+            txtWeightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
+            txtWeightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
 
-            total.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
+/*            txtTotalResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
                     mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +
-                    kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
+                    kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));*/
+
+            txtTotalResult.setText(String.valueOf(wsnMinimumSensorObjective.value(wsn, bitString)));
 
             Point2D[] potentialPositionArray = wsn.getPotentialPositions();
 
@@ -329,6 +266,7 @@ public class Controller {
                 radii.add(sensingRadius);
                 sensors.add(sensor);
             }
+            changeDisable(false);
         });
         new Thread(gaTask).start();
         // Below line is duplicated on purpose. It will be removed in the refactoring phase
@@ -336,6 +274,7 @@ public class Controller {
 
     }
 
+    @FXML
     void cleanSolution() {
         for (Sensor sensor : sensors) {
             mainPane.getChildren().remove(sensor);
@@ -348,21 +287,14 @@ public class Controller {
         radii.clear();
     }
 
-    void initProblemInstance() throws Exception {
-
-        final int scale = 1;
-
-        Sensor.setRadii(scale * commRange, scale * sensRange);
-        mainPane.setMaxWidth(scale * paneWidth);
-        mainPane.setMaxHeight(scale * paneHeight);
+    void initProblemInstance() {
+        Sensor.setRadii(communicationRangeProperty.get(), sensingRangeProperty.get());
+        mainPane.setMaxWidth(paneWidth);
+        mainPane.setMaxHeight(paneHeight);
         mainPane.setStyle("-fx-background-color: lightGray;");
 
         mainPane.setLayoutX(25);
         mainPane.setLayoutY(25);
-
-        potentialPositions.replaceAll(point2D -> point2D.multiply(scale));
-
-        targets.replaceAll(point2D -> point2D.multiply(scale));
 
         for (Point2D point2D: targets) {
             mainPane.getChildren().add(new Target(point2D.getX(), point2D.getY()));
@@ -385,12 +317,12 @@ public class Controller {
 
         WSN wsn = new WSN(targetArray,
                 potentialPositionArray,
-                m,
-                k,
-                scale * commRange,
-                scale * sensRange,
-                generationCount,
-                mutationRate);
+                mProperty.get(),
+                kProperty.get(),
+                communicationRangeProperty.get(),
+                sensingRangeProperty.get(),
+                generationCountProperty.get(),
+                mutationRateProperty.get());
 
         optimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
     }
@@ -398,7 +330,18 @@ public class Controller {
     @FXML
     void exportToFileButtonClicked() {
         try {
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get("output.json"));
+            FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(new File("."));
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+            File f = fc.showSaveDialog(null);
+
+            if (f == null) {
+                return;
+            }
+
+            String src = f.getAbsolutePath();
+
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get(src));
             ObjectMapper objectMapper = new ObjectMapper();
 
             Map<String, Object> problemInfo = new HashMap<>();
@@ -422,12 +365,12 @@ public class Controller {
             }
             problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
 
-            problemInfo.put(Constants.COMMUNICATION_RADIUS, commRange);
-            problemInfo.put(Constants.SENSING_RADIUS, sensRange);
-            problemInfo.put(Constants.M, m);
-            problemInfo.put(Constants.K, k);
-            problemInfo.put(Constants.GENERATION_COUNT, generationCount);
-            problemInfo.put(Constants.MUTATION_RATE, mutationRate);
+            problemInfo.put(Constants.COMMUNICATION_RADIUS, communicationRangeProperty.get());
+            problemInfo.put(Constants.SENSING_RADIUS, sensingRangeProperty.get());
+            problemInfo.put(Constants.M, mProperty.get());
+            problemInfo.put(Constants.K, kProperty.get());
+            problemInfo.put(Constants.GENERATION_COUNT, generationCountProperty.get());
+            problemInfo.put(Constants.MUTATION_RATE, mutationRateProperty.get());
 
             writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
             writer.close();
@@ -437,15 +380,26 @@ public class Controller {
     }
 
     @FXML
-    void loadFromFileButtonClicked() throws Exception {
+    void loadFromFileButtonClicked() {
         resetRegionButtonClicked();
+
+        FileChooser fc = new FileChooser();
+        fc.setInitialDirectory(new File("."));
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+        File f = fc.showOpenDialog(null);
+
+        if (f == null) {
+            return;
+        }
+
+        String src = f.getAbsolutePath();
 
         Point2D dimensions;
         Point2D[] targetArray;
         Point2D[] potentialPositionArray;
 
         try {
-            Reader reader = Files.newBufferedReader(Paths.get("output.json"));
+            Reader reader = Files.newBufferedReader(Paths.get(src));
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode parser = objectMapper.readTree(reader);
 
@@ -468,12 +422,12 @@ public class Controller {
                 potentialPositionArray[i] = potentialPos;
             }
 
-            m = parser.path(Constants.M).asInt();
-            k = parser.path(Constants.K).asInt();
-            generationCount = parser.path(Constants.GENERATION_COUNT).asInt();
-            mutationRate = Double.parseDouble(parser.path(Constants.MUTATION_RATE).asText());
-            sensRange = Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText());
-            commRange = Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText());
+            mProperty.set(parser.path(Constants.M).asInt());
+            kProperty.set(parser.path(Constants.K).asInt());
+            communicationRangeProperty.set(Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText()));
+            sensingRangeProperty.set(Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText()));
+            generationCountProperty.set(parser.path(Constants.GENERATION_COUNT).asInt());
+            mutationRateProperty.set(Double.parseDouble(parser.path(Constants.MUTATION_RATE).asText()));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
