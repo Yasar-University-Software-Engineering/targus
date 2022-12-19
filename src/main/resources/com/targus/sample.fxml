@@ -32,37 +32,37 @@
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="18.0" prefWidth="200.0" spacing="20.0">
                <children>
-                    <Label prefHeight="18.0" prefWidth="124.0" text="m Value" />
+                    <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="124.0" text="Connectivity (m)" />
                     <TextField fx:id="txtM" alignment="CENTER" prefHeight="25.0" prefWidth="71.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="200.0" spacing="20.0">
                <children>
-                    <Label prefHeight="17.0" prefWidth="124.0" text="k Value" />
+                    <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="124.0" text="Coverage (k)" />
                     <TextField fx:id="txtK" alignment="CENTER" prefHeight="25.0" prefWidth="71.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="200.0" spacing="20.0">
                <children>
-                    <Label prefHeight="18.0" prefWidth="124.0" text="Communication Range" />
+                    <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="124.0" text="Communication Range" />
                     <TextField fx:id="txtCommunicationRange" alignment="CENTER" prefHeight="25.0" prefWidth="71.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="200.0" spacing="20.0">
                <children>
-                    <Label prefHeight="17.0" prefWidth="124.0" text="Sensing Range" />
+                    <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="124.0" text="Sensing Range" />
                     <TextField fx:id="txtSensingRange" alignment="CENTER" prefHeight="25.0" prefWidth="71.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="200.0" spacing="20.0">
                <children>
-                    <Label prefHeight="17.0" prefWidth="124.0" text="Generation Count" />
+                    <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="124.0" text="Generation Count" />
                     <TextField fx:id="txtGenerationCount" alignment="CENTER" prefHeight="25.0" prefWidth="71.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_LEFT" prefHeight="28.0" prefWidth="200.0" spacing="20.0">
                <children>
-                    <Label prefHeight="17.0" prefWidth="124.0" text="Mutation Rate" />
+                    <Label alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="124.0" text="Mutation Rate" />
                     <TextField fx:id="txtMutationRate" alignment="CENTER" prefHeight="25.0" prefWidth="71.0" />
                </children>
             </HBox>
@@ -165,6 +165,7 @@
             </HBox>
          </children>
       </VBox>
-      <TextField fx:id="txtTotalResult" editable="false" layoutX="1108.0" layoutY="316.0" prefHeight="26.0" prefWidth="83.0" />
+      <TextField fx:id="txtTotalResult" editable="false" layoutX="1081.0" layoutY="314.0" prefHeight="26.0" prefWidth="93.0" />
+      <Label alignment="CENTER_RIGHT" layoutX="982.0" layoutY="319.0" prefHeight="18.0" prefWidth="80.0" text="Fitness Value" />
     </children>
 </AnchorPane>
