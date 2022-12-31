@@ -30,6 +30,10 @@ public class BitString implements Representation {
         bitSet.flip(bitIndex);
     }
 
+    public void set(int bitIndex, boolean value) {
+        bitSet.set(bitIndex, value);
+    }
+
     public int length() {
         return bitSet.length();
     }
