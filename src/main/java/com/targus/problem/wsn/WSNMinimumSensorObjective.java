@@ -23,8 +23,8 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
         HashSet<Integer> sensors = bitString.ones();
 
-        double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
-                1 - ((double) bitSet.cardinality() / wsn.getPopulationSize()) : 0;
+        double sensorPenValueScaled = wsn.getSolutionSize() != 0 ?
+                1 - ((double) bitSet.cardinality() / wsn.getSolutionSize()) : 0;
 
         double mConnPenValueScaled = sensors.size() == 0 || wsn.getM() == 0 ?
                 1 : (double) mConnPenSum(wsn, sensors) / (sensors.size() * wsn.getM());

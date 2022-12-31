@@ -2,7 +2,6 @@ package com.targus.problem.wsn;
 
 import com.targus.base.ProblemModel;
 import javafx.geometry.Point2D;
-import javafx.scene.effect.Light;
 
 import java.util.*;
 
@@ -17,9 +16,20 @@ public class WSN implements ProblemModel {
     private int generationCount;
     private double mutationRate;
 
-    HashMap<Point2D, HashSet<Point2D>> positionsInCommRange;   // Potential Position to Potential Position Collection
-    HashMap<Point2D, HashSet<Point2D>> positionsInSensRange;   // Target to Potential Position Collection
-    HashMap<Point2D, HashSet<Point2D>> targetsInSensRange;     // Potential Position to Target Collection
+    // holds potential position to potential position(s) map
+    // keys represent each potential position
+    // values represent other potential positions which are in the communication range
+    HashMap<Point2D, HashSet<Point2D>> positionsInCommRange;
+
+    // holds target to potential(s) position map
+    // keys represent each target
+    // values represent each potential position that can cover the target
+    HashMap<Point2D, HashSet<Point2D>> positionsInSensRange;
+
+    // holds potential position to target
+    // keys represent each potential position
+    // values represent each target that the potential position can cover
+    HashMap<Point2D, HashSet<Point2D>> targetsInSensRange;
 
     public WSN(
             Point2D[] targets,
@@ -95,14 +105,6 @@ public class WSN implements ProblemModel {
         return k;
     }
 
-    /*
-    * TODO: There is a duplicate of this method. I could not rename it
-    *  to something meaningful. Therefore, left it that way.
-    * */
-    public int getPopulationSize() {
-        return potentialPositions.length;
-    }
-
     public int getSolutionSize() {
         return potentialPositions.length;
     }
@@ -138,6 +140,18 @@ public class WSN implements ProblemModel {
             }
             container.put(point2D, point2Ds);
         }
+    }
+
+    public HashMap<Point2D, HashSet<Point2D>> getPositionsInCommRange() {
+        return positionsInCommRange;
+    }
+
+    public HashMap<Point2D, HashSet<Point2D>> getPositionsInSensRange() {
+        return positionsInSensRange;
+    }
+
+    public HashMap<Point2D, HashSet<Point2D>> getTargetsInSensRange() {
+        return targetsInSensRange;
     }
 
 }

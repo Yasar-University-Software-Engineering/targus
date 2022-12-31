@@ -220,8 +220,8 @@ public class Controller implements Initializable {
             HashSet<Integer> indexes = bitString.ones();
 
             WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
-            double sensorPenValueScaled = wsn.getPopulationSize() != 0 ?
-                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getPopulationSize()) : 0;
+            double sensorPenValueScaled = wsn.getSolutionSize() != 0 ?
+                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getSolutionSize()) : 0;
 
             double mConnPenValueScaled = indexes.size() == 0 || wsn.getM() == 0 ?
                     1 : (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM());
