@@ -31,7 +31,7 @@ public class GABuilder {
     }
 
     public void buildMutationOperator() {
-        ga.setMutationOperator(new OneBitMutation());
+        ga.setMutationOperator(new KBitMutation());
     }
 
     public void buildTerminalState() {
