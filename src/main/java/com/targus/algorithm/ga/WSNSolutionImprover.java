@@ -215,6 +215,32 @@ public class WSNSolutionImprover implements SolutionImprover {
         return sensorsToRemove;
     }
 
+    private int getKCoverageForTarget(Point2D target, WSN wsn) {
+        HashMap<Point2D, HashSet<Point2D>> targetsToSensorsMap =  wsn.getPositionsInSensRange();
+        return targetsToSensorsMap.get(target).size();
+    }
+
+    private HashSet<Point2D>getTargetsForSensor(Point2D sensor, WSN wsn) {
+        HashMap<Point2D, HashSet<Point2D>> sensorsToTargetsMap = wsn.getTargetsInSensRange();
+        return sensorsToTargetsMap.get(sensor);
+    }
+
+    private List<Point2D> getNecessarySensorList(Set<Point2D> sensors, WSN wsn) {
+        int K = wsn.getK();
+        List<Point2D> sensorToAdd = new ArrayList<>();
+        for (Point2D sensor : sensors) {
+            HashSet<Point2D> targetsForSensor = getTargetsForSensor(sensor, wsn);
+            List<Integer> kCoveragesForSensor = new ArrayList<>();
+            for (Point2D target : targetsForSensor) {
+                kCoveragesForSensor.add(getKCoverageForTarget(target, wsn));
+            }
+            if (kCoveragesForSensor.stream().anyMatch(k -> k < K)) {
+                sensorToAdd.add(sensor);
+            }
+        }
+        return sensorToAdd;
+    }
+
     @Override
     public Solution improve(OptimizationProblem problem, Solution solution) {
         WSN wsn = (WSN) problem.model();
@@ -227,6 +253,11 @@ public class WSNSolutionImprover implements SolutionImprover {
         List<Point2D> removedSensors = getUnnecessarySensorList(connectivityMap, wsn);
         for (Point2D sensor : removedSensors) {
             improvedSequence.set(turnedOnSensors.get(sensor), false);
+        }
+
+        List<Point2D> addedSensors = getNecessarySensorList(turnedOffSensors.keySet(), wsn);
+        for (Point2D sensor : addedSensors) {
+            improvedSequence.set(turnedOffSensors.get(sensor), true);
         }
 
         return new BitStringSolution(improvedSequence, problem.objectiveValue(improvedSequence));
