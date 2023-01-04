@@ -132,29 +132,11 @@ public class WSNSolutionImprover implements SolutionImprover {
     }
 
     /**
-     * Removes turned off sensors from the map
-     * @param connectivityMap
-     *      map that holds the information of which sensor is communicating with which sensor
-     * @param chain
-     *      a series of sensors that does not cover any target
+     * Gets random element from the given set
+     * @param set
+     *      set to pick random element from
+     * @return random element from the given set
      */
-    private void updateConnectivityMap(Map<Point2D, HashSet<Point2D>> connectivityMap, LinkedList<Point2D> chain) {
-        Iterator<Map.Entry<Point2D, HashSet<Point2D>>> iter = connectivityMap.entrySet().iterator();
-        while (iter.hasNext()) {
-            Map.Entry<Point2D, HashSet<Point2D>> entry = iter.next();
-            Point2D key = entry.getKey();
-            HashSet<Point2D> value = entry.getValue();
-            if (value.isEmpty() || chain.contains(key)) {
-                iter.remove();
-            }
-            /*for (Point2D s : chain) {
-                if (value.contains(s) || value.contains(key)) {
-                    connectivityMap.get(key).remove(s);
-                }
-            }*/
-        }
-    }
-
     private Point2D getRandomElementFromSet(Set<Point2D> set) {
         int index = random.nextInt(set.size());
         int i = 0;
@@ -167,6 +149,12 @@ public class WSNSolutionImprover implements SolutionImprover {
         return null;
     }
 
+    /**
+     * Checks whether the given linked list contains cycle
+     * @param linkedList
+     *      linked list to check
+     * @return true if the linked list contains cycle, false otherwise
+     */
     private boolean doesContainCycle(LinkedList<Point2D> linkedList) {
         Set<Point2D> set = new HashSet<>();
         for (Point2D elem : linkedList) {
@@ -185,6 +173,7 @@ public class WSNSolutionImprover implements SolutionImprover {
      * @param wsn
      *      problem model object
      * @return list of turned off sensors
+     * @see WSNSolutionImprover#getNecessarySensorList(Set, WSN)
      */
     private List<Point2D> getUnnecessarySensorList(Map<Point2D, HashSet<Point2D>> connectivityMap, WSN wsn) {
         List<Point2D> sensorsToRemove = new ArrayList<>();
@@ -215,30 +204,44 @@ public class WSNSolutionImprover implements SolutionImprover {
         return sensorsToRemove;
     }
 
-    private int getKCoverageForTarget(Point2D target, WSN wsn) {
+    /**
+     * Checks whether a target should be covered for the given sensor
+     * @param sensor
+     *      turned-off sensor
+     * @param wsn
+     *      problem model object
+     * @return true if turning on the sensor will benefit k-coverage, false otherwise
+     */
+    private boolean shouldSensorTurnedOn(Point2D sensor, WSN wsn) {
         HashMap<Point2D, HashSet<Point2D>> targetsToSensorsMap =  wsn.getPositionsInSensRange();
-        return targetsToSensorsMap.get(target).size();
-    }
-
-    private HashSet<Point2D>getTargetsForSensor(Point2D sensor, WSN wsn) {
         HashMap<Point2D, HashSet<Point2D>> sensorsToTargetsMap = wsn.getTargetsInSensRange();
-        return sensorsToTargetsMap.get(sensor);
+        HashSet<Point2D> targetsForSensor = sensorsToTargetsMap.get(sensor);
+        List<Integer> kCoveragesForSensor = new ArrayList<>();
+        for (Point2D target : targetsForSensor) {
+            kCoveragesForSensor.add(targetsToSensorsMap.get(target).size());
+        }
+
+        int K = wsn.getK();
+        return kCoveragesForSensor.stream().anyMatch(k -> k < K);
     }
 
+    /**
+     * Finds necessary sensors, sensors that can cover a target, and returns them in a list
+     * @param sensors
+     *      set of coordinates of the turned off sensors
+     * @param wsn
+     *      problem model object
+     * @return list of sensors that can be turned on
+     * @see WSNSolutionImprover#getUnnecessarySensorList(Map, WSN)
+     */
     private List<Point2D> getNecessarySensorList(Set<Point2D> sensors, WSN wsn) {
-        int K = wsn.getK();
-        List<Point2D> sensorToAdd = new ArrayList<>();
+        List<Point2D> sensorToTurnOn = new ArrayList<>();
         for (Point2D sensor : sensors) {
-            HashSet<Point2D> targetsForSensor = getTargetsForSensor(sensor, wsn);
-            List<Integer> kCoveragesForSensor = new ArrayList<>();
-            for (Point2D target : targetsForSensor) {
-                kCoveragesForSensor.add(getKCoverageForTarget(target, wsn));
-            }
-            if (kCoveragesForSensor.stream().anyMatch(k -> k < K)) {
-                sensorToAdd.add(sensor);
+            if (shouldSensorTurnedOn(sensor, wsn)) {
+                sensorToTurnOn.add(sensor);
             }
         }
-        return sensorToAdd;
+        return sensorToTurnOn;
     }
 
     @Override
