@@ -14,10 +14,12 @@ public class GA {
     CrossOverOperator crossOverOperator;
     MutationOperator mutationOperator;
     TerminalState terminalState;
+    SolutionImprover improver;
 
 
     public GA(OptimizationProblem problem) {
         this.problem = problem;
+        this.improver = new WSNSolutionImprover();
     }
 
 
@@ -32,8 +34,9 @@ public class GA {
             List<Solution> parents = selectionPolicy.apply(problem, population.getIndividuals());
             List<Solution> mating = crossOverOperator.apply(problem, parents);
             List<Solution> mutated = mutationOperator.apply(problem, mating);
+            List<Solution> improved = improver.improveAll(problem, mutated);
 
-            population.addAll(problem, mutated);
+            population.addAll(problem, improved);
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
         }
