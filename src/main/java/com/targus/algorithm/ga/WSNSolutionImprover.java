@@ -177,25 +177,25 @@ public class WSNSolutionImprover implements SolutionImprover {
      */
     private List<Point2D> getUnnecessarySensorList(Map<Point2D, HashSet<Point2D>> connectivityMap, WSN wsn) {
         List<Point2D> sensorsToRemove = new ArrayList<>();
-        for (Map.Entry<Point2D, HashSet<Point2D>> entry : connectivityMap.entrySet()) {
-            if (entry.getValue().isEmpty()) {
-                sensorsToRemove.add(entry.getKey());
-            }
-        }
-        for (Point2D sensor : sensorsToRemove) {
-            connectivityMap.remove(sensor);
-        }
+
+        connectivityMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue().isEmpty())
+                .forEach(entry -> sensorsToRemove.add(entry.getKey()));
+
+        sensorsToRemove.forEach(connectivityMap::remove);
 
         for (Map.Entry<Point2D, HashSet<Point2D>> entry : connectivityMap.entrySet()) {
             Point2D sensor = entry.getKey();
             HashSet<Point2D> otherSensors = entry.getValue();
+
             LinkedList<Point2D> chain = new LinkedList<>();
             chain.add(sensor);
             do {
                 sensor = getRandomElementFromSet(otherSensors);
                 chain.add(sensor);
                 otherSensors = connectivityMap.get(sensor);
-            } while (chain.getFirst() != chain.getLast() && !doesContainCycle(chain));
+            } while (!doesContainCycle(chain));
             if (!doesChainCoverTarget(chain, wsn)) {
                 chain.removeLast();
                 sensorsToRemove.addAll(chain);
@@ -258,6 +258,7 @@ public class WSNSolutionImprover implements SolutionImprover {
             improvedSequence.set(turnedOnSensors.get(sensor), false);
         }
 
+        // I did not shuffle the sensors below because Set is not ordered. So, randomization is handled automatically.
         List<Point2D> addedSensors = getNecessarySensorList(turnedOffSensors.keySet(), wsn);
         for (Point2D sensor : addedSensors) {
             improvedSequence.set(turnedOffSensors.get(sensor), true);
