@@ -1,9 +1,8 @@
-package com.targus.algorithm.ga;
+package com.targus.problem.wsn;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
-import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
 import javafx.geometry.Point2D;
 
