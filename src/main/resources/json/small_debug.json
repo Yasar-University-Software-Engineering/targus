@@ -1,0 +1,11 @@
+{
+  "sensingRadius" : 30.0,
+  "communicationRadius" : 30.0,
+  "generationCount" : 1000,
+  "mutationRate" : 0.3,
+  "k" : 1,
+  "targets" : [ [ 3.0, 6.0 ], [ 35.0, 34.0 ] ],
+  "m" : 1,
+  "potentialPositions" : [ [ 10.0, 5.0 ], [ 35.0, 5.0 ], [ 60.0, 5.0 ], [ 10.0, 30.0 ], [ 35.0, 30.0 ], [ 60.0, 30.0 ], [ 10.0, 55.0 ], [ 35.0, 55.0 ], [ 60.0, 55.0 ] ],
+  "dimensions" : [ 75, 75 ]
+}
