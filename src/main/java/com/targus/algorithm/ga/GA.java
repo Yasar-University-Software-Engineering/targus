@@ -2,6 +2,8 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.problem.wsn.SolutionImprover;
+import com.targus.problem.wsn.WSNSolutionImprover;
 
 import java.lang.reflect.Field;
 import java.util.*;
