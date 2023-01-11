@@ -10,7 +10,6 @@ import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
 import com.targus.utils.Constants;
 import com.targus.utils.ProgressTask;
-import javafx.beans.property.*;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,6 +31,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Controller implements Initializable {
+    private final WSNPrototype WSNPrototype = new WSNPrototype();
     @FXML
     private TextField txtSensorObjective;
     @FXML
@@ -76,21 +76,9 @@ public class Controller implements Initializable {
     private ProgressBar progressBar;
     @FXML
     private Label gaProgressLabel;
-    private int paneWidth;
-    private int paneHeight;
+
     MenuItem item1 = new MenuItem("Create Target");
     MenuItem item2 = new MenuItem("Create Potential Position");
-
-
-    private final ArrayList<Point2D> potentialPositions = new ArrayList<>();
-    private final ArrayList<Point2D> targets = new ArrayList<>();
-
-    private final IntegerProperty mProperty = new SimpleIntegerProperty(1);
-    private final IntegerProperty kProperty = new SimpleIntegerProperty(1);
-    private final DoubleProperty communicationRangeProperty = new SimpleDoubleProperty(100);
-    private final DoubleProperty sensingRangeProperty = new SimpleDoubleProperty(50);
-    private final IntegerProperty generationCountProperty = new SimpleIntegerProperty(1000);
-    private final DoubleProperty mutationRateProperty = new SimpleDoubleProperty(0.3);
 
     private OptimizationProblem optimizationProblem;
 
@@ -99,12 +87,12 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        txtM.textProperty().bindBidirectional(mProperty, new NumberStringConverter());
-        txtK.textProperty().bindBidirectional(kProperty, new NumberStringConverter());
-        txtCommunicationRange.textProperty().bindBidirectional(communicationRangeProperty, new NumberStringConverter());
-        txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
-        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
-        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
+        txtM.textProperty().bindBidirectional(WSNPrototype.getMProperty(), new NumberStringConverter());
+        txtK.textProperty().bindBidirectional(WSNPrototype.getKProperty(), new NumberStringConverter());
+        txtCommunicationRange.textProperty().bindBidirectional(WSNPrototype.getCommunicationRangeProperty(), new NumberStringConverter());
+        txtSensingRange.textProperty().bindBidirectional(WSNPrototype.getSensingRangeProperty(), new NumberStringConverter());
+        txtGenerationCount.textProperty().bindBidirectional(WSNPrototype.getGenerationCountProperty(), new NumberStringConverter());
+        txtMutationRate.textProperty().bindBidirectional(WSNPrototype.getMutationRateProperty(), new NumberStringConverter());
     }
 
     private void changeDisable(boolean bool) {
@@ -118,10 +106,10 @@ public class Controller implements Initializable {
 
     @FXML
     public void setAreaButtonClicked() {
-        paneWidth = Integer.parseInt(setAreaWidthTextField.getText());
-        paneHeight = Integer.parseInt(setAreaHeightTextField.getText());
-        mainPane.setMaxWidth(paneWidth);
-        mainPane.setMaxHeight(paneHeight);
+        WSNPrototype.setPaneWidth(Integer.parseInt(setAreaWidthTextField.getText()));
+        WSNPrototype.setPaneHeight(Integer.parseInt(setAreaHeightTextField.getText()));
+        mainPane.setMaxWidth(WSNPrototype.getPaneWidth());
+        mainPane.setMaxHeight(WSNPrototype.getPaneHeight());
         mainPane.setStyle("-fx-background-color: lightGray;");
         mainPane.setLayoutX(25);
         mainPane.setLayoutY(25);
@@ -144,7 +132,7 @@ public class Controller implements Initializable {
                 public void handle(ActionEvent actionEvent) {
                     //create target on mouse click location
                     mainPane.getChildren().add(new Target(event.getX(),event.getY()));
-                    targets.add(new Point2D(event.getX(),event.getY()));
+                    WSNPrototype.getTargets().add(new Point2D(event.getX(),event.getY()));
                 }
             });
 
@@ -154,7 +142,7 @@ public class Controller implements Initializable {
                 public void handle(ActionEvent actionEvent) {
                     //create potential position on mouse click location
                     mainPane.getChildren().add(new PotentialPosition(event.getX(),event.getY()));
-                    potentialPositions.add(new Point2D(event.getX(),event.getY()));
+                    WSNPrototype.getPotentialPositions().add(new Point2D(event.getX(),event.getY()));
                 }
             });
 
@@ -166,8 +154,8 @@ public class Controller implements Initializable {
     void resetRegionButtonClicked() {
         mainPane.getChildren().removeAll(mainPane.getChildren());
         mainPane.setMaxSize(0,0);
-        potentialPositions.clear();
-        targets.clear();
+        WSNPrototype.getPotentialPositions().clear();
+        WSNPrototype.getTargets().clear();
     }
 
     @FXML
@@ -177,9 +165,9 @@ public class Controller implements Initializable {
 
     @FXML
     void generateGrid() {
-        for (int i = 5; i < paneHeight; i += 25) {
-            for (int j = 10; j < paneWidth; j += 25) {
-                potentialPositions.add(new Point2D(j, i));
+        for (int i = 5; i < WSNPrototype.getPaneHeight(); i += 25) {
+            for (int j = 10; j < WSNPrototype.getPaneWidth(); j += 25) {
+                WSNPrototype.getPotentialPositions().add(new Point2D(j, i));
             }
         }
 
@@ -288,157 +276,54 @@ public class Controller implements Initializable {
     }
 
     void initProblemInstance() {
-        Sensor.setRadii(communicationRangeProperty.get(), sensingRangeProperty.get());
-        mainPane.setMaxWidth(paneWidth);
-        mainPane.setMaxHeight(paneHeight);
+        Sensor.setRadii(WSNPrototype.getCommunicationRangeProperty().get(), WSNPrototype.getSensingRangeProperty().get());
+        mainPane.setMaxWidth(WSNPrototype.getPaneWidth());
+        mainPane.setMaxHeight(WSNPrototype.getPaneHeight());
         mainPane.setStyle("-fx-background-color: lightGray;");
 
         mainPane.setLayoutX(25);
         mainPane.setLayoutY(25);
 
-        for (Point2D point2D: targets) {
+        for (Point2D point2D: WSNPrototype.getTargets()) {
             mainPane.getChildren().add(new Target(point2D.getX(), point2D.getY()));
         }
 
-        for (Point2D point2D: potentialPositions) {
+        for (Point2D point2D: WSNPrototype.getPotentialPositions()) {
             mainPane.getChildren().add(new PotentialPosition(point2D.getX(), point2D.getY()));
         }
 
-        Point2D[] targetArray = new Point2D[targets.size()];
-        Point2D[] potentialPositionArray = new Point2D[potentialPositions.size()];
+        Point2D[] targetArray = new Point2D[WSNPrototype.getTargets().size()];
+        Point2D[] potentialPositionArray = new Point2D[WSNPrototype.getPotentialPositions().size()];
 
         for (int i = 0; i < targetArray.length; i++) {
-            targetArray[i] = targets.get(i);
+            targetArray[i] = WSNPrototype.getTargets().get(i);
         }
 
         for (int i = 0; i < potentialPositionArray.length; i++) {
-            potentialPositionArray[i] = potentialPositions.get(i);
+            potentialPositionArray[i] = WSNPrototype.getPotentialPositions().get(i);
         }
 
         WSN wsn = new WSN(targetArray,
                 potentialPositionArray,
-                mProperty.get(),
-                kProperty.get(),
-                communicationRangeProperty.get(),
-                sensingRangeProperty.get(),
-                generationCountProperty.get(),
-                mutationRateProperty.get());
+                WSNPrototype.getMProperty().get(),
+                WSNPrototype.getKProperty().get(),
+                WSNPrototype.getCommunicationRangeProperty().get(),
+                WSNPrototype.getSensingRangeProperty().get(),
+                WSNPrototype.getGenerationCountProperty().get(),
+                WSNPrototype.getMutationRateProperty().get());
 
         optimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
     }
 
     @FXML
     void exportToFileButtonClicked() {
-        try {
-            FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("."));
-            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-            File f = fc.showSaveDialog(null);
-
-            if (f == null) {
-                return;
-            }
-
-            String src = f.getAbsolutePath();
-
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get(src));
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            Map<String, Object> problemInfo = new HashMap<>();
-            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(paneWidth, paneWidth));
-
-            List<double[]> targetList = new ArrayList<>();
-            for (Point2D target : targets) {
-                double[] coords = new double[2];
-                coords[0] = target.getX();
-                coords[1] = target.getY();
-                targetList.add(coords);
-            }
-            problemInfo.put(Constants.TARGETS, targetList);
-
-            List<double[]> potentialPositionList = new ArrayList<>();
-            for (Point2D potentialPosition : potentialPositions) {
-                double[] coords = new double[2];
-                coords[0] = potentialPosition.getX();
-                coords[1] = potentialPosition.getY();
-                potentialPositionList.add(coords);
-            }
-            problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
-
-            problemInfo.put(Constants.COMMUNICATION_RADIUS, communicationRangeProperty.get());
-            problemInfo.put(Constants.SENSING_RADIUS, sensingRangeProperty.get());
-            problemInfo.put(Constants.M, mProperty.get());
-            problemInfo.put(Constants.K, kProperty.get());
-            problemInfo.put(Constants.GENERATION_COUNT, generationCountProperty.get());
-            problemInfo.put(Constants.MUTATION_RATE, mutationRateProperty.get());
-
-            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        WSNPrototype.exportToFile();
     }
 
     @FXML
     void loadFromFileButtonClicked() {
         resetRegionButtonClicked();
-
-        FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File("."));
-        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-        File f = fc.showOpenDialog(null);
-
-        if (f == null) {
-            return;
-        }
-
-        String src = f.getAbsolutePath();
-
-        Point2D dimensions;
-        Point2D[] targetArray;
-        Point2D[] potentialPositionArray;
-
-        try {
-            Reader reader = Files.newBufferedReader(Paths.get(src));
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode parser = objectMapper.readTree(reader);
-
-            JsonNode dimensionsNode = parser.path(Constants.DIMENSIONS);
-            dimensions = new Point2D(dimensionsNode.get(0).asDouble(), dimensionsNode.get(1).asDouble());
-
-            JsonNode targetsNode = parser.path(Constants.TARGETS);
-            targetArray = new Point2D[targetsNode.size()];
-            for (int i = 0; i < targetsNode.size(); i++) {
-                JsonNode node = targetsNode.get(i);
-                Point2D target = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
-                targetArray[i] = target;
-            }
-
-            JsonNode potentialPositionsNode = parser.path(Constants.POTENTIAL_POSITIONS);
-            potentialPositionArray = new Point2D[potentialPositionsNode.size()];
-            for (int i = 0; i < potentialPositionsNode.size(); i++) {
-                JsonNode node = potentialPositionsNode.get(i);
-                Point2D potentialPos = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
-                potentialPositionArray[i] = potentialPos;
-            }
-
-            mProperty.set(parser.path(Constants.M).asInt());
-            kProperty.set(parser.path(Constants.K).asInt());
-            communicationRangeProperty.set(Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText()));
-            sensingRangeProperty.set(Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText()));
-            generationCountProperty.set(parser.path(Constants.GENERATION_COUNT).asInt());
-            mutationRateProperty.set(Double.parseDouble(parser.path(Constants.MUTATION_RATE).asText()));
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        paneWidth = (int) dimensions.getX();
-        paneHeight = (int) dimensions.getY();
-
-        Collections.addAll(targets, targetArray);
-        Collections.addAll(potentialPositions, potentialPositionArray);
-
+        WSNPrototype.loadFromFile();
         initProblemInstance();
     }
 }
