@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
+import com.targus.algorithm.ga.StandardGA;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.*;
@@ -195,7 +196,7 @@ public class Controller implements Initializable {
 
         WSN wsn = (WSN) optimizationProblem.model();
 
-        GABuilder gaBuilder = new GABuilder(new GA(optimizationProblem));
+        GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
         GA ga = gaBuilder.build();
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
