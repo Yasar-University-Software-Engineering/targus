@@ -26,36 +26,22 @@ import javafx.stage.FileChooser;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 public class Controller implements Initializable {
-    @FXML
-    private TextField txtSensorObjective;
-    @FXML
-    private TextField txtWeightSensorObjective;
-    @FXML
-    private TextField txtWeightSensorObjectiveResult;
-    @FXML
-    private TextField txtConnectivityObjective;
-    @FXML
-    private TextField txtWeightConnectivityObjective;
-    @FXML
-    private TextField txtWeightConnectivityObjectiveResult;
-    @FXML
-    private TextField txtCoverageObjective;
-    @FXML
-    private TextField txtWeightCoverageObjective;
-    @FXML
-    private TextField txtWeightCoverageObjectiveResult;
-    @FXML
-    private TextField txtTotalResult;
-
+    private final Informative informative = new Informative();
     @FXML
     private TextField setAreaHeightTextField;
-
+    @FXML
+    private Pane mainPane;
+    @FXML
+    ChoiceBox<String> choiceBox = new ChoiceBox<>();
+    @FXML
+    private TextField setAreaWidthTextField;
     @FXML
     private TextField txtCommunicationRange;
     @FXML
@@ -66,12 +52,8 @@ public class Controller implements Initializable {
     private TextField txtK;
     @FXML
     private TextField txtMutationRate;
-    @FXML private TextField txtGenerationCount;
     @FXML
-    private Pane mainPane;
-
-    @FXML
-    private TextField setAreaWidthTextField;
+    private TextField txtGenerationCount;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -154,6 +136,7 @@ public class Controller implements Initializable {
                 public void handle(ActionEvent actionEvent) {
                     //create potential position on mouse click location
                     mainPane.getChildren().add(new PotentialPosition(event.getX(),event.getY()));
+
                     potentialPositions.add(new Point2D(event.getX(),event.getY()));
                 }
             });
@@ -220,32 +203,12 @@ public class Controller implements Initializable {
             HashSet<Integer> indexes = bitString.ones();
 
             WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
-            double sensorPenValueScaled = wsn.getSolutionSize() != 0 ?
-                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getSolutionSize()) : 0;
 
-            double mConnPenValueScaled = indexes.size() == 0 || wsn.getM() == 0 ?
-                    1 : (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM());
+            double sensorPenValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
+            double mConnPenValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
+            double kCoverPenValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
 
-            double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
-                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 1;
-
-            txtSensorObjective.setText(String.valueOf(sensorPenValueScaled));
-            txtConnectivityObjective.setText(String.valueOf(mConnPenValueScaled));
-            txtCoverageObjective.setText(String.valueOf(kCoverPenValueScaled));
-
-            txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
-            txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
-            txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
-
-            txtWeightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
-            txtWeightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
-            txtWeightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
-
-/*            txtTotalResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
-                    mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +
-                    kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));*/
-
-            txtTotalResult.setText(String.valueOf(wsnMinimumSensorObjective.value(wsn, bitString)));
+            informative.display(sensorPenValueScaled, mConnPenValueScaled, kCoverPenValueScaled);
 
             Point2D[] potentialPositionArray = wsn.getPotentialPositions();
 
