@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
 import com.targus.base.OptimizationProblem;
+import com.targus.base.SingleObjectiveOA;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
@@ -87,6 +88,10 @@ public class Controller implements Initializable {
         txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
         txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
         txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
+
+        choiceBox.getItems().add("Standard GA");
+        choiceBox.getItems().add("Improved GA");
+        choiceBox.getItems().add("Greedy Algorithm");
     }
 
     private void changeDisable(boolean bool) {
@@ -178,10 +183,25 @@ public class Controller implements Initializable {
 
         WSN wsn = (WSN) optimizationProblem.model();
 
-        GABuilder gaBuilder = new GABuilder(new GA(optimizationProblem));
-        GA ga = gaBuilder.build();
+        SingleObjectiveOA singleObjectiveOA;
 
-        ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
+        if (choiceBox.getValue().equals("Standard GA")) {
+            GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
+            singleObjectiveOA = gaBuilder.build();
+        } else if (choiceBox.getValue().equals("Improved GA")) {
+            GABuilder gaBuilder = new GABuilder(new ImprovedGA(optimizationProblem));
+            singleObjectiveOA = gaBuilder.build();
+        } else if (choiceBox.getValue().equals("Greedy Algorithm")) {
+            singleObjectiveOA = null;
+        } else {
+            try {
+                throw new Exception("No such algorithm available");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        ProgressTask progressTask = new ProgressTask(singleObjectiveOA.getTerminalState());
         progressTask.valueProperty().addListener((observable, oldValue, newValue) -> gaProgressLabel.setText(String.valueOf(newValue)));
         progressBar.progressProperty().bind(progressTask.progressProperty());
 
@@ -192,7 +212,7 @@ public class Controller implements Initializable {
         Task<Solution> gaTask = new Task<>() {
             @Override
             protected Solution call() {
-                return ga.perform();
+                return singleObjectiveOA.perform(optimizationProblem);
             }
         };
 
