@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.GABuilder;
+import com.targus.algorithm.ga.ImprovedGA;
+import com.targus.algorithm.ga.StandardGA;
 import com.targus.base.OptimizationProblem;
-import com.targus.base.SingleObjectiveOA;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.*;
 import com.targus.represent.BitString;
@@ -183,7 +184,7 @@ public class Controller implements Initializable {
 
         WSN wsn = (WSN) optimizationProblem.model();
 
-        SingleObjectiveOA singleObjectiveOA;
+        GA singleObjectiveOA;
 
         if (choiceBox.getValue().equals("Standard GA")) {
             GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
@@ -212,7 +213,7 @@ public class Controller implements Initializable {
         Task<Solution> gaTask = new Task<>() {
             @Override
             protected Solution call() {
-                return singleObjectiveOA.perform(optimizationProblem);
+                return singleObjectiveOA.perform();
             }
         };
 
@@ -228,7 +229,7 @@ public class Controller implements Initializable {
             double mConnPenValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
             double kCoverPenValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
 
-            informative.display(sensorPenValueScaled, mConnPenValueScaled, kCoverPenValueScaled);
+            //informative.display(sensorPenValueScaled, mConnPenValueScaled, kCoverPenValueScaled);
 
             Point2D[] potentialPositionArray = wsn.getPotentialPositions();
 
@@ -367,7 +368,7 @@ public class Controller implements Initializable {
         resetRegionButtonClicked();
 
         FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File("."));
+        fc.setInitialDirectory(new File("./src/main/resources/json"));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
         File f = fc.showOpenDialog(null);
 
