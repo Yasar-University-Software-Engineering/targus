@@ -4,6 +4,7 @@ import com.targus.algorithm.ga.TerminalState;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.WSN;
+import com.targus.utils.Constants;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -31,7 +32,8 @@ public class Experiment {
     public static String getProblemInformation(OptimizationProblem problem) {
         WSN wsn = (WSN) problem.model();
         return String.format("K: %d M: %d Mutation Rate: %f Initial Population: %d Communication Range: %d Sensing Range: %d\n\n",
-                wsn.getK(), wsn.getM(), wsn.getMutationRate(), 60, 100, 50);
+                wsn.getK(), wsn.getM(), wsn.getMutationRate(), Constants.DEFAULT_POPULATION_COUNT,
+                Constants.DEFAULT_COMMUNICATION_RANGE, Constants.DEFAULT_SENSING_RANGE);
     }
 
 }
