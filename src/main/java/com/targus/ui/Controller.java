@@ -194,11 +194,12 @@ public class Controller implements Initializable {
                 .build();
     }
 
+    // TODO: replace wsn.getGenerationCount() with time
     public GA buildImprovedGA(WSN wsn) {
         return ImprovedGA
                 .builder(optimizationProblem)
                 .setSolutionImprover(new WSNSolutionImprover())
-                .setTerminalState(new IterativeTerminal(wsn.getGenerationCount()))
+                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
                 .setCrossOverOperator(new OnePointCrossOver())
                 .setMutationOperator(new OneBitMutation())
                 .build();
@@ -211,7 +212,7 @@ public class Controller implements Initializable {
         cleanSolution();
         initProblemInstance();
         WSN wsn = (WSN) optimizationProblem.model();
-        GA ga = buildStandardGA(wsn);
+        GA ga = buildImprovedGA(wsn);
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
         progressTask.valueProperty().addListener((observable, oldValue, newValue) -> gaProgressLabel.setText(String.valueOf(newValue)));
