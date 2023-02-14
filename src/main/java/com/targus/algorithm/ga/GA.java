@@ -2,11 +2,13 @@ package com.targus.algorithm.ga;
 
 import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.base.OptimizationProblem;
+import com.targus.base.Solution;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class GA implements SingleObjectiveOA {
+    protected Solution bestSolution;
     protected OptimizationProblem problem;
     protected Population population;
     protected SelectionPolicy selectionPolicy;
@@ -42,7 +44,7 @@ public abstract class GA implements SingleObjectiveOA {
 
         protected void basicBuild() {
             if (population == null) {
-                population = new SimplePopulation(100);
+                population = new SimplePopulation(60);
             }
             if (selectionPolicy == null) {
                 selectionPolicy = new RouletteWheelSelection();
@@ -88,6 +90,15 @@ public abstract class GA implements SingleObjectiveOA {
             return this;
         }
 
+    }
+
+    protected boolean updateBestSolution(OptimizationProblem problem, Solution solution) {
+        if (bestSolution == null || problem.objectiveType().betterThan(solution.objectiveValue(), bestSolution.objectiveValue())) {
+            bestSolution = solution;
+            return true;
+        }
+
+        return false;
     }
 
     protected boolean notRunnable() {
