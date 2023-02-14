@@ -2,8 +2,10 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.experiment.Experiment;
 import com.targus.problem.wsn.SolutionImprover;
 import com.targus.problem.wsn.WSNSolutionImprover;
+import com.targus.utils.Constants;
 
 import java.util.*;
 
@@ -20,7 +22,7 @@ public class ImprovedGA extends GA {
         if (notRunnable()) {
             throw new NullPointerException("There are unassigned members in the class");
         }
-
+        StringBuilder diagnostic = new StringBuilder(Experiment.getProblemInformation(problem));
         population.init(problem);
 
         while(!terminalState.isTerminal()) {
@@ -32,7 +34,14 @@ public class ImprovedGA extends GA {
             population.addAll(problem, improved);
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
+            if (updateBestSolution(problem, population.getBestIndividual())) {
+                diagnostic.append(Experiment.getBenchmarkTestInformation(bestSolution, terminalState));
+                System.out.println("the best solution is changed");
+                System.out.println("time is : " + terminalState.getCurrentState());
+            }
         }
+
+        Experiment.writeToFile(Constants.IMPROVED_GA_EXPERIMENT_FILE_NAME, diagnostic.toString());
         return population.getBestIndividual();
     }
 
