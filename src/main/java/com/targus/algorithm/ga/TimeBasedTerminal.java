@@ -3,25 +3,31 @@ package com.targus.algorithm.ga;
 import com.targus.utils.LongRunningTask;
 import com.targus.utils.TimeOutTask;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Timer;
 
 public class TimeBasedTerminal implements TerminalState {
 
-    private int minutes;
+    private Instant startTime;
     private TimeOutTask timeOutTask;
+    private long currentTimeInSeconds;
+    private final long endTimeInSeconds;
 
     public TimeBasedTerminal(int minutes) {
-        this.minutes = minutes;
+        currentTimeInSeconds = 0;
+        endTimeInSeconds = minutes * 60L;
         start();
     }
 
     private void start() {
         Thread thread = new Thread(new LongRunningTask());
         thread.start();
+        startTime = Instant.now();
 
         Timer timer = new Timer();
         timeOutTask = new TimeOutTask(thread, timer);
-        timer.schedule(timeOutTask, minutes * 60 * 1000L);
+        timer.schedule(timeOutTask, endTimeInSeconds * 1000L);
     }
 
     @Override
@@ -31,16 +37,17 @@ public class TimeBasedTerminal implements TerminalState {
 
     @Override
     public void nextState() {
-
+        Instant endTime = Instant.now();
+        currentTimeInSeconds = Duration.between(startTime, endTime).toSeconds();
     }
 
     @Override
-    public int getCurrentState() {
-        return 0;
+    public long getCurrentState() {
+        return currentTimeInSeconds;
     }
 
     @Override
-    public int getFinishState() {
-        return 0;
+    public long getFinishState() {
+        return endTimeInSeconds;
     }
 }
