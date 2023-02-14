@@ -1,5 +1,6 @@
 package com.targus.algorithm.ga;
 
+// TODO: change integers to long
 public class IterativeTerminal implements TerminalState {
 
     private int startIndex;
@@ -21,12 +22,12 @@ public class IterativeTerminal implements TerminalState {
     }
 
     @Override
-    public int getCurrentState() {
+    public long getCurrentState() {
         return startIndex;
     }
 
     @Override
-    public int getFinishState() {
+    public long getFinishState() {
         return endIndex;
     }
 }
