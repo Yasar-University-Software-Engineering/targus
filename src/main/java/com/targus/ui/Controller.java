@@ -2,9 +2,7 @@ package com.targus.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.targus.algorithm.ga.GA;
-import com.targus.algorithm.ga.GABuilder;
-import com.targus.algorithm.ga.StandardGA;
+import com.targus.algorithm.ga.*;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.*;
@@ -196,8 +194,25 @@ public class Controller implements Initializable {
 
         WSN wsn = (WSN) optimizationProblem.model();
 
-        GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
-        GA ga = gaBuilder.build();
+        // GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
+        // GA ga = gaBuilder.build();
+
+
+        GA ga = StandardGA
+                .builder(optimizationProblem)
+                .setCrossOverOperator(new OnePointCrossOver())
+                .setMutationOperator(new OneBitMutation())
+                //.setTerminalState(new IterativeTerminal(wsn.getGenerationCount()))
+                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .build();
+
+//        GA ga = ImprovedGA
+//                .builder(optimizationProblem)
+//                .setSolutionImprover(new WSNSolutionImprover())
+//                .setTerminalState(new IterativeTerminal(wsn.getGenerationCount()))
+//                .setCrossOverOperator(new OnePointCrossOver())
+//                .setMutationOperator(new OneBitMutation())
+//                .build();
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
         progressTask.valueProperty().addListener((observable, oldValue, newValue) -> gaProgressLabel.setText(String.valueOf(newValue)));

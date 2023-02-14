@@ -10,15 +10,15 @@ import java.util.*;
 public class ImprovedGA extends GA {
     SolutionImprover improver;
 
-    public ImprovedGA(OptimizationProblem problem) {
-        super(problem);
+    public ImprovedGA(GA.Builder builder) {
+        super(builder);
         this.improver = new WSNSolutionImprover();
     }
 
     @Override
     public Solution perform() {
         if (notRunnable()) {
-            throw new NullPointerException("There are unassigned members in GA class. Did you call GABuilder class before perform() method?");
+            throw new NullPointerException("There are unassigned members in the class");
         }
 
         population.init(problem);
@@ -34,6 +34,31 @@ public class ImprovedGA extends GA {
             terminalState.nextState();
         }
         return population.getBestIndividual();
+    }
+
+    public static Builder builder(OptimizationProblem problem) {
+        return new Builder(problem);
+    }
+
+    public static class Builder extends GA.Builder {
+
+        protected SolutionImprover improver;
+
+        public Builder(OptimizationProblem problem) {
+            super(problem);
+
+        }
+
+        public Builder setSolutionImprover(SolutionImprover improver) {
+            this.improver = improver;
+            return this;
+        }
+
+        @Override
+        public GA build() {
+            basicBuild();
+            return new ImprovedGA(this);
+        }
     }
 
     @Override

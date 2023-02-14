@@ -7,8 +7,8 @@ import java.util.List;
 
 public class StandardGA extends GA {
 
-    public StandardGA(OptimizationProblem problem) {
-        super(problem);
+    public StandardGA(Builder builder) {
+        super(builder);
     }
 
     @Override
@@ -29,6 +29,24 @@ public class StandardGA extends GA {
             terminalState.nextState();
         }
         return population.getBestIndividual();
+    }
+
+
+    public static Builder builder(OptimizationProblem problem) {
+        return new Builder(problem);
+    }
+
+    public static class Builder extends GA.Builder {
+
+        public Builder(OptimizationProblem problem) {
+            super(problem);
+        }
+
+        @Override
+        public GA build() {
+            basicBuild();
+            return new StandardGA(this);
+        }
     }
 
     @Override
