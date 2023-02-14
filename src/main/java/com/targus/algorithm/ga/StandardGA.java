@@ -2,21 +2,23 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.experiment.Experiment;
+import com.targus.utils.Constants;
 
 import java.util.List;
 
 public class StandardGA extends GA {
 
-    public StandardGA(Builder builder) {
+    public StandardGA(GA.Builder builder) {
         super(builder);
     }
 
     @Override
     public Solution perform() {
         if (notRunnable()) {
-            throw new NullPointerException("There are unassigned members in GA class. Did you call GABuilder class before perform() method?");
+            throw new NullPointerException("There are unassigned members in the class.");
         }
-
+        StringBuilder diagnostic = new StringBuilder(Experiment.getProblemInformation(problem));
         population.init(problem);
 
         while(!terminalState.isTerminal()) {
@@ -27,8 +29,15 @@ public class StandardGA extends GA {
             population.addAll(problem, mutated);
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
+            if (updateBestSolution(problem, population.getBestIndividual())) {
+                diagnostic.append(Experiment.getBenchmarkTestInformation(bestSolution, terminalState));
+                System.out.println("the best solution is changed");
+                System.out.println("time is : " + terminalState.getCurrentState());
+            }
         }
-        return population.getBestIndividual();
+
+        Experiment.writeToFile(Constants.STANDARD_GA_EXPERIMENT_FILE_NAME, diagnostic.toString());
+        return bestSolution;
     }
 
 
@@ -44,8 +53,7 @@ public class StandardGA extends GA {
 
         @Override
         public GA build() {
-            basicBuild();
-            return new StandardGA(this);
+            return new StandardGA(basicBuild());
         }
     }
 

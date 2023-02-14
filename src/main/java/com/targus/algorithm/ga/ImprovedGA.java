@@ -56,8 +56,7 @@ public class ImprovedGA extends GA {
 
         @Override
         public GA build() {
-            basicBuild();
-            return new ImprovedGA(this);
+            return new ImprovedGA(basicBuild());
         }
     }
 

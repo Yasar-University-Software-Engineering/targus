@@ -3,6 +3,7 @@ package com.targus.algorithm.ga;
 import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.utils.Constants;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -42,9 +43,9 @@ public abstract class GA implements SingleObjectiveOA {
 
         public abstract GA build();
 
-        protected void basicBuild() {
+        protected Builder basicBuild() {
             if (population == null) {
-                population = new SimplePopulation(60);
+                population = new SimplePopulation(Constants.DEFAULT_POPULATION_COUNT);
             }
             if (selectionPolicy == null) {
                 selectionPolicy = new RouletteWheelSelection();
@@ -58,6 +59,7 @@ public abstract class GA implements SingleObjectiveOA {
             if (mutationOperator == null) {
                 mutationOperator = new OneBitMutation();
             }
+            return this;
         }
 
         public Builder setPopulation(Population population) {
