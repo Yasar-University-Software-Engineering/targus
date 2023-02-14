@@ -1,43 +1,141 @@
 package com.targus.algorithm;
 
+import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.WSN;
+import com.targus.represent.BitString;
 import javafx.geometry.Point2D;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class GreedySelectionAlgorithm {
+public class GreedySelectionAlgorithm implements SingleObjectiveOA {
 
     OptimizationProblem problem;
+    private final WSN wsn;
+    private final HashMap<Point2D, HashSet<Point2D>> sensorToCommunicationSensorMap;
+    private final HashMap<Point2D, HashSet<Point2D>> sensorToSensingTargetMap;
+    private final Point2D[] potentialPositions;
 
     public GreedySelectionAlgorithm(OptimizationProblem problem) {
         this.problem = problem;
+        wsn = (WSN) problem.model();
+        sensorToCommunicationSensorMap = wsn.getPositionsInCommRange();
+        sensorToSensingTargetMap = wsn.getTargetsInSensRange();
+        potentialPositions = wsn.getPotentialPositions();
     }
 
+    @Override
     public Solution perform() {
-        WSN wsn = (WSN) problem.model();
-        Point2D[] potentialPositions = wsn.getPotentialPositions();
-        Point2D[] targets = wsn.getTargets();
-        HashMap<Point2D, HashSet<Point2D>> sensorToCommunicationSensorMap = wsn.getPositionsInCommRange();
-        HashMap<Point2D, HashSet<Point2D>> sensorToSensingTargetMap = wsn.getTargetsInSensRange();
-        int k = wsn.getK();
-        int m = wsn.getM();
+        Map<Integer, Integer> indexToPotentialPositionValueMap = mapIndexesToPotentialPositions();
+        LinkedHashMap<Integer, Integer> sortedIndexToPotentialPositionValueMap = sortMapByValue(indexToPotentialPositionValueMap);
 
-        // create a solution list to hold the indexes of pp's -> W
-        // create a hashmap, key -> pp index, value -> pp cartesian product value
-        // insert each pp with cartesian product value
-        // sort the map by values
+        List<Integer> potentialPositionIndexes = new ArrayList<>();
+        while (isObjectiveSatisfied(wsn, potentialPositionIndexes)) {
+            try {
+                int key = sortedIndexToPotentialPositionValueMap.entrySet().iterator().next().getKey();
+                potentialPositionIndexes.add(key);
+                sortedIndexToPotentialPositionValueMap.remove(key);
+            }
+            catch (NoSuchElementException e) {
+                break;
+            }
+        }
 
-        // while each target is not covered m-connectivity is not achieved
-        // get the pp with the highest value
-        // add the pp to W
-        // remove pp from the map
-
-        // return W or the solution created from it
-
-        return null;
+        return generateSolution(potentialPositionIndexes);
     }
 
+    private BitStringSolution generateSolution(List<Integer> potentialPositionIndexes) {
+        BitSet bitSetSolution = new BitSet();
+        for (Integer index : potentialPositionIndexes) {
+            bitSetSolution.set(index);
+        }
+        BitString bitString = new BitString(bitSetSolution);
+        return new BitStringSolution(bitString, problem.objectiveValue(bitString));
+    }
+
+    private Map<Integer, Integer> mapIndexesToPotentialPositions() {
+        Map<Integer, Integer> indexToPotentialPositionValueMap = new HashMap<>();
+        for (int i = 0; i < potentialPositions.length; i++) {
+            Point2D pp = potentialPositions[i];
+            int value = sensorToCommunicationSensorMap.get(pp).size() * sensorToSensingTargetMap.get(pp).size();
+            indexToPotentialPositionValueMap.put(i, value);
+        }
+        return indexToPotentialPositionValueMap;
+    }
+
+    private LinkedHashMap<Integer, Integer> sortMapByValue(Map<Integer, Integer> indexToPotentialPositionValueMap) {
+        List<Integer> values = indexToPotentialPositionValueMap.values()
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+        LinkedHashMap<Integer, Integer> sortedIndexToPotentialPositionValueMap = new LinkedHashMap<>();
+        for (Integer value : values) {
+            for (Map.Entry<Integer, Integer> entry : indexToPotentialPositionValueMap.entrySet()) {
+                if (entry.getValue().equals(value)) {
+                    sortedIndexToPotentialPositionValueMap.put(entry.getKey(), value);
+                }
+            }
+        }
+        return sortedIndexToPotentialPositionValueMap;
+    }
+
+    private boolean isObjectiveSatisfied(WSN wsn, List<Integer> potentialPositionIndexes) {
+        return !checkKCoverage(wsn, potentialPositionIndexes) || !checkMConnectivity(wsn, potentialPositionIndexes);
+    }
+
+    private boolean checkMConnectivity(WSN wsn, List<Integer> currentSensorIndexes) {
+        int m = wsn.getM();
+        List<Point2D> currentPotentialPositions = getPotentialPositionsFromIndexes(wsn, currentSensorIndexes);
+        HashMap<Point2D, HashSet<Point2D>> sensorToCommunicationSensorMap = wsn.getPositionsInCommRange();
+        for (Map.Entry<Point2D, HashSet<Point2D>> entry : sensorToCommunicationSensorMap.entrySet()) {
+            HashSet<Point2D> potentialPositions = entry.getValue();
+            int currentM = -1;
+            for (Point2D pp : potentialPositions) {
+                if (currentPotentialPositions.contains(pp)) {
+                    currentM++;
+                }
+            }
+            if (currentM < m) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkKCoverage(WSN wsn, List<Integer> currentSensorIndexes) {
+        int k = wsn.getK();
+        List<Point2D> currentPotentialPositions = getPotentialPositionsFromIndexes(wsn, currentSensorIndexes);
+        HashMap<Point2D, HashSet<Point2D>> targetToSensorMap = wsn.getPositionsInSensRange();
+        for (Map.Entry<Point2D, HashSet<Point2D>> entry : targetToSensorMap.entrySet()) {
+            HashSet<Point2D> potentialPositions = entry.getValue();
+            int currentK = 0;
+            for (Point2D pp : potentialPositions) {
+                if (currentPotentialPositions.contains(pp)) {
+                    currentK++;
+                }
+            }
+            if (currentK < k) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private List<Point2D> getPotentialPositionsFromIndexes(WSN wsn, List<Integer> indexList) {
+        Point2D[] potentialPositions = wsn.getPotentialPositions();
+        List<Point2D> result = new ArrayList<>();
+        for (Integer index : indexList) {
+            result.add(potentialPositions[index]);
+        }
+
+        return result;
+    }
+
+    @Override
+    public String getName() {
+        return "Greedy Selection Algorithm";
+    }
 }
