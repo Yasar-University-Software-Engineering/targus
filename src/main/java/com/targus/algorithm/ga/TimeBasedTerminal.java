@@ -21,12 +21,12 @@ public class TimeBasedTerminal implements TerminalState {
 
         Timer timer = new Timer();
         timeOutTask = new TimeOutTask(thread, timer);
-        timer.schedule(timeOutTask, 60 * 1000);
+        timer.schedule(timeOutTask, minutes * 60 * 1000L);
     }
 
     @Override
     public boolean isTerminal() {
-        return false;
+        return !timeOutTask.isAlive();
     }
 
     @Override
