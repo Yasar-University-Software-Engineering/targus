@@ -40,7 +40,7 @@ public class ImprovedGA extends GA {
                 System.out.println("time is : " + terminalState.getCurrentState());
             }
         }
-
+        System.out.println("pop size: " + population.getIndividuals().size());
         Experiment.writeToFile(Constants.IMPROVED_GA_EXPERIMENT_FILE_NAME, diagnostic.toString());
         return population.getBestIndividual();
     }
