@@ -3,9 +3,11 @@ package com.targus.algorithm;
 import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.experiment.Experiment;
 import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
+import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
 import java.util.*;
@@ -43,6 +45,10 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
                 break;
             }
         }
+        String diagnostic = Experiment.getProblemInformation(problem) + "\n";
+        BitStringSolution solution = generateSolution(potentialPositionIndexes);
+        diagnostic += solution.getRepresentation() + "\n" + solution.objectiveValue() + "\n\n";
+        Experiment.writeToFile(Constants.GREEDY_SELECTION_ALGORITHM_EXPERIMENT_FILE_NAME, diagnostic);
 
         return generateSolution(potentialPositionIndexes);
     }
