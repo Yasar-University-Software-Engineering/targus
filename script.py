@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import dataclasses
 
 @dataclass
 class TestInformation:
@@ -6,6 +7,9 @@ class TestInformation:
     bitset_sequence: str
     objective_value: float
     number_of_sensors: int = 0
+
+    def __str__(self):
+        return f"{self.file_name}\n{self.bitset_sequence}\n{self.objective_value}\n{self.number_of_sensors}\n\n"
 
 
 file_paths = [
@@ -53,5 +57,6 @@ def analyze(file_path=""):
     )
 
 for file_path in file_paths:
-    info = analyze(file_path)
-    print(info, end="\n\n")
+    with open("sumary_of_benchmark_tests.txt", "a") as file:
+        file.write(str(dataclasses.asdict(analyze(file_path))))
+        file.write("\n\n")
