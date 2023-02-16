@@ -2,9 +2,7 @@ package com.targus.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.targus.algorithm.ga.GA;
-import com.targus.algorithm.ga.GABuilder;
-import com.targus.algorithm.ga.StandardGA;
+import com.targus.algorithm.ga.*;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.*;
@@ -178,13 +176,33 @@ public class Controller implements Initializable {
 
     @FXML
     void generateGrid() {
-        for (int i = 5; i < paneHeight; i += 25) {
-            for (int j = 10; j < paneWidth; j += 25) {
+        for (int i = 25; i < paneHeight; i += 25) {
+            for (int j = 25; j < paneWidth; j += 25) {
                 potentialPositions.add(new Point2D(j, i));
             }
         }
 
         initProblemInstance();
+    }
+
+    public GA buildStandardGA(WSN wsn) {
+        return StandardGA
+                .builder(optimizationProblem)
+                .setCrossOverOperator(new OnePointCrossOver())
+                .setMutationOperator(new OneBitMutation())
+                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .build();
+    }
+
+    // TODO: replace wsn.getGenerationCount() with time
+    public GA buildImprovedGA(WSN wsn) {
+        return ImprovedGA
+                .builder(optimizationProblem)
+                .setSolutionImprover(new WSNSolutionImprover())
+                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .setCrossOverOperator(new OnePointCrossOver())
+                .setMutationOperator(new OneBitMutation())
+                .build();
     }
 
     @FXML
@@ -193,11 +211,8 @@ public class Controller implements Initializable {
 
         cleanSolution();
         initProblemInstance();
-
         WSN wsn = (WSN) optimizationProblem.model();
-
-        GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
-        GA ga = gaBuilder.build();
+        GA ga = buildImprovedGA(wsn);
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
         progressTask.valueProperty().addListener((observable, oldValue, newValue) -> gaProgressLabel.setText(String.valueOf(newValue)));

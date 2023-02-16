@@ -12,9 +12,9 @@ public class ProgressTask extends Task {
     }
 
     @Override
-    protected Object call() throws Exception {
-        int start = terminalState.getCurrentState();
-        int end = terminalState.getFinishState();
+    protected Object call() {
+        long start = terminalState.getCurrentState();
+        long end = terminalState.getFinishState();
         while (start < end) {
             updateValue("GA progress: " + start + "/" + end);
             updateProgress(start, end);
