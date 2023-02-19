@@ -45,7 +45,7 @@ public abstract class GA implements SingleObjectiveOA {
 
         protected Builder basicBuild() {
             if (population == null) {
-                population = new SimplePopulation(Constants.DEFAULT_POPULATION_COUNT);
+                population = new SimplePopulation(problem, Constants.DEFAULT_POPULATION_COUNT);
             }
             if (selectionPolicy == null) {
                 selectionPolicy = new RouletteWheelSelection();

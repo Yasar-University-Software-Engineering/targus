@@ -12,8 +12,8 @@ import java.util.HashSet;
 public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
     public final static double weightSensor = 0.1;
-    public final static double weightMComm = 0.45;
-    public final static double weightKCov = 0.45;
+    public final static double weightMComm = 5;
+    public final static double weightKCov = 5;
 
     @Override
     public double value(ProblemModel model, Representation r) {
