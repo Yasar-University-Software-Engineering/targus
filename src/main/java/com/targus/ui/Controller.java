@@ -347,7 +347,7 @@ public class Controller implements Initializable {
     void exportToFileButtonClicked() {
         try {
             FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("."));
+            fc.setInitialDirectory(new File("./src/main/resources/json/"));
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
             File f = fc.showSaveDialog(null);
 
@@ -400,7 +400,7 @@ public class Controller implements Initializable {
         resetRegionButtonClicked();
 
         FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File("."));
+        fc.setInitialDirectory(new File("./src/main/resources/json/"));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
         File f = fc.showOpenDialog(null);
 
