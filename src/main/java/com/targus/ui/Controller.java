@@ -236,14 +236,18 @@ public class Controller implements Initializable {
             HashSet<Integer> indexes = bitString.ones();
 
             WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
-            double sensorPenValueScaled = wsn.getSolutionSize() != 0 ?
-                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getSolutionSize()) : 0;
+//            double sensorPenValueScaled = wsn.getSolutionSize() != 0 ?
+//                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getSolutionSize()) : 0;
+//
+//            double mConnPenValueScaled = indexes.size() == 0 || wsn.getM() == 0 ?
+//                    1 : (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM());
+//
+//            double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
+//                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 1;
 
-            double mConnPenValueScaled = indexes.size() == 0 || wsn.getM() == 0 ?
-                    1 : (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM());
-
-            double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
-                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 1;
+            double sensorPenValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
+            double mConnPenValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
+            double kCoverPenValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
 
             txtSensorObjective.setText(String.valueOf(sensorPenValueScaled));
             txtConnectivityObjective.setText(String.valueOf(mConnPenValueScaled));
