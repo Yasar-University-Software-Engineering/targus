@@ -39,11 +39,11 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
     public double getMConnPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
         return sensors.size() == 0 || wsn.getM() == 0 ?
-                1 : (double) mConnPenSum(wsn, sensors) / (sensors.size() * wsn.getM());
+                0 : (double) mConnPenSum(wsn, sensors) / (sensors.size() * wsn.getM());
     }
 
     public double getKCoverPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
-        return wsn.targetsSize() * wsn.getK() == 0 ?
+        return wsn.targetsSize() == 0 || wsn.getK() == 0 ?
                 0 : (double) kCovPenSum(wsn, sensors) / (wsn.targetsSize() * wsn.getK());
     }
 
@@ -56,8 +56,6 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
             int value = wsn.mConnSensors(sensor, sensors);
             if (value < m) {
                 penSum += m - value;
-            } else {
-                penSum += m;
             }
         }
 
@@ -72,8 +70,6 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
             int value = wsn.kCovTargets(i, sensors);
             if (value < k) {
                 penSum += k - value;
-            } else {
-                penSum += k;
             }
         }
 
