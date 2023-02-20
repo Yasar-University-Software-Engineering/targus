@@ -11,12 +11,12 @@ public class TimeBasedTerminal implements TerminalState {
 
     private Instant startTime;
     private TimeOutTask timeOutTask;
-    private long currentTimeInSeconds;
-    private final long endTimeInSeconds;
+    private long currentTimeInMilliseconds;
+    private final long endTimeInMilliseconds;
 
-    public TimeBasedTerminal(int minutes) {
-        currentTimeInSeconds = 0;
-        endTimeInSeconds = minutes * 60L;
+    public TimeBasedTerminal(int seconds) {
+        currentTimeInMilliseconds = 0;
+        endTimeInMilliseconds = seconds * 1000L;
         start();
     }
 
@@ -27,7 +27,7 @@ public class TimeBasedTerminal implements TerminalState {
 
         Timer timer = new Timer();
         timeOutTask = new TimeOutTask(thread, timer);
-        timer.schedule(timeOutTask, endTimeInSeconds * 1000L);
+        timer.schedule(timeOutTask, endTimeInMilliseconds);
     }
 
     @Override
@@ -38,16 +38,16 @@ public class TimeBasedTerminal implements TerminalState {
     @Override
     public void nextState() {
         Instant endTime = Instant.now();
-        currentTimeInSeconds = Duration.between(startTime, endTime).toSeconds();
+        currentTimeInMilliseconds = Duration.between(startTime, endTime).toMillis();
     }
 
     @Override
     public long getCurrentState() {
-        return currentTimeInSeconds;
+        return currentTimeInMilliseconds;
     }
 
     @Override
     public long getFinishState() {
-        return endTimeInSeconds;
+        return endTimeInMilliseconds;
     }
 }

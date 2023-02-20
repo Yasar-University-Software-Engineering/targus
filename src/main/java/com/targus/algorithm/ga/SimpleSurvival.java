@@ -10,7 +10,7 @@ public class SimpleSurvival implements SurvivalPolicy{
     @Override
     public void apply(OptimizationProblem problem, Population population) {
         for (int i = 0; i < 20; i++) {
-            Solution s = Collections.min(population.getIndividuals(), Comparator.comparingDouble(Solution::objectiveValue));
+            Solution s = population.getWorstIndividual();
             population.remove(s);
         }
     }

@@ -3,6 +3,7 @@ package com.targus.algorithm.ga;
 import com.targus.problem.BitStringSolution;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.problem.ObjectiveType;
 import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
 
@@ -11,12 +12,14 @@ import java.util.*;
 
 public class SimplePopulation implements Population {
 
+    private OptimizationProblem problem;
     private int populationSize;
     private List<Solution> individuals;
     private Random random;
     private static final int POPULATION_SIZE = 100;
 
-    public SimplePopulation(int populationSize) {
+    public SimplePopulation(OptimizationProblem problem, int populationSize) {
+        this.problem = problem;
         this.populationSize = populationSize;
         individuals = new ArrayList<>();
         random = new SecureRandom();
@@ -71,7 +74,21 @@ public class SimplePopulation implements Population {
         if (individuals.isEmpty()) {
             return null;
         }
-        return Collections.max(individuals, Comparator.comparingDouble(Solution::objectiveValue));
+
+        return problem.objectiveType() == ObjectiveType.Maximization
+                ? Collections.max(individuals, Comparator.comparingDouble(Solution::objectiveValue))
+                : Collections.min(individuals, Comparator.comparingDouble(Solution::objectiveValue));
+    }
+
+    @Override
+    public Solution getWorstIndividual() {
+        if (individuals.isEmpty()) {
+            return null;
+        }
+
+        return problem.objectiveType() == ObjectiveType.Maximization
+                ? Collections.min(individuals, Comparator.comparingDouble(Solution::objectiveValue))
+                : Collections.max(individuals, Comparator.comparingDouble(Solution::objectiveValue));
     }
 
     @Override

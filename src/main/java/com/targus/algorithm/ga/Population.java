@@ -21,6 +21,8 @@ public interface Population {
 
     Solution getBestIndividual();
 
+    Solution getWorstIndividual();
+
     List<Solution> getIndividuals();
 
     void clear();
