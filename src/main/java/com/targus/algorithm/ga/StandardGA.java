@@ -34,7 +34,8 @@ public class StandardGA extends GA {
             }
         }
 
-        Experiment.writeToFile(Constants.STANDARD_GA_EXPERIMENT_FILE_NAME, Experiment.getProblemInformation(problem) + bestSolution.objectiveValue() + " " + terminalState.getCurrentState());
+        Experiment.writeToFile(Constants.STANDARD_GA_EXPERIMENT_FILE_NAME,
+                Experiment.getProblemInformation(problem) + bestSolution.objectiveValue() + " " + terminalState.getCurrentState());
         return bestSolution;
     }
 
