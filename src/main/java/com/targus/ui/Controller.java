@@ -96,6 +96,9 @@ public class Controller implements Initializable {
     private final ArrayList<Sensor> sensors = new ArrayList<>();
     private final ArrayList<Circle> radii = new ArrayList<>();
 
+    @FXML
+    ChoiceBox<String> choiceBox = new ChoiceBox<>();
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         txtM.textProperty().bindBidirectional(mProperty, new NumberStringConverter());
@@ -104,6 +107,12 @@ public class Controller implements Initializable {
         txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
         txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
         txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
+
+        choiceBox.getItems().add("Standard GA");
+        choiceBox.getItems().add("Improved GA");
+        choiceBox.getItems().add("Greedy Algorithm");
+
+        choiceBox.setValue("Improved GA");
     }
 
     private void changeDisable(boolean bool) {
@@ -212,7 +221,22 @@ public class Controller implements Initializable {
         cleanSolution();
         initProblemInstance();
         WSN wsn = (WSN) optimizationProblem.model();
-        GA ga = buildImprovedGA(wsn);
+
+        GA ga = buildImprovedGA(wsn); // In case choice box doesn't get initialized properly
+
+        if (choiceBox.getValue().equals("Standard GA")) {
+            ga = buildStandardGA(wsn);
+        } else if (choiceBox.getValue().equals("Improved GA")) {
+            ga = buildImprovedGA(wsn);
+        } else if (choiceBox.getValue().equals("Greedy Algorithm")) {
+            ga = null;
+        } else {
+            try {
+                throw new Exception("No such algorithm available");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
         progressTask.valueProperty().addListener((observable, oldValue, newValue) -> gaProgressLabel.setText(String.valueOf(newValue)));
@@ -222,10 +246,11 @@ public class Controller implements Initializable {
         thread.setDaemon(true);
         thread.start();
 
+        GA finalGa = ga;
         Task<Solution> gaTask = new Task<>() {
             @Override
             protected Solution call() {
-                return ga.perform();
+                return finalGa.perform();
             }
         };
 
@@ -236,14 +261,6 @@ public class Controller implements Initializable {
             HashSet<Integer> indexes = bitString.ones();
 
             WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
-//            double sensorPenValueScaled = wsn.getSolutionSize() != 0 ?
-//                    1 - ((double) bitString.getBitSet().cardinality() / wsn.getSolutionSize()) : 0;
-//
-//            double mConnPenValueScaled = indexes.size() == 0 || wsn.getM() == 0 ?
-//                    1 : (double) wsnMinimumSensorObjective.mConnPenSum(wsn, indexes) / (indexes.size() * wsn.getM());
-//
-//            double kCoverPenValueScaled = wsn.targetsSize() * wsn.getK() != 0 ?
-//                    (double) wsnMinimumSensorObjective.kCovPenSum(wsn, indexes) / (wsn.targetsSize() * wsn.getK()) : 1;
 
             double sensorPenValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
             double mConnPenValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
