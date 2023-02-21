@@ -1,5 +1,7 @@
 package com.targus.utils;
 
+import javafx.geometry.Point2D;
+
 public class Constants {
 
     public static final String DIMENSIONS = "dimensions";
@@ -22,4 +24,10 @@ public class Constants {
     public static final int DEFAULT_K = 2;
     public static final int DEFAULT_ITERATION_COUNT = 10000;
     public static final int DEFAULT_TIME_IN_SECONDS = 10;
+    public static final int DEFAULT_GRID_SIZE = 25;
+    public static final Point2D DEFAULT_GRID_PADDING = new Point2D(DEFAULT_GRID_SIZE, DEFAULT_GRID_SIZE);
+    public static final double DEFAULT_IMPROVE_PROBABILITY = 0.1;
+    public static final int DEFAULT_IMMIGRANT_COUNT = (int) (DEFAULT_POPULATION_COUNT * 0.1);
+    public static final int DEFAULT_IMMIGRATION_PERIOD = 1000;
+
 }
