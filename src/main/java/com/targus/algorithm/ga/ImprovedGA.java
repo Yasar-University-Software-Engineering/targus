@@ -3,9 +3,13 @@ package com.targus.algorithm.ga;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.experiment.Experiment;
+import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.SolutionImprover;
+import com.targus.problem.wsn.WSN;
+import com.targus.represent.BitString;
 import com.targus.utils.Constants;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 public class ImprovedGA extends GA {
@@ -23,6 +27,9 @@ public class ImprovedGA extends GA {
         }
         population.init(problem);
 
+        long iterationCount = 0;
+        WSN wsn = (WSN) problem.model();
+        int solutionSize = wsn.getSolutionSize();
         while(!terminalState.isTerminal()) {
             List<Solution> parents = selectionPolicy.apply(problem, population.getIndividuals());
             List<Solution> mating = crossOverOperator.apply(problem, parents);
@@ -30,12 +37,16 @@ public class ImprovedGA extends GA {
             List<Solution> improved = improver.improveAll(problem, mutated);
 
             population.addAll(problem, improved);
+            if (iterationCount % Constants.DEFAULT_IMMIGRATION_PERIOD == 0) {
+                population.addAll(problem, BitStringSolution.generate(problem, solutionSize, Constants.DEFAULT_IMMIGRANT_COUNT));
+            }
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
                 System.out.println("the best solution is changed");
                 System.out.println("time is : " + terminalState.getCurrentState());
             }
+            iterationCount++;
         }
 
         Experiment.writeToFile(Constants.IMPROVED_GA_EXPERIMENT_FILE_NAME,
