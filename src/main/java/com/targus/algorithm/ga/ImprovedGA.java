@@ -12,9 +12,9 @@ import java.util.*;
 public class ImprovedGA extends GA {
     SolutionImprover improver;
 
-    public ImprovedGA(GA.Builder builder) {
+    public ImprovedGA(Builder builder) {
         super(builder);
-        this.improver = new WSNSolutionImprover();
+        this.improver = builder.improver;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ImprovedGA extends GA {
 
         @Override
         public GA build() {
-            return new ImprovedGA(basicBuild());
+            return new ImprovedGA((Builder) basicBuild());
         }
     }
 

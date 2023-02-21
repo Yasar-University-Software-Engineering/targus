@@ -9,7 +9,7 @@ import java.util.List;
 
 public class StandardGA extends GA {
 
-    public StandardGA(GA.Builder builder) {
+    public StandardGA(Builder builder) {
         super(builder);
     }
 
@@ -52,7 +52,7 @@ public class StandardGA extends GA {
 
         @Override
         public GA build() {
-            return new StandardGA(basicBuild());
+            return new StandardGA((Builder) basicBuild());
         }
     }
 
