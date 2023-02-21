@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.targus.ui.MainController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0"/>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="SOMETIMES" minHeight="10.0" percentHeight="50.0"/>
+        <RowConstraints vgrow="SOMETIMES" minHeight="10.0" percentHeight="50.0"/>
+    </rowConstraints>
+    <fx:include fx:id="inputsController" source="inputs.fxml" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+    <fx:include fx:id="informativeController" source="informative.fxml" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+    <fx:include source="map.fxml" fx:id="mapController" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <fx:include source="empty.fxml" fx:id="emptyController" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+</GridPane>
+
