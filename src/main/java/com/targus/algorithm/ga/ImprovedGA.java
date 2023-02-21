@@ -4,7 +4,6 @@ import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.experiment.Experiment;
 import com.targus.problem.wsn.SolutionImprover;
-import com.targus.problem.wsn.WSNSolutionImprover;
 import com.targus.utils.Constants;
 
 import java.util.*;
