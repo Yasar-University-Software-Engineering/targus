@@ -18,7 +18,6 @@ public class StandardGA extends GA {
         if (notRunnable()) {
             throw new NullPointerException("There are unassigned members in the class.");
         }
-        StringBuilder diagnostic = new StringBuilder(Experiment.getProblemInformation(problem));
         population.init(problem);
 
         while(!terminalState.isTerminal()) {
@@ -30,13 +29,12 @@ public class StandardGA extends GA {
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
-                diagnostic.append(Experiment.getBenchmarkTestInformation(bestSolution, terminalState));
                 System.out.println("the best solution is changed");
                 System.out.println("time is : " + terminalState.getCurrentState());
             }
         }
 
-        Experiment.writeToFile(Constants.STANDARD_GA_EXPERIMENT_FILE_NAME, diagnostic.toString());
+        Experiment.writeToFile(Constants.STANDARD_GA_EXPERIMENT_FILE_NAME, Experiment.getProblemInformation(problem) + bestSolution.objectiveValue() + " " + terminalState.getCurrentState());
         return bestSolution;
     }
 
