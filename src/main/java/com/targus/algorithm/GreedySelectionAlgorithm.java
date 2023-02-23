@@ -48,7 +48,7 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
         String diagnostic = Experiment.getProblemInformation(problem) + "\n";
         BitStringSolution solution = generateSolution(potentialPositionIndexes);
         diagnostic += solution.getRepresentation() + "\n" + solution.objectiveValue() + "\n\n";
-        Experiment.writeToFile(Constants.GREEDY_SELECTION_ALGORITHM_EXPERIMENT_FILE_NAME, diagnostic);
+        Experiment.writeToFile(Constants.GREEDY_SELECTION_ALGORITHM_EXPERIMENT_FILE_NAME, diagnostic, true);
 
         return generateSolution(potentialPositionIndexes);
     }
