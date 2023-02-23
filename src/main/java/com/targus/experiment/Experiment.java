@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 
 public class Experiment {
 
-    public static void writeToFile(String fileName, String text) {
-        try(FileWriter fw = new FileWriter(fileName, true);
+    public static void writeToFile(String fileName, String text, boolean append) {
+        try(FileWriter fw = new FileWriter(fileName, append);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
