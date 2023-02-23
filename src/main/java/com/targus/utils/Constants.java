@@ -29,5 +29,6 @@ public class Constants {
     public static final double DEFAULT_IMPROVE_PROBABILITY = 0.1;
     public static final int DEFAULT_IMMIGRANT_COUNT = (int) (DEFAULT_POPULATION_COUNT * 0.1);
     public static final int DEFAULT_IMMIGRATION_PERIOD = 1000;
+    public static final int DEFAULT_SELECTION_COUNT = 20;
 
 }
