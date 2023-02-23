@@ -6,10 +6,8 @@ import com.targus.experiment.Experiment;
 import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.SolutionImprover;
 import com.targus.problem.wsn.WSN;
-import com.targus.represent.BitString;
 import com.targus.utils.Constants;
 
-import java.security.SecureRandom;
 import java.util.*;
 
 public class ImprovedGA extends GA {
@@ -27,6 +25,10 @@ public class ImprovedGA extends GA {
         }
         population.init(problem);
 
+        StringBuilder plotData = new StringBuilder();
+        StringBuilder bestSolutionTracker = new StringBuilder();
+        StringBuilder bestWorstIndividual = new StringBuilder();
+
         long iterationCount = 0;
         WSN wsn = (WSN) problem.model();
         int solutionSize = wsn.getSolutionSize();
@@ -37,20 +39,27 @@ public class ImprovedGA extends GA {
             List<Solution> improved = improver.improveAll(problem, mutated);
 
             population.addAll(problem, improved);
-            if (iterationCount % Constants.DEFAULT_IMMIGRATION_PERIOD == 0) {
+            if (iterationCount % 100 == 0) {
                 population.addAll(problem, BitStringSolution.generate(problem, solutionSize, Constants.DEFAULT_IMMIGRANT_COUNT));
             }
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
-                System.out.println("the best solution is changed");
-                System.out.println("time is : " + terminalState.getCurrentState());
+                System.out.println("best solution is changed: " + terminalState.getCurrentState());
+                bestSolutionTracker.append(bestSolution.objectiveValue()).append(" ").append(terminalState.getCurrentState()).append("\n");
             }
             iterationCount++;
+            plotData.append(iterationCount).append(",").append(bestSolution.objectiveValue()).append("\n");
+            if (iterationCount % 100 == 1) {
+                bestWorstIndividual.append(bestSolution.objectiveValue()).append(",").append(population.getWorstIndividual().objectiveValue()).append("\n");
+            }
         }
 
-        Experiment.writeToFile(Constants.IMPROVED_GA_EXPERIMENT_FILE_NAME,
-                Experiment.getProblemInformation(problem) + bestSolution + " " + terminalState.getCurrentState());
+        Experiment.writeToFile("plot_data_imp.txt", plotData.toString(), false);
+        Experiment.writeToFile("best_solutions_imp.txt", bestSolutionTracker.append("\n\n").toString(), true);
+        Experiment.writeToFile("best_worst_individual_imp.txt", bestWorstIndividual.toString(), true);
+        Experiment.writeToFile("result_imp.txt", iterationCount + " " + bestSolution.objectiveValue(), true);
+
         return bestSolution;
     }
 
