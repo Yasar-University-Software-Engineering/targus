@@ -34,7 +34,7 @@ public class StandardGA extends GA {
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
                 System.out.println("best solution is changed: " + terminalState.getCurrentState());
-                bestSolutionTracker.append(bestSolution.objectiveValue()).append(" ").append(terminalState.getCurrentState()).append("\n");
+                bestSolutionTracker.append(bestSolution.objectiveValue()).append(",").append(terminalState.getCurrentState()).append("\n");
             }
             iterationCount++;
             plotData.append(iterationCount).append(",").append(bestSolution.objectiveValue()).append("\n");
@@ -46,7 +46,7 @@ public class StandardGA extends GA {
         Experiment.writeToFile("plot_data_std.txt", plotData.toString(), false);
         Experiment.writeToFile("best_solutions_std.txt", bestSolutionTracker.append("\n").toString(), true);
         Experiment.writeToFile("best_worst_individual_std.txt", bestWorstIndividual.toString(), true);
-        Experiment.writeToFile("result_std.txt", iterationCount + " " + bestSolution.objectiveValue(), true);
+        Experiment.writeToFile("result_std.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
         return bestSolution;
     }
 

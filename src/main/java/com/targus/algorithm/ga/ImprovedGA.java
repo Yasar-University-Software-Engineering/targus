@@ -39,14 +39,14 @@ public class ImprovedGA extends GA {
             List<Solution> improved = improver.improveAll(problem, mutated);
 
             population.addAll(problem, improved);
-            if (iterationCount % 100 == 0) {
+            if (iterationCount % Constants.DEFAULT_IMMIGRATION_PERIOD == 0) {
                 population.addAll(problem, BitStringSolution.generate(problem, solutionSize, Constants.DEFAULT_IMMIGRANT_COUNT));
             }
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
                 System.out.println("best solution is changed: " + terminalState.getCurrentState());
-                bestSolutionTracker.append(bestSolution.objectiveValue()).append(" ").append(terminalState.getCurrentState()).append("\n");
+                bestSolutionTracker.append(bestSolution.objectiveValue()).append(",").append(terminalState.getCurrentState()).append("\n");
             }
             iterationCount++;
             plotData.append(iterationCount).append(",").append(bestSolution.objectiveValue()).append("\n");
@@ -58,7 +58,7 @@ public class ImprovedGA extends GA {
         Experiment.writeToFile("plot_data_imp.txt", plotData.toString(), false);
         Experiment.writeToFile("best_solutions_imp.txt", bestSolutionTracker.append("\n\n").toString(), true);
         Experiment.writeToFile("best_worst_individual_imp.txt", bestWorstIndividual.toString(), true);
-        Experiment.writeToFile("result_imp.txt", iterationCount + " " + bestSolution.objectiveValue(), true);
+        Experiment.writeToFile("result_imp.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
 
         return bestSolution;
     }
