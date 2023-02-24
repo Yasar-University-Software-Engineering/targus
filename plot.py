@@ -16,17 +16,10 @@ print(f"Improved GA - {TOTAL_ITERATION}: {result_imp[TOTAL_ITERATION].mean()} {F
 standard_ga_df = pd.read_csv("plot_data_std.txt", sep=",", names=[ITERATION, FITNESS_VALUE])
 improved_ga_df = pd.read_csv("plot_data_imp.txt", sep=",", names=[ITERATION, FITNESS_VALUE])
 
-figure, axis = plt.subplots(2, 1)
+plt.plot(standard_ga_df[ITERATION], standard_ga_df[FITNESS_VALUE], label="Standard GA")
+plt.plot(improved_ga_df[ITERATION], improved_ga_df[FITNESS_VALUE], label="Improved GA")
+plt.xlabel(ITERATION)
+plt.ylabel(FITNESS_VALUE)
+plt.legend()
 
-axis[0].plot(standard_ga_df[ITERATION], standard_ga_df[FITNESS_VALUE])
-axis[0].set_title("Standard GA")
-axis[0].set_xlabel(ITERATION)
-axis[0].set_ylabel(FITNESS_VALUE)
-
-axis[1].plot(improved_ga_df[ITERATION], improved_ga_df[FITNESS_VALUE])
-axis[1].set_title("Improved GA")
-axis[1].set_xlabel(ITERATION)
-axis[1].set_ylabel(FITNESS_VALUE)
-
-figure.tight_layout()
 plt.show()
