@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class RouletteWheelSelection implements SelectionPolicy {
+public class InverseRouletteWheelSelection implements SelectionPolicy {
 
     @Override
     public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
