@@ -13,10 +13,9 @@ import java.util.*;
 public class SimplePopulation implements Population {
 
     private OptimizationProblem problem;
-    private int populationSize;
+    private final int populationSize;
     private List<Solution> individuals;
-    private Random random;
-    private static final int POPULATION_SIZE = 100;
+    private final Random random;
 
     public SimplePopulation(OptimizationProblem problem, int populationSize) {
         this.problem = problem;
@@ -29,18 +28,7 @@ public class SimplePopulation implements Population {
     public void init(OptimizationProblem problem) {
         WSN model = (WSN) problem.model();
         int solutionSize = model.getSolutionSize();
-        for (int i = 0; i < POPULATION_SIZE; i++) {
-            BitString random = generateRandomIndividual(solutionSize);
-            individuals.add(new BitStringSolution(random, problem.objectiveValue(random)));
-        }
-    }
-
-    private BitString generateRandomIndividual(int individualSize) {
-        BitSet bitSet = new BitSet(individualSize);
-        for (int i = 0; i < individualSize; i++) {
-            bitSet.set(i, random.nextBoolean());
-        }
-        return new BitString(bitSet);
+        individuals.addAll(BitStringSolution.generate(problem, solutionSize, populationSize));
     }
 
     @Override
@@ -55,18 +43,8 @@ public class SimplePopulation implements Population {
         }
     }
 
-    @Override
-    public void remove(int i) {
-        individuals.remove(i);
-    }
-
     public void remove(Solution s) {
         individuals.remove(s);
-    }
-
-    @Override
-    public void sortIndividuals() {
-        individuals.sort(Comparator.comparingDouble(Solution::objectiveValue));
     }
 
     @Override

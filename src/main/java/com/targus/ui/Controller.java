@@ -253,13 +253,13 @@ public class Controller implements Initializable {
             txtConnectivityObjective.setText(String.valueOf(mConnPenValueScaled));
             txtCoverageObjective.setText(String.valueOf(kCoverPenValueScaled));
 
-            txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
-            txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
-            txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
+            txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_SENSOR));
+            txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_M_COMM));
+            txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_K_COV));
 
-            txtWeightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor));
-            txtWeightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm));
-            txtWeightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov));
+            txtWeightSensorObjectiveResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR));
+            txtWeightConnectivityObjectiveResult.setText(String.valueOf(mConnPenValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM));
+            txtWeightCoverageObjectiveResult.setText(String.valueOf(kCoverPenValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV));
 
 /*            txtTotalResult.setText(String.valueOf(sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor +
                     mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm +

@@ -34,17 +34,8 @@ public class OnePointCrossOver implements CrossOverOperator{
             BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint);
             BitString childTwo = generateChild(parentTwo, parentOne, crossOverPoint);
 
-            Solution solutionOne = new BitStringSolution(generateChild(parentOne, parentTwo, crossOverPoint), problem.objectiveValue(childOne));
-            Solution solutionTwo = new BitStringSolution(generateChild(parentTwo, parentOne, crossOverPoint), problem.objectiveValue(childTwo));
-
-            List<Solution> allSolutions = new ArrayList<>(List.of(pOne, pTwo, solutionOne, solutionTwo));
-            List<Solution> bestSolutions = allSolutions
-                    .stream()
-                    .sorted(Comparator.comparingDouble(Solution::objectiveValue).reversed())
-                    .limit(2)
-                    .collect(Collectors.toList());
-
-            result.addAll(bestSolutions);
+            result.add(new BitStringSolution(generateChild(parentOne, parentTwo, crossOverPoint), problem.objectiveValue(childOne)));
+            result.add(new BitStringSolution(generateChild(parentTwo, parentOne, crossOverPoint), problem.objectiveValue(childTwo)));
         }
 
         return result;

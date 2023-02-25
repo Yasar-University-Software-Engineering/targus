@@ -11,9 +11,9 @@ import java.util.HashSet;
 
 public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
-    public final static double weightSensor = 0.1;
-    public final static double weightMComm = 5;
-    public final static double weightKCov = 5;
+    public final static double WEIGHT_SENSOR = 0.1;
+    public final static double WEIGHT_M_COMM = 5;
+    public final static double WEIGHT_K_COV = 5;
 
     @Override
     public double value(ProblemModel model, Representation r) {
@@ -29,7 +29,7 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
         double kCoverPenValueScaled = getKCoverPenValueScaled(wsn, sensors);
 
-        return sensorPenValueScaled * weightSensor + mConnPenValueScaled * weightMComm + kCoverPenValueScaled * weightKCov;
+        return sensorPenValueScaled * WEIGHT_SENSOR + mConnPenValueScaled * WEIGHT_M_COMM + kCoverPenValueScaled * WEIGHT_K_COV;
     }
 
     public double getSensorPenValueScaled(WSN wsn, BitSet bitSet) {

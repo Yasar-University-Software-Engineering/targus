@@ -2,17 +2,16 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.utils.Constants;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
-public class RouletteWheelSelection implements SelectionPolicy {
+public class RouletteWheelSurvival implements SurvivalPolicy {
 
     @Override
-    public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
+    public void apply(OptimizationProblem problem, Population population) {
+        List<Solution> solutions = population.getIndividuals();
         double sum = 0;
         double probabilitiesSum = 0;
         for (Solution s : solutions) {
@@ -26,16 +25,19 @@ public class RouletteWheelSelection implements SelectionPolicy {
         }
 
         Random random = new SecureRandom();
-        List<Solution> selected = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        List<Solution> toRemove = new ArrayList<>();
+        int removeCount = population.getIndividuals().size() - Constants.DEFAULT_POPULATION_COUNT;
+        for (int i = 0; i < removeCount; i++) {
             double prob = random.nextDouble();
             int index = Arrays.binarySearch(probabilitiesArray, prob);
             if (index < 0) {
                 index = Math.abs(index + 1);
             }
-            selected.add(solutions.get(index));
+            toRemove.add(solutions.get(index));
         }
 
-        return selected;
+        for (Solution s : toRemove) {
+            population.remove(s);
+        }
     }
 }

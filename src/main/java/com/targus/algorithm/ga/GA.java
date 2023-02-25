@@ -45,19 +45,19 @@ public abstract class GA implements SingleObjectiveOA {
 
         protected Builder basicBuild() {
             if (population == null) {
-                population = new SimplePopulation(problem, Constants.DEFAULT_POPULATION_COUNT);
+                setPopulation(new SimplePopulation(problem, Constants.DEFAULT_POPULATION_COUNT));
             }
             if (selectionPolicy == null) {
-                selectionPolicy = new RouletteWheelSelection();
+                setSelectionPolicy(new InverseRouletteWheelSelection());
             }
             if (survivalPolicy == null) {
-                survivalPolicy = new SimpleSurvival();
+                setSurvivalPolicy(new SimpleSurvival());
             }
             if (crossOverOperator == null) {
-                crossOverOperator = new OnePointCrossOver();
+                setCrossOverOperator(new OnePointCrossOver());
             }
             if (mutationOperator == null) {
-                mutationOperator = new OneBitMutation();
+                setMutationOperator(new OneBitMutation());
             }
             return this;
         }

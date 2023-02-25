@@ -1,7 +1,15 @@
 package com.targus.problem;
 
+import com.targus.base.OptimizationProblem;
 import com.targus.base.Representation;
 import com.targus.base.Solution;
+import com.targus.represent.BitString;
+
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Random;
 
 public class BitStringSolution implements Solution {
 
@@ -32,8 +40,25 @@ public class BitStringSolution implements Solution {
         return objectiveValue;
     }
 
+    public static Solution generate(OptimizationProblem problem, int solutionSize) {
+        Random random = new SecureRandom();
+        BitSet bitSet = new BitSet(solutionSize);
+        for (int i = 0; i < solutionSize; i++) {
+            bitSet.set(i, random.nextBoolean());
+        }
+        BitString bitString = new BitString(bitSet);
+        return new BitStringSolution(bitString, problem.objectiveValue(bitString));
+    }
+
+    public static List<Solution> generate(OptimizationProblem problem, int solutionSize, int count) {
+        List<Solution> solutions = new ArrayList<>();
+        for (int c = 0; c < count; c++) {
+            solutions.add(generate(problem, solutionSize));
+        }
+        return solutions;
+    }
+
     public String toString() {
-        // TODO: limit 2 decimal places after the dot
         return representation.toString() + " " + objectiveValue;
     }
 }
