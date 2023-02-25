@@ -1,5 +1,6 @@
 package com.targus.experiment.wsn;
 
+import com.targus.experiment.Experiment;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNMinimumSensorObjective;
 import com.targus.problem.wsn.WSNOptimizationProblem;
@@ -87,6 +88,10 @@ public class WSNProblemGenerator {
                 mutationRate
         );
         return new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
+    }
+
+    public static WSNOptimizationProblem generateProblemInstanceFromJson(String filePath) {
+        return new WSNOptimizationProblem(Experiment.readFromJson(filePath), new WSNMinimumSensorObjective());
     }
 
     public static Point2D[] generateGrid(Point2D dimensions, Point2D padding, int gridSize) {
