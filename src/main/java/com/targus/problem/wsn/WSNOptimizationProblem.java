@@ -8,8 +8,8 @@ import com.targus.problem.ObjectiveType;
 
 
 public class WSNOptimizationProblem implements OptimizationProblem {
-    ProblemModel model;
-    ObjectiveFunction objectiveFunction;
+    private ProblemModel model;
+    private ObjectiveFunction objectiveFunction;
 
     public WSNOptimizationProblem(ProblemModel model, ObjectiveFunction objectiveFunction) {
         this.model = model;
@@ -19,6 +19,10 @@ public class WSNOptimizationProblem implements OptimizationProblem {
     @Override
     public ProblemModel model() {
         return model;
+    }
+
+    public ObjectiveFunction getObjectiveFunction() {
+        return objectiveFunction;
     }
 
     @Override
