@@ -11,9 +11,9 @@ import java.util.HashSet;
 
 public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
-    public final static double weightSensor = 0.1;
-    public final static double weightMComm = 0.45;
-    public final static double weightKCov = 0.45;
+    public final static double WEIGHT_SENSOR = 0.1;
+    public final static double WEIGHT_M_COMM = 5;
+    public final static double WEIGHT_K_COV = 5;
 
     @Override
     public double value(ProblemModel model, Representation r) {
@@ -29,7 +29,22 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
         double kCoverPenValueScaled = getKCoverPenValueScaled(wsn, sensors);
 
-        return sensorPenValueScaled * weightSensor + mConnPenValueScaled * weightMComm + kCoverPenValueScaled * weightKCov;
+        return sensorPenValueScaled * WEIGHT_SENSOR + mConnPenValueScaled * WEIGHT_M_COMM + kCoverPenValueScaled * WEIGHT_K_COV;
+    }
+
+    public double getSensorPenValueScaled(WSN wsn, BitSet bitSet) {
+        return wsn.getSolutionSize() == 0 ?
+                0 : ((double) bitSet.cardinality() / wsn.getSolutionSize());
+    }
+
+    public double getMConnPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
+        return sensors.size() == 0 || wsn.getM() == 0 ?
+                0 : (double) mConnPenSum(wsn, sensors) / (sensors.size() * wsn.getM());
+    }
+
+    public double getKCoverPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
+        return wsn.targetsSize() == 0 || wsn.getK() == 0 ?
+                0 : (double) kCovPenSum(wsn, sensors) / (wsn.targetsSize() * wsn.getK());
     }
 
     public double getKCoverPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
@@ -54,7 +69,9 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
         for (Integer sensor:sensors)
         {
             int value = wsn.mConnSensors(sensor, sensors);
-            penSum += Math.min(value, m);
+            if (value < m) {
+                penSum += m - value;
+            }
         }
 
         return penSum;
@@ -66,7 +83,9 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
         for (int i = 0; i < wsn.targetsSize(); i++) {
             int value = wsn.kCovTargets(i, sensors);
-            penSum += Math.min(value, k);
+            if (value < k) {
+                penSum += k - value;
+            }
         }
 
         return penSum;
@@ -74,6 +93,6 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
 
     @Override
     public ObjectiveType type() {
-        return ObjectiveType.Maximization;
+        return ObjectiveType.Minimization;
     }
 }

@@ -6,6 +6,6 @@ public interface TerminalState {
 
     void nextState();
 
-    int getCurrentState();
-    int getFinishState();
+    long getCurrentState();
+    long getFinishState();
 }

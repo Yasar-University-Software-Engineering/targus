@@ -2,15 +2,15 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.utils.Constants;
 
-import java.util.Collections;
-import java.util.Comparator;
 
 public class SimpleSurvival implements SurvivalPolicy{
     @Override
     public void apply(OptimizationProblem problem, Population population) {
-        for (int i = 0; i < 20; i++) {
-            Solution s = Collections.min(population.getIndividuals(), Comparator.comparingDouble(Solution::objectiveValue));
+        int removeCount = population.getIndividuals().size() - Constants.DEFAULT_POPULATION_COUNT;
+        for (int i = 0; i < removeCount; i++) {
+            Solution s = population.getWorstIndividual();
             population.remove(s);
         }
     }

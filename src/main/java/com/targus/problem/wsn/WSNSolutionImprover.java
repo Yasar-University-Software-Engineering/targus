@@ -4,6 +4,7 @@ import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
 import com.targus.represent.BitString;
+import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
 import java.security.SecureRandom;
@@ -18,7 +19,7 @@ public class WSNSolutionImprover implements SolutionImprover {
     }
 
     /**
-     * Maps each potential position with its solutions index. For instance,
+     * Maps each potential position with its solutions state. For instance,
      * let potentialPositions = [ a, b, c, d] and solution = 1010. The returned
      * value would be { a:1, b:0, c:1, d:0 }
      * @param potentialPositions
@@ -26,7 +27,7 @@ public class WSNSolutionImprover implements SolutionImprover {
      * @param solution
      *      the current solution
      * @return LinkedHashMap that holds key (potential position)
-     * value (potential position's index in the problem model) pairs
+     * value (potential position's state) pairs
      */
     private LinkedHashMap<Point2D, Boolean> createPotentialPositionStateMap(Point2D[] potentialPositions, Solution solution) {
         LinkedHashMap<Point2D, Boolean> map = new LinkedHashMap<>();
@@ -270,7 +271,13 @@ public class WSNSolutionImprover implements SolutionImprover {
     public List<Solution> improveAll(OptimizationProblem problem, List<Solution> solutions) {
         List<Solution> improvedSolutions = new ArrayList<>();
         for (Solution solution : solutions) {
-            improvedSolutions.add(improve(problem, solution));
+            double probability = random.nextDouble();
+            if (probability < Constants.DEFAULT_IMPROVE_PROBABILITY) {
+                improvedSolutions.add(improve(problem, solution));
+            }
+            else {
+                improvedSolutions.add(solution);
+            }
         }
         return improvedSolutions;
     }
