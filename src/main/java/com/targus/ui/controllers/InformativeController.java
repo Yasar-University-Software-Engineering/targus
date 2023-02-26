@@ -60,13 +60,13 @@ public class InformativeController {
         txtConnectivityObjective.setText(String.valueOf(mConnPenValueScaled));
         txtCoverageObjective.setText(String.valueOf(kCoverPenValueScaled));
 
-        txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightSensor));
-        txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightMComm));
-        txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.weightKCov));
+        txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_SENSOR));
+        txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_M_COMM));
+        txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_K_COV));
 
-        double weightedSensorValue = sensorPenValueScaled * WSNMinimumSensorObjective.weightSensor;
-        double weightedMConnValue = mConnPenValueScaled * WSNMinimumSensorObjective.weightMComm;
-        double weightedKCovValue = kCoverPenValueScaled * WSNMinimumSensorObjective.weightKCov;
+        double weightedSensorValue = sensorPenValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR;
+        double weightedMConnValue = mConnPenValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM;
+        double weightedKCovValue = kCoverPenValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV;
 
         txtWeightSensorObjectiveResult.setText(String.valueOf(weightedSensorValue));
         txtWeightConnectivityObjectiveResult.setText(String.valueOf(weightedMConnValue));

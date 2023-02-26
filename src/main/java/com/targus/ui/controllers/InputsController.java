@@ -2,15 +2,13 @@ package com.targus.ui.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.targus.algorithm.ga.GA;
-import com.targus.algorithm.ga.GABuilder;
-import com.targus.algorithm.ga.ImprovedGA;
-import com.targus.algorithm.ga.StandardGA;
+import com.targus.algorithm.ga.*;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNMinimumSensorObjective;
 import com.targus.problem.wsn.WSNOptimizationProblem;
+import com.targus.problem.wsn.WSNSolutionImprover;
 import com.targus.represent.BitString;
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.PotentialPosition;
@@ -246,6 +244,26 @@ public class InputsController implements Initializable {
         mediator.display();
     }
 
+    public GA buildStandardGA(WSN wsn) {
+        return StandardGA
+                .builder(optimizationProblem)
+                .setCrossOverOperator(new OnePointCrossOver())
+                .setMutationOperator(new OneBitMutation())
+                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .build();
+    }
+
+    // TODO: replace wsn.getGenerationCount() with time
+    public GA buildImprovedGA(WSN wsn) {
+        return ImprovedGA
+                .builder(optimizationProblem)
+                .setSolutionImprover(new WSNSolutionImprover())
+                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .setCrossOverOperator(new OnePointCrossOver())
+                .setMutationOperator(new OneBitMutation())
+                .build();
+    }
+
     @FXML
     void handleSolve()  {
         disableTextField(true);
@@ -255,16 +273,14 @@ public class InputsController implements Initializable {
 
         WSN wsn = (WSN) optimizationProblem.model();
 
-        GA singleObjectiveOA;
+        GA ga = buildImprovedGA(wsn); // In case choice box doesn't get initialized properly
 
         if (choiceBox.getValue().equals("Standard GA")) {
-            GABuilder gaBuilder = new GABuilder(new StandardGA(optimizationProblem));
-            singleObjectiveOA = gaBuilder.build();
+            ga = buildStandardGA(wsn);
         } else if (choiceBox.getValue().equals("Improved GA")) {
-            GABuilder gaBuilder = new GABuilder(new ImprovedGA(optimizationProblem));
-            singleObjectiveOA = gaBuilder.build();
+            ga = buildImprovedGA(wsn);
         } else if (choiceBox.getValue().equals("Greedy Algorithm")) {
-            singleObjectiveOA = null;
+            ga = null;
         } else {
             try {
                 throw new Exception("No such algorithm available");
@@ -273,7 +289,7 @@ public class InputsController implements Initializable {
             }
         }
 
-        ProgressTask progressTask = new ProgressTask(singleObjectiveOA.getTerminalState());
+        ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
         progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
         mediator.bindProgressBar(progressTask.progressProperty());
 
@@ -281,10 +297,11 @@ public class InputsController implements Initializable {
         thread.setDaemon(true);
         thread.start();
 
+        GA finalGa = ga;
         Task<Solution> gaTask = new Task<>() {
             @Override
             protected Solution call() {
-                return singleObjectiveOA.perform();
+                return finalGa.perform();
             }
         };
 

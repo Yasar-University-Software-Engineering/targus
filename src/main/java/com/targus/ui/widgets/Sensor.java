@@ -19,7 +19,7 @@ public class Sensor extends Group {
         Circle sensingRange = new Circle(centerX, centerY, SENSING_RADIUS);
         sensingRange.setStroke(Color.BLUE);
         sensingRange.setFill(Color.TRANSPARENT);
-        communicationRange.setMouseTransparent(true);
+        sensingRange.setMouseTransparent(true);
         getChildren().addAll(circle, sensingRange, communicationRange);
     }
 

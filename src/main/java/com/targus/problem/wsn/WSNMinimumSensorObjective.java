@@ -47,21 +47,6 @@ public class WSNMinimumSensorObjective implements ObjectiveFunction {
                 0 : (double) kCovPenSum(wsn, sensors) / (wsn.targetsSize() * wsn.getK());
     }
 
-    public double getKCoverPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
-        return wsn.targetsSize() * wsn.getK() != 0 ?
-                (double) kCovPenSum(wsn, sensors) / (wsn.targetsSize() * wsn.getK()) : 1;
-    }
-
-    public double getMConnPenValueScaled(WSN wsn, HashSet<Integer> sensors) {
-        return sensors.size() == 0 || wsn.getM() == 0 ?
-                1 : (double) mConnPenSum(wsn, sensors) / (sensors.size() * wsn.getM());
-    }
-
-    public double getSensorPenValueScaled(WSN wsn, BitSet bitSet) {
-        return wsn.getSolutionSize() != 0 ?
-                1 - ((double) bitSet.cardinality() / wsn.getSolutionSize()) : 0;
-    }
-
     public int mConnPenSum(WSN wsn, HashSet<Integer> sensors) {
         int penSum = 0;
         int m = wsn.getM();
