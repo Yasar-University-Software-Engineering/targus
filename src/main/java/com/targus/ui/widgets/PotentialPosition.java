@@ -1,4 +1,4 @@
-package com.targus.ui;
+package com.targus.ui.widgets;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;

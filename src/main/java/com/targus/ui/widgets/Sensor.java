@@ -1,8 +1,4 @@
-package com.targus.ui;
-
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+package com.targus.ui.widgets;
 
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
@@ -10,33 +6,37 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 public class Sensor extends Group {
-    private double communicationRadius;
-    private double sensingRadius;
+    private static double COMMUNICATION_RADIUS;
+    private static double SENSING_RADIUS;
 
     public Sensor(double centerX, double centerY) {
         Circle circle = new Circle(centerX, centerY, 4);
         circle.setFill(Color.GREEN);
-        Circle communicationRange = new Circle(centerX, centerY, communicationRadius);
-        communicationRange.setFill(Color.YELLOW); // green with 20% opacity
-        Circle sensingRange = new Circle(centerX, centerY, sensingRadius);
-        sensingRange.setFill(Color.rgb(255, 0, 0, 0.2)); // red with 20% opacity
+        Circle communicationRange = new Circle(centerX, centerY, COMMUNICATION_RADIUS);
+        communicationRange.setStroke(Color.ORANGE);
+        communicationRange.setFill(Color.TRANSPARENT);
+        communicationRange.setMouseTransparent(true);
+        Circle sensingRange = new Circle(centerX, centerY, SENSING_RADIUS);
+        sensingRange.setStroke(Color.BLUE);
+        sensingRange.setFill(Color.TRANSPARENT);
+        communicationRange.setMouseTransparent(true);
         getChildren().addAll(circle, sensingRange, communicationRange);
     }
 
     public double getCommunicationRadius() {
-        return communicationRadius;
+        return COMMUNICATION_RADIUS;
     }
 
-    public void setCommunicationRadius(double communicationRadius) {
-        this.communicationRadius = communicationRadius;
+    public static void setCommunicationRadius(double communicationRadius) {
+        COMMUNICATION_RADIUS = communicationRadius;
     }
 
     public double getSensingRadius() {
-        return sensingRadius;
+        return SENSING_RADIUS;
     }
 
-    public void setSensingRadius(double sensingRadius) {
-        this.sensingRadius = sensingRadius;
+    public static void setSensingRadius(double sensingRadius) {
+        SENSING_RADIUS = sensingRadius;
     }
 
     public void addToPane(Pane pane) {
