@@ -3,8 +3,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 
-<?import javafx.scene.control.Label?>
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml" fx:controller="com.targus.ui.MapController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml" fx:controller="com.targus.ui.controllers.MapController">
    <Pane fx:id="mainPane" layoutX="14.0" layoutY="14.0" maxHeight="369.0" maxWidth="406.0" onMouseClicked="#paneClicked" prefHeight="369.0" prefWidth="406.0" />
-   <Label fx:id="lbl" text="hello"/>
 </AnchorPane>
