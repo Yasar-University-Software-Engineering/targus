@@ -1,4 +1,4 @@
-package com.targus.ui;
+package com.targus.ui.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,12 +11,18 @@ import com.targus.base.Solution;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNMinimumSensorObjective;
 import com.targus.problem.wsn.WSNOptimizationProblem;
+import com.targus.represent.BitString;
+import com.targus.ui.Mediator;
+import com.targus.ui.widgets.PotentialPosition;
+import com.targus.ui.widgets.Sensor;
+import com.targus.ui.widgets.Target;
 import com.targus.utils.Constants;
 import com.targus.utils.ProgressTask;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
@@ -25,20 +31,15 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.util.converter.NumberStringConverter;
 
-import com.targus.represent.BitString;
-import javafx.concurrent.Task;
-
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashSet;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class InputsController implements Initializable {
     @FXML
@@ -61,7 +62,7 @@ public class InputsController implements Initializable {
     private int paneHeight;
     private final ArrayList<Point2D> targets = new ArrayList<>();
     private final ArrayList<Point2D> potentialPositions = new ArrayList<>();
-    private final ArrayList<Point2D> sensors = new ArrayList<>();
+    private final ArrayList<Sensor> sensors = new ArrayList<>();
     private final IntegerProperty mProperty = new SimpleIntegerProperty(1);
     private final IntegerProperty kProperty = new SimpleIntegerProperty(1);
     private final DoubleProperty communicationRangeProperty = new SimpleDoubleProperty(100);
@@ -72,10 +73,19 @@ public class InputsController implements Initializable {
     @FXML
     ChoiceBox<String> choiceBox = new ChoiceBox<>();
     private OptimizationProblem optimizationProblem;
+    private Solution solution;
     private Mediator mediator;
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
+    }
+
+    public OptimizationProblem getOptimizationProblem() {
+        return optimizationProblem;
+    }
+
+    public Solution getSolution() {
+        return solution;
     }
 
     @Override
@@ -161,6 +171,54 @@ public class InputsController implements Initializable {
     }
 
     public void handleExportToFile() {
+        try {
+            FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(new File("./src/main/resources/json/"));
+            fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
+            File f = fc.showSaveDialog(null);
+
+            if (f == null) {
+                return;
+            }
+
+            String src = f.getAbsolutePath();
+
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get(src));
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            Map<String, Object> problemInfo = new HashMap<>();
+            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(paneWidth, paneWidth));
+
+            List<double[]> targetList = new ArrayList<>();
+            for (Point2D target : targets) {
+                double[] coords = new double[2];
+                coords[0] = target.getX();
+                coords[1] = target.getY();
+                targetList.add(coords);
+            }
+            problemInfo.put(Constants.TARGETS, targetList);
+
+            List<double[]> potentialPositionList = new ArrayList<>();
+            for (Point2D potentialPosition : potentialPositions) {
+                double[] coords = new double[2];
+                coords[0] = potentialPosition.getX();
+                coords[1] = potentialPosition.getY();
+                potentialPositionList.add(coords);
+            }
+            problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
+
+            problemInfo.put(Constants.COMMUNICATION_RADIUS, communicationRangeProperty.get());
+            problemInfo.put(Constants.SENSING_RADIUS, sensingRangeProperty.get());
+            problemInfo.put(Constants.M, mProperty.get());
+            problemInfo.put(Constants.K, kProperty.get());
+            problemInfo.put(Constants.GENERATION_COUNT, generationCountProperty.get());
+            problemInfo.put(Constants.MUTATION_RATE, mutationRateProperty.get());
+
+            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -175,7 +233,17 @@ public class InputsController implements Initializable {
 
     @FXML
     void handleCleanSolution() {
+        for (Sensor sensor : sensors) {
+            mediator.removeChild(sensor);
+        }
         sensors.clear();
+
+        if (solution == null) {
+            return;
+        }
+        BitString bitString = (BitString) solution.getRepresentation();
+        bitString.getBitSet().clear();
+        mediator.display();
     }
 
     @FXML
@@ -222,35 +290,28 @@ public class InputsController implements Initializable {
 
         gaTask.setOnSucceeded(e -> {
             mediator.setProgressLabelText("GA is completed!");
-            Solution bitStringSolution = gaTask.getValue();
-            BitString bitString = (BitString) bitStringSolution.getRepresentation();
+            solution = gaTask.getValue();
+            BitString bitString = (BitString) solution.getRepresentation();
             HashSet<Integer> indexes = bitString.ones();
 
-            WSNMinimumSensorObjective wsnMinimumSensorObjective = new WSNMinimumSensorObjective();
-
-            double sensorPenValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
-            double mConnPenValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
-            double kCoverPenValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
-
-            mediator.display(sensorPenValueScaled, mConnPenValueScaled, kCoverPenValueScaled);
-
             Point2D[] potentialPositionArray = wsn.getPotentialPositions();
+
+            Sensor.setCommunicationRadius(communicationRangeProperty.get());
+            Sensor.setSensingRadius(sensingRangeProperty.get());
 
             for (Integer index: indexes) {
                 Point2D potentialPosition = potentialPositionArray[index];
                 Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
-                sensor.setCommunicationRadius(communicationRangeProperty.get());
-                sensor.setSensingRadius(sensingRangeProperty.get());
 
                 mediator.addChild(sensor);
-                sensors.add(new Point2D(sensor.getLayoutX(), sensor.getLayoutY()));
+                addSensor(sensor);
             }
+            mediator.display();
             disableTextField(false);
         });
         new Thread(gaTask).start();
         // Below line is duplicated on purpose. It will be removed in the refactoring phase
         mediator.setProgressLabelText("GA is completed!");
-
     }
 
     private void disableTextField(boolean bool) {
@@ -319,6 +380,40 @@ public class InputsController implements Initializable {
 
     public void addPotentialPosition(PotentialPosition potentialPosition) {
         potentialPositions.add(new Point2D(potentialPosition.getLayoutX(), potentialPosition.getLayoutY()));
+    }
+
+    public void addSensor(Sensor sensor) {
+        double x = sensor.getLayoutX();
+        double y = sensor.getLayoutY();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        for (int i = 0; i < potentialPositions.size(); i++) {
+            if (df.format(potentialPositions.get(i).getX()).equals(df.format(x))
+                    && df.format(potentialPositions.get(i).getY()).equals(df.format(y))) {
+                BitString bitString = (BitString) solution.getRepresentation();
+                bitString.set(i, true);
+            }
+        }
+
+        sensors.add(sensor);
+    }
+
+    public void removeSensor(Sensor sensor) {
+        double x = sensor.getLayoutX();
+        double y = sensor.getLayoutY();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        for (int i = 0; i < potentialPositions.size(); i++) {
+            if (df.format(potentialPositions.get(i).getX()).equals(df.format(x))
+            && df.format(potentialPositions.get(i).getY()).equals(df.format(y))) {
+                BitString bitString = (BitString) solution.getRepresentation();
+                bitString.set(i, false);
+            }
+        }
+
+        sensors.remove(sensor);
     }
 
     public void clearTargets() {

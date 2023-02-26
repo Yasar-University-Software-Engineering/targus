@@ -1,6 +1,6 @@
-package com.targus.ui;
+package com.targus.ui.controllers;
 
-import javafx.beans.property.Property;
+import com.targus.ui.Mediator;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -24,6 +24,5 @@ public class EmptyController {
 
     public void bindProgressBar(ReadOnlyDoubleProperty property) {
         progressBar.progressProperty().bind(property);
-
     }
 }
