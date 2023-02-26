@@ -20,22 +20,22 @@ public class MainController {
     private Mediator mediator;
 
     public void initialize() {
-//        // Create the mediator
-//        mediator = new Mediator();
-//
-//        // Set up the mediator with the nested controllers
-//        mediator.setInputsController(inputsController);
-//        mediator.setInformativeController(informativeController);
-//        mediator.setMapController(mapController);
-//        mediator.setEmptyController(emptyController);
-//
-//        // Set the mediator on the nested controllers
-//        inputsController.setMediator(mediator);
-//        informativeController.setMediator(mediator);
-//        mapController.setMediator(mediator);
-//        emptyController.setMediator(mediator);
-//
-//        // Initialize the nested controllers
+        // Create the mediator
+        mediator = new Mediator();
+
+        // Set up the mediator with the nested controllers
+        mediator.setInputsController(inputsController);
+        mediator.setInformativeController(informativeController);
+        mediator.setMapController(mapController);
+        mediator.setEmptyController(emptyController);
+
+        // Set the mediator on the nested controllers
+        inputsController.setMediator(mediator);
+        informativeController.setMediator(mediator);
+        mapController.setMediator(mediator);
+        emptyController.setMediator(mediator);
+
+        // Initialize the nested controllers
 //        inputsController.initialize();
 //        informativeController.initialize();
 //        mapController.initialize();

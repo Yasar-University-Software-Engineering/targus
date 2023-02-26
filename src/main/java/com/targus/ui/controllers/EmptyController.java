@@ -1,5 +1,7 @@
 package com.targus.ui;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -9,7 +11,6 @@ public class EmptyController {
     private ProgressBar progressBar;
     @FXML
     private Label gaProgressLabel;
-    @FXML private Label emptyLabel;
 
     private Mediator mediator;
 
@@ -17,7 +18,12 @@ public class EmptyController {
         this.mediator = mediator;
     }
 
-    public void initialize() {
+    public void setProgressLabelText(String text) {
+        gaProgressLabel.setText(text);
+    }
+
+    public void bindProgressBar(ReadOnlyDoubleProperty property) {
+        progressBar.progressProperty().bind(property);
 
     }
 }

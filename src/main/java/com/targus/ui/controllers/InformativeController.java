@@ -32,10 +32,6 @@ public class InformativeController {
         this.mediator = mediator;
     }
 
-    public void initialize() {
-
-    }
-
     public void display(double sensorPenValueScaled,
                         double mConnPenValueScaled,
                         double kCoverPenValueScaled) {
