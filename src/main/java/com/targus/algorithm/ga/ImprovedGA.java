@@ -45,7 +45,7 @@ public class ImprovedGA extends GA {
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
-                System.out.println("best solution is changed: " + terminalState.getCurrentState());
+                //System.out.println("best solution is changed: " + terminalState.getCurrentState());
                 bestSolutionTracker.append(bestSolution.objectiveValue()).append(",").append(terminalState.getCurrentState()).append("\n");
             }
             iterationCount++;
