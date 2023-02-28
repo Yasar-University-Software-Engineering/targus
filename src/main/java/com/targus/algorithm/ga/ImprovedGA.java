@@ -26,6 +26,7 @@ public class ImprovedGA extends GA {
         population.init(problem);
 
         StringBuilder plotData = new StringBuilder();
+        StringBuilder timeBasedPlotData = new StringBuilder();
         StringBuilder bestSolutionTracker = new StringBuilder();
         StringBuilder bestWorstIndividual = new StringBuilder();
 
@@ -45,17 +46,18 @@ public class ImprovedGA extends GA {
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
             if (updateBestSolution(problem, population.getBestIndividual())) {
-                //System.out.println("best solution is changed: " + terminalState.getCurrentState());
                 bestSolutionTracker.append(bestSolution.objectiveValue()).append(",").append(terminalState.getCurrentState()).append("\n");
             }
             iterationCount++;
             plotData.append(iterationCount).append(",").append(bestSolution.objectiveValue()).append("\n");
+            timeBasedPlotData.append(terminalState.getCurrentState()).append(",").append(bestSolution.objectiveValue()).append("\n");
             if (iterationCount % 100 == 1) {
                 bestWorstIndividual.append(bestSolution.objectiveValue()).append(",").append(population.getWorstIndividual().objectiveValue()).append("\n");
             }
         }
 
         Experiment.writeToFile("plot_data_imp.txt", plotData.toString(), false);
+        Experiment.writeToFile("time_based_plot_data_imp.txt", timeBasedPlotData.toString(), false);
         Experiment.writeToFile("best_solutions_imp.txt", bestSolutionTracker.append("\n\n").toString(), true);
         Experiment.writeToFile("best_worst_individual_imp.txt", bestWorstIndividual.toString(), true);
         Experiment.writeToFile("result_imp.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
