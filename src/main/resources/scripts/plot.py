@@ -34,7 +34,7 @@ axis[1].plot(standard_ga_time_df[TIME], standard_ga_time_df[FITNESS_VALUE], labe
 axis[1].plot(improved_ga_time_df[TIME], improved_ga_time_df[FITNESS_VALUE], label="Improved GA")
 axis[1].set_xlabel(TIME)
 axis[1].set_ylabel(FITNESS_VALUE)
-axis[1].set_title("Comparison by iteration")
+axis[1].set_title("Comparison by time")
 axis[1].legend()
 
 plt.show()
