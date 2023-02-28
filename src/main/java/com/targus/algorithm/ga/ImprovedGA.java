@@ -62,6 +62,8 @@ public class ImprovedGA extends GA {
         Experiment.writeToFile("best_worst_individual_imp.txt", bestWorstIndividual.toString(), true);
         Experiment.writeToFile("result_imp.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
 
+        terminalState.reset();
+        population.clear();
         return bestSolution;
     }
 

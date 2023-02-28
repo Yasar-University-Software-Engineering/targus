@@ -49,6 +49,9 @@ public class StandardGA extends GA {
         Experiment.writeToFile("best_solutions_std.txt", bestSolutionTracker.append("\n").toString(), true);
         Experiment.writeToFile("best_worst_individual_std.txt", bestWorstIndividual.toString(), true);
         Experiment.writeToFile("result_std.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
+
+        terminalState.reset();
+        population.clear();
         return bestSolution;
     }
 
