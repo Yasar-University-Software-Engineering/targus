@@ -30,5 +30,6 @@ public class Constants {
     public static final int DEFAULT_IMMIGRANT_COUNT = (int) (DEFAULT_POPULATION_COUNT * 0.4);
     public static final int DEFAULT_IMMIGRATION_PERIOD = 100;
     public static final int DEFAULT_SELECTION_COUNT = 8;
+    public static final String DEFAULT_BASE_PATH_FOR_JSON_FILES = "./src/main/resources/json/";
 
 }
