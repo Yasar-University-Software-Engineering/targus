@@ -45,7 +45,7 @@ public class StandardGA extends GA {
         }
 
         Experiment.writeToFile("plot_data_std.txt", plotData.toString(), false);
-        Experiment.writeToFile("time_based_plot_data_imp.txt", timeBasedPlotData.toString(), false);
+        Experiment.writeToFile("time_based_plot_data_std.txt", timeBasedPlotData.toString(), false);
         Experiment.writeToFile("best_solutions_std.txt", bestSolutionTracker.append("\n").toString(), true);
         Experiment.writeToFile("best_worst_individual_std.txt", bestWorstIndividual.toString(), true);
         Experiment.writeToFile("result_std.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
