@@ -392,16 +392,16 @@ public class InputsController implements Initializable {
     }
 
     public void addTarget(Target target) {
-        targets.add(new Point2D(target.getLayoutX(), target.getLayoutY()));
+        targets.add(new Point2D(target.getCenterX(), target.getCenterY()));
     }
 
     public void addPotentialPosition(PotentialPosition potentialPosition) {
-        potentialPositions.add(new Point2D(potentialPosition.getLayoutX(), potentialPosition.getLayoutY()));
+        potentialPositions.add(new Point2D(potentialPosition.getCenterX(), potentialPosition.getCenterY()));
     }
 
     public void addSensor(Sensor sensor) {
-        double x = sensor.getLayoutX();
-        double y = sensor.getLayoutY();
+        double x = sensor.getCenterX();
+        double y = sensor.getCenterY();
 
         DecimalFormat df = new DecimalFormat("#.##");
 
@@ -417,8 +417,8 @@ public class InputsController implements Initializable {
     }
 
     public void removeSensor(Sensor sensor) {
-        double x = sensor.getLayoutX();
-        double y = sensor.getLayoutY();
+        double x = sensor.getCenterX();
+        double y = sensor.getCenterY();
 
         DecimalFormat df = new DecimalFormat("#.##");
 
