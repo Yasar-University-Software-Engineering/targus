@@ -313,12 +313,17 @@ public class InputsController implements Initializable {
 
             Point2D[] potentialPositionArray = wsn.getPotentialPositions();
 
-            Sensor.setCommunicationRadius(communicationRangeProperty.get());
-            Sensor.setSensingRadius(sensingRangeProperty.get());
+            Sensor.initializeRadii(communicationRangeProperty.get(), sensingRangeProperty.get());
 
             for (Integer index: indexes) {
                 Point2D potentialPosition = potentialPositionArray[index];
-                Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
+                Sensor sensor = null;
+
+                try {
+                    sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
+                } catch (IllegalStateException illegalStateException) {
+                    throw new IllegalStateException(illegalStateException.getMessage());
+                }
 
                 mediator.addChild(sensor);
                 addSensor(sensor);
