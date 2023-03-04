@@ -31,7 +31,7 @@ public class KBitMutation implements MutationOperator {
                 BitString individual = (BitString) s.clone().getRepresentation();
                 int k = random.nextInt(solutionSize);
                 for (int i = 0; i < k; i++) {
-                    individual.flip(random.nextInt(solutionSize));
+                    individual.set(random.nextInt(solutionSize), false);
                 }
                 BitStringSolution mutatedSolution = new BitStringSolution(individual, problem.objectiveValue(individual));
                 newSolutions.add(mutatedSolution);

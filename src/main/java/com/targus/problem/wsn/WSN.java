@@ -8,7 +8,7 @@ import java.util.*;
 public class WSN implements ProblemModel {
     private final Point2D[] targets;
     private final Point2D[] potentialPositions;
-    private HashMap<Point2D, Integer> potentialPositionsMap;
+    private HashMap<Point2D, Integer> potentialPositionsToIndexMap;
     private final int m;
     private final int k;
     private final double commRange;
@@ -19,17 +19,17 @@ public class WSN implements ProblemModel {
     // holds potential position to potential position(s) map
     // keys represent each potential position
     // values represent other potential positions which are in the communication range
-    HashMap<Point2D, HashSet<Point2D>> positionsInCommRange;
+    HashMap<Point2D, HashSet<Point2D>> potentialPositionToPotentialPositionMap;
 
     // holds target to potential(s) position map
     // keys represent each target
     // values represent each potential position that can cover the target
-    HashMap<Point2D, HashSet<Point2D>> positionsInSensRange;
+    HashMap<Point2D, HashSet<Point2D>> targetToPotentialPositionMap;
 
     // holds potential position to target
     // keys represent each potential position
     // values represent each target that the potential position can cover
-    HashMap<Point2D, HashSet<Point2D>> targetsInSensRange;
+    HashMap<Point2D, HashSet<Point2D>> potentialPositionToTargetMap;
 
     public WSN(
             Point2D[] targets,
@@ -50,29 +50,29 @@ public class WSN implements ProblemModel {
         this.generationCount = generationCount;
         this.mutationRate = mutationRate;
 
-        positionsInCommRange = new HashMap<>();
-        positionsInSensRange = new HashMap<>();
-        targetsInSensRange = new HashMap<>();
+        potentialPositionToPotentialPositionMap = new HashMap<>();
+        targetToPotentialPositionMap = new HashMap<>();
+        potentialPositionToTargetMap = new HashMap<>();
 
-        generateHashMap(potentialPositions, potentialPositions, positionsInCommRange, commRange);
-        generateHashMap(targets, potentialPositions, positionsInSensRange, sensRange);
-        generateHashMap(potentialPositions, targets, targetsInSensRange, sensRange);
+        generateHashMap(potentialPositions, potentialPositions, potentialPositionToPotentialPositionMap, commRange);
+        generateHashMap(targets, potentialPositions, targetToPotentialPositionMap, sensRange);
+        generateHashMap(potentialPositions, targets, potentialPositionToTargetMap, sensRange);
         initPotentialPositionMap();
     }
 
     private void initPotentialPositionMap() {
-        potentialPositionsMap = new HashMap<>();
+        potentialPositionsToIndexMap = new HashMap<>();
         for (int i = 0; i < potentialPositions.length; i++) {
-            potentialPositionsMap.put(potentialPositions[i], i);
+            potentialPositionsToIndexMap.put(potentialPositions[i], i);
         }
     }
 
     public int mConnSensors(Integer sensor, HashSet<Integer> sensors) {
         int count = 0;
-        HashSet<Point2D> connSensors = positionsInCommRange.get(potentialPositions[sensor]);
+        HashSet<Point2D> connSensors = potentialPositionToPotentialPositionMap.get(potentialPositions[sensor]);
 
         for (Point2D obj : connSensors) {
-            Integer index = potentialPositionsMap.get(obj);
+            Integer index = potentialPositionsToIndexMap.get(obj);
             if (sensors.contains(index))
                 count++;
         }
@@ -82,10 +82,10 @@ public class WSN implements ProblemModel {
 
     public int kCovTargets(Integer target, HashSet<Integer> sensors) {
         int count = 0;
-        HashSet<Point2D> covSensors = positionsInSensRange.get(targets[target]);
+        HashSet<Point2D> covSensors = targetToPotentialPositionMap.get(targets[target]);
 
         for (Point2D obj : covSensors) {
-            Integer index = potentialPositionsMap.get(obj);
+            Integer index = potentialPositionsToIndexMap.get(obj);
             if (sensors.contains(index))
                 count++;
         }
@@ -146,16 +146,19 @@ public class WSN implements ProblemModel {
         }
     }
 
-    public HashMap<Point2D, HashSet<Point2D>> getPositionsInCommRange() {
-        return positionsInCommRange;
+    public HashMap<Point2D, HashSet<Point2D>> getPotentialPositionToPotentialPositionMap() {
+        return potentialPositionToPotentialPositionMap;
     }
 
-    public HashMap<Point2D, HashSet<Point2D>> getPositionsInSensRange() {
-        return positionsInSensRange;
+    public HashMap<Point2D, HashSet<Point2D>> getTargetToPotentialPositionMap() {
+        return targetToPotentialPositionMap;
     }
 
-    public HashMap<Point2D, HashSet<Point2D>> getTargetsInSensRange() {
-        return targetsInSensRange;
+    public HashMap<Point2D, HashSet<Point2D>> getPotentialPositionToTargetMap() {
+        return potentialPositionToTargetMap;
     }
 
+    public HashMap<Point2D, Integer> getPotentialPositionToIndexMap() {
+        return potentialPositionsToIndexMap;
+    }
 }
