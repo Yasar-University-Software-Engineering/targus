@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 
 import java.util.HashSet;
 
-public class InformativeController {
+public class ObjectiveValueDisplayController {
     @FXML
     TextField txtSensorObjective;
     @FXML
@@ -52,26 +52,42 @@ public class InformativeController {
         BitString bitString = (BitString) solution.getRepresentation();
         HashSet<Integer> indexes = bitString.ones();
 
-        double sensorPenValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
-        double mConnPenValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
-        double kCoverPenValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
+        double weightedSensorValue = sensorValue(wsnMinimumSensorObjective, wsn, bitString);
+        double weightedMConnValue = mConnectivityValue(wsnMinimumSensorObjective, wsn, indexes);
+        double weightedKCovValue = kCoverageValue(wsnMinimumSensorObjective, wsn, indexes);
 
-        txtSensorObjective.setText(String.valueOf(sensorPenValueScaled));
-        txtConnectivityObjective.setText(String.valueOf(mConnPenValueScaled));
-        txtCoverageObjective.setText(String.valueOf(kCoverPenValueScaled));
+        double totalResult = weightedSensorValue + weightedMConnValue + weightedKCovValue;
+        setTextField(txtTotalResult, totalResult);
+    }
 
-        txtWeightSensorObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_SENSOR));
-        txtWeightConnectivityObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_M_COMM));
-        txtWeightCoverageObjective.setText(String.valueOf(WSNMinimumSensorObjective.WEIGHT_K_COV));
+    private double sensorValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, BitString bitString) {
+        double sensorValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
+        double weightedSensorValue = sensorValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR;
+        setTextField(txtSensorObjective, sensorValueScaled);
+        setTextField(txtWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
+        setTextField(txtWeightSensorObjectiveResult, weightedSensorValue);
+        return  weightedSensorValue;
+    }
 
-        double weightedSensorValue = sensorPenValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR;
-        double weightedMConnValue = mConnPenValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM;
-        double weightedKCovValue = kCoverPenValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV;
+    private double mConnectivityValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
+        double mConnectivityValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
+        double weightedMConnectivityValue = mConnectivityValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM;
+        setTextField(txtConnectivityObjective, mConnectivityValueScaled);
+        setTextField(txtWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
+        setTextField(txtWeightConnectivityObjectiveResult, weightedMConnectivityValue);
+        return weightedMConnectivityValue;
+    }
 
-        txtWeightSensorObjectiveResult.setText(String.valueOf(weightedSensorValue));
-        txtWeightConnectivityObjectiveResult.setText(String.valueOf(weightedMConnValue));
-        txtWeightCoverageObjectiveResult.setText(String.valueOf(weightedKCovValue));
+    private double kCoverageValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
+        double kCoverageValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
+        double weightedKCoverageValue = kCoverageValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV;
+        setTextField(txtCoverageObjective, kCoverageValueScaled);
+        setTextField(txtWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
+        setTextField(txtWeightCoverageObjectiveResult, weightedKCoverageValue);
+        return weightedKCoverageValue;
+    }
 
-        txtTotalResult.setText(String.valueOf(weightedSensorValue + weightedMConnValue + weightedKCovValue));
+    private void setTextField(TextField textField, double value) {
+        textField.setText(String.valueOf(value));
     }
 }
