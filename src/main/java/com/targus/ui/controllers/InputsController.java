@@ -447,6 +447,6 @@ public class InputsController implements Initializable {
     }
 
     public void clearSensors() {
-        sensors.clear();
+        handleCleanSolution();
     }
 }
