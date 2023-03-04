@@ -257,7 +257,7 @@ public class InputsController implements Initializable {
     public GA buildImprovedGA(WSN wsn) {
         return ImprovedGA
                 .builder(optimizationProblem)
-                .setSolutionImprover(new WSNSolutionImprover())
+                .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
                 .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
                 .setCrossOverOperator(new OnePointCrossOver())
                 .setMutationOperator(new OneBitMutation())
