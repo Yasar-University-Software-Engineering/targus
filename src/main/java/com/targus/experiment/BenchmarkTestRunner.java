@@ -9,92 +9,77 @@ import com.targus.problem.wsn.WSNSolutionImprover;
 import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
+import java.security.InvalidParameterException;
+
 public class BenchmarkTestRunner {
 
-    public static GA buildTimeBasedImprovedGA(OptimizationProblem optimizationProblem, WSN wsn) {
-        return ImprovedGA.builder(optimizationProblem)
-                .setSolutionImprover(new WSNSolutionImprover())
-                .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
-                .setSurvivalPolicy(new RouletteWheelSurvival())
-                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
-                .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
-                .build();
+    public static GA buildGA(OptimizationProblem optimizationProblem, WSN wsn, String gaType, MutationOperator mutationOperator, TerminalState terminalState) {
+        GA ga = null;
+        switch (gaType) {
+            case "Standard":
+                ga = StandardGA.builder(optimizationProblem)
+                        .setCrossOverOperator(new OnePointCrossOver())
+                        .setMutationOperator(mutationOperator)
+                        .setSurvivalPolicy(new RouletteWheelSurvival())
+                        .setTerminalState(terminalState)
+                        .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
+                        .build();
+                break;
+            case "Improved":
+                ga = ImprovedGA.builder(optimizationProblem)
+                        .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
+                        .setCrossOverOperator(new OnePointCrossOver())
+                        .setMutationOperator(mutationOperator)
+                        .setSurvivalPolicy(new RouletteWheelSurvival())
+                        .setTerminalState(terminalState)
+                        .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
+                        .build();
+                break;
+            default:
+                System.out.println("Invalid class name. Make sure there is no typo in the class name");
+                break;
+        }
+
+        if (ga == null) {
+            throw new InvalidParameterException("Type " + gaType + " could not found.");
+        }
+
+        return ga;
     }
 
-    public static GA buildIterationBasedImprovedGA(OptimizationProblem optimizationProblem, WSN wsn) {
-        return ImprovedGA.builder(optimizationProblem)
-                .setSolutionImprover(new WSNSolutionImprover())
-                .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
-                .setSurvivalPolicy(new RouletteWheelSurvival())
-                .setTerminalState(new IterativeTerminal(wsn.getGenerationCount()))
-                .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
-                .build();
-    }
-
-    public static GA buildTimeBasedStandardGA(OptimizationProblem optimizationProblem, WSN wsn) {
-        return ImprovedGA.builder(optimizationProblem)
-                .setSolutionImprover(new WSNSolutionImprover())
-                .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
-                .setSurvivalPolicy(new RouletteWheelSurvival())
-                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
-                .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
-                .build();
-    }
-
-    public static GA buildIterationBasedStandardGA(OptimizationProblem optimizationProblem, WSN wsn) {
-        return ImprovedGA.builder(optimizationProblem)
-                .setSolutionImprover(new WSNSolutionImprover())
-                .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
-                .setSurvivalPolicy(new RouletteWheelSurvival())
-                .setTerminalState(new IterativeTerminal(wsn.getGenerationCount()))
-                .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
-                .build();
-    }
-
-    public static void benchmarkTestOne() {
+    public static OptimizationProblem buildRandomProblemInstanceWithDefault(Point2D[] targets, Point2D[] potentialPositions, int terminalValue) {
         WSNProblemGenerator wsnProblemGenerator = WSNProblemGenerator.builder()
                 .communicatingRange(Constants.DEFAULT_COMMUNICATION_RANGE)
                 .sensingRange(Constants.DEFAULT_SENSING_RANGE)
                 .m(Constants.DEFAULT_M)
                 .k(Constants.DEFAULT_K)
-                .terminationValue(300)
+                .terminationValue(terminalValue)
                 .mutationRate(Constants.DEFAULT_MUTATION_RATE)
                 .build();
-        Point2D dimensions = new Point2D(600, 600);
-        OptimizationProblem optimizationProblem = wsnProblemGenerator.generateProblemInstance(
-                WSNProblemGenerator.generateGrid(dimensions, Constants.DEFAULT_GRID_PADDING, Constants.DEFAULT_GRID_SIZE),
-                WSNProblemGenerator.generateRandomPoint2D(dimensions, 300));
-        WSN wsn = (WSN) optimizationProblem.model();
 
-        GA ga = buildTimeBasedStandardGA(optimizationProblem, wsn);
-        Solution solution = ga.perform();
-        System.out.println("Standard GA: " + solution.objectiveValue());
-
-        ga = buildTimeBasedImprovedGA(optimizationProblem, wsn);
-        solution = ga.perform();
-        System.out.println("Improved GA: " + solution.objectiveValue());
+        return wsnProblemGenerator.generateProblemInstance(targets, potentialPositions);
     }
 
-    public static void benchmarkTestOnlyImproved() {
-        WSNProblemGenerator wsnProblemGenerator = WSNProblemGenerator.builder()
-                .communicatingRange(Constants.DEFAULT_COMMUNICATION_RANGE)
-                .sensingRange(Constants.DEFAULT_SENSING_RANGE)
-                .m(Constants.DEFAULT_M)
-                .k(Constants.DEFAULT_K)
-                .terminationValue(180)
-                .mutationRate(Constants.DEFAULT_MUTATION_RATE)
-                .build();
-        Point2D dimensions = new Point2D(400, 400);
-        OptimizationProblem optimizationProblem = wsnProblemGenerator.generateProblemInstance(
-                WSNProblemGenerator.generateGrid(dimensions, Constants.DEFAULT_GRID_PADDING, Constants.DEFAULT_GRID_SIZE),
-                WSNProblemGenerator.generateRandomPoint2D(dimensions, 200));
+    public static void GABenchmarkTest(String filePath, String gaType, MutationOperator mutationOperator, TerminalState terminalState, int repeat) {
+        OptimizationProblem optimizationProblem = WSNProblemGenerator.generateProblemInstanceFromJson(filePath);
         WSN wsn = (WSN) optimizationProblem.model();
-        GA ga = buildTimeBasedImprovedGA(optimizationProblem, wsn);
-        Solution solution = ga.perform();
-        System.out.println("Improved GA: " + solution.objectiveValue());
+
+        double sum = 0.0;
+        GA ga = buildGA(optimizationProblem, wsn, gaType, mutationOperator, terminalState);
+        for (int i = 0; i < repeat; i++) {
+            Solution solution = ga.perform();
+            sum += solution.objectiveValue();
+        }
+
+        double average = sum / repeat;
+        System.out.println(gaType + " -- Fitness Value (repeated: " + repeat + "): " + average);
+    }
+
+    public static void main(String[] args) {
+        String filePath = "C:\\Users\\doguk\\Desktop\\targus\\src\\main\\resources\\json\\big_instance.json";
+        int terminalValue = 20;
+        int repeat = 5;
+        GABenchmarkTest(filePath, "Standard", new OneBitMutation(), new TimeBasedTerminal(terminalValue), repeat);
+        GABenchmarkTest(filePath, "Improved", new KBitMutation(), new TimeBasedTerminal(terminalValue), repeat);
     }
 }

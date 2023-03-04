@@ -4,18 +4,28 @@ import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
 import com.targus.represent.BitString;
-import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WSNSolutionImprover implements SolutionImprover {
 
-    private Random random;
+    private final Random random;
+    private final WSN wsn;
+    private final HashMap<Point2D, HashSet<Point2D>> targetToPotentialPositions;
+    private final HashMap<Point2D, HashSet<Point2D>> potentialPositionToTargets;
+    private final HashMap<Point2D, HashSet<Point2D>> potentialPositionToPotentialPosition;
+    private final double IMPROVE_PROBABILITY;
 
-    public WSNSolutionImprover() {
+    public WSNSolutionImprover(WSN wsn, double improveProbability) {
         random = new SecureRandom();
+        this.wsn = wsn;
+        targetToPotentialPositions = wsn.getTargetToPotentialPositionMap();
+        potentialPositionToTargets = wsn.getPotentialPositionToTargetMap();
+        potentialPositionToPotentialPosition = wsn.getPotentialPositionToPotentialPositionMap();
+        IMPROVE_PROBABILITY = improveProbability;
     }
 
     /**
@@ -39,30 +49,28 @@ public class WSNSolutionImprover implements SolutionImprover {
         return map;
     }
 
+    // TODO: this method will be removed
     /**
      * Checks if the given potential position covers a target
      * @param potentialPosition
      *      sensor to check if it covers any target
-     * @param targetsInSensingRange
-     *      map of each potential position that can cover a target
      * @return true if the given sensor covers any target, false otherwise
      */
-    private boolean doesCoverTarget(Point2D potentialPosition, HashMap<Point2D, HashSet<Point2D>> targetsInSensingRange) {
-        HashSet<Point2D> targets = targetsInSensingRange.get(potentialPosition);
+    private boolean doesCoverTarget(Point2D potentialPosition) {
+        HashSet<Point2D> targets = potentialPositionToTargets.get(potentialPosition);
         return targets.size() != 0;
     }
 
+    // TODO: this method will be removed
     /**
      * Checks if any of the given chain of sensors cover a target
      * @param chain
      *      a sequence of sensor coordinates
-     * @param wsn
-     *      problem model object
      * @return true if a sensor covers a target, false otherwise
      */
-    private boolean doesChainCoverTarget(LinkedList<Point2D> chain, WSN wsn) {
+    private boolean doesChainCoverTarget(LinkedList<Point2D> chain) {
         for (Point2D pp : chain) {
-            if (doesCoverTarget(pp, wsn.getTargetsInSensRange()))
+            if (doesCoverTarget(pp))
                 return true;
         }
         return false;
@@ -104,23 +112,21 @@ public class WSNSolutionImprover implements SolutionImprover {
         return map;
     }
 
+    // TODO: this method will be removed
     /**
      * Creates a map that holds the information of which sensor is currently communicating with which sensor
      * The result is similar to below. Note that the numbers are arbitrary and arrays represent Point2D objects:
      * Point2D [x = 35.0, y = 5.0] = [ Point2D [x = 10.0, y = 5.0], Point2D [x = 35.0, y = 30.0] ]
      * @param sensors
      *      map of turned on sensors
-     * @param wsn
-     *      problem model object
      * @return map of connectivity
      */
-    private Map<Point2D, HashSet<Point2D>> createConnectivityMap(Map<Point2D, Integer> sensors, WSN wsn) {
+    private Map<Point2D, HashSet<Point2D>> createConnectivityMap(Map<Point2D, Integer> sensors) {
         Map<Point2D, HashSet<Point2D>> map = new HashMap<>();
-        Map<Point2D, HashSet<Point2D>> potentialPositionCommunicationMap = wsn.getPositionsInCommRange();
         Set<Point2D> sensorKeySet = sensors.keySet();
         for (Point2D sensor : sensorKeySet) {
             HashSet<Point2D> temp = new HashSet<>();
-            Set<Point2D> neighborSensors = potentialPositionCommunicationMap.get(sensor);
+            Set<Point2D> neighborSensors = potentialPositionToPotentialPosition.get(sensor);
             for (Point2D s : neighborSensors) {
                 if (sensorKeySet.contains(s)) {
                     temp.add(s);
@@ -131,6 +137,7 @@ public class WSNSolutionImprover implements SolutionImprover {
         return map;
     }
 
+    // TODO: this method will be removed
     /**
      * Gets random element from the given set
      * @param set
@@ -149,6 +156,7 @@ public class WSNSolutionImprover implements SolutionImprover {
         return null;
     }
 
+    // TODO: this method will be removed
     /**
      * Checks whether the given linked list contains cycle
      * @param linkedList
@@ -166,16 +174,17 @@ public class WSNSolutionImprover implements SolutionImprover {
         return false;
     }
 
+    /* TODO: this method will be removed. because the amount of work it does does not worth the trouble
+        to gain performance we do not call this method. we plan to remove this later on but just for now
+        we will keep it
+     */
     /**
      * Finds unnecessary sensors and returns them in a list
      * @param connectivityMap
      *      map that holds the information of which sensors are communicating with which sensors
-     * @param wsn
-     *      problem model object
      * @return list of turned off sensors
-     * @see WSNSolutionImprover#getNecessarySensorList(Set, WSN)
      */
-    private List<Point2D> getUnnecessarySensorList(Map<Point2D, HashSet<Point2D>> connectivityMap, WSN wsn) {
+    private List<Point2D> getSensorsToTurnOff(Map<Point2D, HashSet<Point2D>> connectivityMap) {
         List<Point2D> sensorsToRemove = new ArrayList<>();
 
         connectivityMap.entrySet()
@@ -187,16 +196,16 @@ public class WSNSolutionImprover implements SolutionImprover {
 
         for (Map.Entry<Point2D, HashSet<Point2D>> entry : connectivityMap.entrySet()) {
             Point2D sensor = entry.getKey();
-            HashSet<Point2D> otherSensors = entry.getValue();
+            HashSet<Point2D> communicatingSensors = entry.getValue();
 
             LinkedList<Point2D> chain = new LinkedList<>();
             chain.add(sensor);
             do {
-                sensor = getRandomElementFromSet(otherSensors);
+                sensor = getRandomElementFromSet(communicatingSensors);
                 chain.add(sensor);
-                otherSensors = connectivityMap.get(sensor);
+                communicatingSensors = connectivityMap.get(sensor);
             } while (!doesContainCycle(chain));
-            if (!doesChainCoverTarget(chain, wsn)) {
+            if (!doesChainCoverTarget(chain)) {
                 chain.removeLast();
                 sensorsToRemove.addAll(chain);
             }
@@ -204,65 +213,122 @@ public class WSNSolutionImprover implements SolutionImprover {
         return sensorsToRemove;
     }
 
-    /**
-     * Checks whether a target should be covered for the given sensor
-     * @param sensor
-     *      turned-off sensor
-     * @param wsn
-     *      problem model object
-     * @return true if turning on the sensor will benefit k-coverage, false otherwise
-     */
-    private boolean shouldSensorTurnedOn(Point2D sensor, WSN wsn) {
-        HashMap<Point2D, HashSet<Point2D>> targetsToSensorsMap =  wsn.getPositionsInSensRange();
-        HashMap<Point2D, HashSet<Point2D>> sensorsToTargetsMap = wsn.getTargetsInSensRange();
-        HashSet<Point2D> targetsForSensor = sensorsToTargetsMap.get(sensor);
-        List<Integer> kCoveragesForSensor = new ArrayList<>();
-        for (Point2D target : targetsForSensor) {
-            kCoveragesForSensor.add(targetsToSensorsMap.get(target).size());
+    // TODO: this method will be removed
+    private void removeSensorFromConnectivityMap(Map<Point2D, HashSet<Point2D>> connectivityMap, Point2D sensor) {
+        HashSet<Point2D> sensorKeysToUpdate = connectivityMap.get(sensor);
+        for (Point2D sensorToUpdate : sensorKeysToUpdate) {
+            HashSet<Point2D> values = connectivityMap.get(sensorToUpdate);
+            HashSet<Point2D> newValues = (HashSet<Point2D>) values.stream().filter(s -> !s.equals(sensor)).collect(Collectors.toSet());
+            // values.remove(sensor);
+            connectivityMap.replace(sensorToUpdate, newValues);
         }
+    }
 
-        int K = wsn.getK();
-        return kCoveragesForSensor.stream().anyMatch(k -> k < K);
+    // TODO: this method will be removed
+    private boolean doesSensorContributeToConnectivity(Map<Point2D, HashSet<Point2D>> connectivityMap, Point2D sensor, int m) {
+        boolean doesContribute = false;
+        HashSet<Point2D> sensorsToCheck = connectivityMap.get(sensor);
+        for (Point2D s : sensorsToCheck) {
+            HashSet<Point2D> sensors = connectivityMap.get(s);
+            if (sensors.size() - 1 < m * m) {
+                doesContribute = true;
+                break;
+            }
+        }
+        return doesContribute;
     }
 
     /**
-     * Finds necessary sensors, sensors that can cover a target, and returns them in a list
-     * @param sensors
-     *      set of coordinates of the turned off sensors
-     * @param wsn
-     *      problem model object
-     * @return list of sensors that can be turned on
-     * @see WSNSolutionImprover#getUnnecessarySensorList(Map, WSN)
+     * Finds sensors that can increase the k-coverage
+     * @param turnedOnSensors a list of sensors that are turned on
+     * @param turnedOffSensors a list of sensors that are turned off
+     * @return a list of sensors that will be turned on
      */
-    private List<Point2D> getNecessarySensorList(Set<Point2D> sensors, WSN wsn) {
+    private List<Point2D> getSensorsToTurnOn(List<Point2D> turnedOnSensors, List<Point2D> turnedOffSensors) {
         List<Point2D> sensorToTurnOn = new ArrayList<>();
-        for (Point2D sensor : sensors) {
-            if (shouldSensorTurnedOn(sensor, wsn)) {
-                sensorToTurnOn.add(sensor);
+        // Initially we declared the type of turnedOnSensors as Set and the caller of this method would
+        // pass this parameter from a map by mapName.keySet() which returns a set that does not support
+        // add and addAll operations that we use below. Since we need to add a sensor to turnedOnSensors list
+        // every time we turn on a sensor, we declared this parameter as list.
+        Set<Point2D> targets = targetToPotentialPositions.keySet();
+        for (Point2D target : targets) {
+            int k = getCoverageForTarget(turnedOnSensors, target);
+            if (k >= wsn.getK()) {
+                continue;
+            }
+            for (Point2D turnedOffSensor : turnedOffSensors) {
+                if (doesSensorContributeToCoverage(turnedOffSensor, target)) {
+                    sensorToTurnOn.add(turnedOffSensor);
+                    turnedOnSensors.add(turnedOffSensor);
+                    k++;
+
+                    if (k >= wsn.getK()) {
+                        break;
+                    }
+                }
             }
         }
         return sensorToTurnOn;
     }
 
+    /**
+     * Checks if the given sensors can cover the given target
+     * @param turnedOffSensor a sensor
+     * @param target a target
+     * @return true if the given sensor can cover the given target, false otherwise
+     */
+    private boolean doesSensorContributeToCoverage(Point2D turnedOffSensor, Point2D target) {
+        HashSet<Point2D> sensors = targetToPotentialPositions.get(target);
+        return sensors.contains(turnedOffSensor);
+    }
+
+    private int getCoverageForTarget(List<Point2D> turnedOnSensors, Point2D target) {
+        HashSet<Point2D> sensors = targetToPotentialPositions.get(target);
+        int k = 0;
+        for (Point2D sensor : turnedOnSensors) {
+            if (sensors.contains(sensor)) {
+                k++;
+            }
+        }
+        return k;
+    }
+
+    // TODO: this method will be removed
+    private void improveMConnectivity(BitString sequence, Map<Point2D, Integer> turnedOnSensors) {
+        Map<Point2D, HashSet<Point2D>> connectivityMap = createConnectivityMap(turnedOnSensors);
+        List<Point2D> removedSensors = getSensorsToTurnOff(connectivityMap);
+        for (Point2D sensor : removedSensors) {
+            sequence.set(turnedOnSensors.get(sensor), false);
+        }
+    }
+
+    /**
+     * The heuristic that increases the k-coverage
+     * <p>
+     * Calculates each target's coverage (k) value and if the k value is lower
+     * than the aimed k, it turns on sensors to increase the k-coverage
+     * @param sequence current solution's bitstring sequence
+     * @param turnedOnSensors map that holds each turned on sensor and their index in the solution
+     * @param turnedOffSensors map that holds each turned off sensor and their index in the solution
+     */
+    private void improveKCoverage(BitString sequence, Map<Point2D, Integer> turnedOnSensors, Map<Point2D, Integer> turnedOffSensors) {
+        List<Point2D> shuffledTurnedOffSensors = new ArrayList<>(turnedOffSensors.keySet());
+        // check getSensorsToTurnOn() method to see why we create the list of turnedOnSensors
+        List<Point2D> listOfTurnedOnSensors = new ArrayList<>(turnedOnSensors.keySet());
+        List<Point2D> sensorsToTurnOn = getSensorsToTurnOn(listOfTurnedOnSensors, shuffledTurnedOffSensors);
+        for (Point2D sensor : sensorsToTurnOn) {
+            sequence.set(turnedOffSensors.get(sensor), true);
+        }
+    }
+
     @Override
     public Solution improve(OptimizationProblem problem, Solution solution) {
-        WSN wsn = (WSN) problem.model();
         LinkedHashMap<Point2D, Boolean> potentialPositionStateMap = createPotentialPositionStateMap(wsn.getPotentialPositions(), solution);
         Map<Point2D, Integer> turnedOnSensors = getTurnedOnSensors(potentialPositionStateMap);
         Map<Point2D, Integer> turnedOffSensors = getTurnedOffSensors(potentialPositionStateMap);
         BitString improvedSequence = (BitString) solution.getRepresentation();
 
-        Map<Point2D, HashSet<Point2D>> connectivityMap = createConnectivityMap(turnedOnSensors, wsn);
-        List<Point2D> removedSensors = getUnnecessarySensorList(connectivityMap, wsn);
-        for (Point2D sensor : removedSensors) {
-            improvedSequence.set(turnedOnSensors.get(sensor), false);
-        }
-
-        // I did not shuffle the sensors below because Set is not ordered. So, randomization is handled automatically.
-        List<Point2D> addedSensors = getNecessarySensorList(turnedOffSensors.keySet(), wsn);
-        for (Point2D sensor : addedSensors) {
-            improvedSequence.set(turnedOffSensors.get(sensor), true);
-        }
+        improveKCoverage(improvedSequence, turnedOnSensors, turnedOffSensors);
 
         return new BitStringSolution(improvedSequence, problem.objectiveValue(improvedSequence));
     }
@@ -272,7 +338,7 @@ public class WSNSolutionImprover implements SolutionImprover {
         List<Solution> improvedSolutions = new ArrayList<>();
         for (Solution solution : solutions) {
             double probability = random.nextDouble();
-            if (probability < Constants.DEFAULT_IMPROVE_PROBABILITY) {
+            if (probability < IMPROVE_PROBABILITY) {
                 improvedSolutions.add(improve(problem, solution));
             }
             else {

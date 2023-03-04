@@ -15,8 +15,12 @@ public class TimeBasedTerminal implements TerminalState {
     private final long endTimeInMilliseconds;
 
     public TimeBasedTerminal(int seconds) {
-        currentTimeInMilliseconds = 0;
         endTimeInMilliseconds = seconds * 1000L;
+        init();
+    }
+
+    private void init() {
+        currentTimeInMilliseconds = 0;
         start();
     }
 
@@ -39,6 +43,11 @@ public class TimeBasedTerminal implements TerminalState {
     public void nextState() {
         Instant endTime = Instant.now();
         currentTimeInMilliseconds = Duration.between(startTime, endTime).toMillis();
+    }
+
+    @Override
+    public void reset() {
+        init();
     }
 
     @Override

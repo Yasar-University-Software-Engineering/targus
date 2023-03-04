@@ -12,6 +12,7 @@ import javafx.geometry.Point2D;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.*;
 
 public class Experiment {
 
@@ -25,6 +26,57 @@ public class Experiment {
             throw new RuntimeException(e);
         }
 
+    }
+
+    // TODO: reduce the number of parameters this method takes
+    // TODO: check the if condition in detail
+    public static void writeToJson(WSN wsn, Point2D dimensions, int terminationValue, int communicationRange, int sensingRange, String fileName, boolean override) {
+        String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + fileName;
+        File f = new File(filePath);
+        if(f.exists() && !f.isDirectory() && !override) {
+            System.out.println(fileName + " already exists in " + Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + ". No changes made to the file.");
+            System.out.println("\nIf you want to make changes to the file, you may provide 'true' for the override parameter\n");
+            return;
+        }
+
+        BufferedWriter writer;
+        try {
+            writer = Files.newBufferedWriter(Paths.get(filePath));
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            Map<String, Object> problemInfo = new HashMap<>();
+            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(dimensions.getX(), dimensions.getY()));
+
+            List<double[]> targetList = new ArrayList<>();
+            for (Point2D target : wsn.getTargets()) {
+                double[] coords = new double[2];
+                coords[0] = target.getX();
+                coords[1] = target.getY();
+                targetList.add(coords);
+            }
+            problemInfo.put(Constants.TARGETS, targetList);
+
+            List<double[]> potentialPositionList = new ArrayList<>();
+            for (Point2D potentialPosition : wsn.getPotentialPositions()) {
+                double[] coords = new double[2];
+                coords[0] = potentialPosition.getX();
+                coords[1] = potentialPosition.getY();
+                potentialPositionList.add(coords);
+            }
+            problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
+
+            problemInfo.put(Constants.COMMUNICATION_RADIUS, communicationRange);
+            problemInfo.put(Constants.SENSING_RADIUS, sensingRange);
+            problemInfo.put(Constants.M, wsn.getM());
+            problemInfo.put(Constants.K, wsn.getK());
+            problemInfo.put(Constants.GENERATION_COUNT, terminationValue);
+            problemInfo.put(Constants.MUTATION_RATE, wsn.getMutationRate());
+
+            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Something went wrong when writing to json file. " + e);
+        }
     }
 
     public static WSN readFromJson(String filePath) {
@@ -69,10 +121,7 @@ public class Experiment {
         }
     }
 
-    public static String getBenchmarkTestInformation(Solution bestSolution, TerminalState terminalState) {
-        return bestSolution.getRepresentation() + "\n" + bestSolution.objectiveValue() + "\n" + terminalState.getCurrentState() + "\n\n\n";
-    }
-
+    // TODO: remove this method (later)
     public static String getProblemInformation(OptimizationProblem problem) {
         WSN wsn = (WSN) problem.model();
         return String.format("K: %d M: %d Mutation Rate: %f Initial Population: %d Communication Range: %d Sensing Range: %d\n\n",

@@ -24,8 +24,8 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
     public GreedySelectionAlgorithm(OptimizationProblem problem) {
         this.problem = problem;
         wsn = (WSN) problem.model();
-        sensorToCommunicationSensorMap = wsn.getPositionsInCommRange();
-        sensorToSensingTargetMap = wsn.getTargetsInSensRange();
+        sensorToCommunicationSensorMap = wsn.getPotentialPositionToPotentialPositionMap();
+        sensorToSensingTargetMap = wsn.getPotentialPositionToTargetMap();
         potentialPositions = wsn.getPotentialPositions();
     }
 
@@ -95,7 +95,7 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
     private boolean checkMConnectivity(WSN wsn, List<Integer> currentSensorIndexes) {
         int m = wsn.getM();
         List<Point2D> currentPotentialPositions = getPotentialPositionsFromIndexes(wsn, currentSensorIndexes);
-        HashMap<Point2D, HashSet<Point2D>> sensorToCommunicationSensorMap = wsn.getPositionsInCommRange();
+        HashMap<Point2D, HashSet<Point2D>> sensorToCommunicationSensorMap = wsn.getPotentialPositionToPotentialPositionMap();
         for (Map.Entry<Point2D, HashSet<Point2D>> entry : sensorToCommunicationSensorMap.entrySet()) {
             HashSet<Point2D> potentialPositions = entry.getValue();
             int currentM = -1;
@@ -114,7 +114,7 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
     private boolean checkKCoverage(WSN wsn, List<Integer> currentSensorIndexes) {
         int k = wsn.getK();
         List<Point2D> currentPotentialPositions = getPotentialPositionsFromIndexes(wsn, currentSensorIndexes);
-        HashMap<Point2D, HashSet<Point2D>> targetToSensorMap = wsn.getPositionsInSensRange();
+        HashMap<Point2D, HashSet<Point2D>> targetToSensorMap = wsn.getTargetToPotentialPositionMap();
         for (Map.Entry<Point2D, HashSet<Point2D>> entry : targetToSensorMap.entrySet()) {
             HashSet<Point2D> potentialPositions = entry.getValue();
             int currentK = 0;
