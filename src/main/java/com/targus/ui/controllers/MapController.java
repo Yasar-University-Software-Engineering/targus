@@ -6,6 +6,7 @@ import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseButton;
@@ -38,15 +39,26 @@ public class MapController {
             });
 
             createSensor.setOnAction(actionEvent -> {
-                Sensor sensor = new Sensor(
-                        ((PotentialPosition) event.getTarget()).getLayoutX(),
-                        ((PotentialPosition) event.getTarget()).getLayoutY());
+                PotentialPosition potentialPosition = (PotentialPosition) event.getTarget();
+                Sensor sensor = new Sensor(potentialPosition.getCenterX(), potentialPosition.getCenterY());
                 addChild(sensor);
                 mediator.addSensor(sensor);
             });
 
             removeSensor.setOnAction(actionEvent -> {
-                Sensor sensor = (Sensor) event.getTarget();
+                Circle circle = (Circle) event.getTarget();
+
+                Sensor sensor = null;
+
+                for (Node node : mainPane.getChildren()) {
+                    if (node instanceof Sensor) {
+                        if (circle.getCenterX() == ((Sensor) node).getCenterX()
+                        && circle.getCenterY() == ((Sensor) node).getCenterY()) {
+                            sensor = (Sensor) node;
+                        }
+                    }
+                }
+                
                 removeChild(sensor);
                 mediator.removeSensor(sensor);
             });
