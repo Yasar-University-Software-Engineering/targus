@@ -12,7 +12,7 @@
         <RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <fx:include source="inputs.fxml" fx:id="inputs" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <fx:include source="informative.fxml" fx:id="informative" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+    <fx:include source="objectiveValueDisplay.fxml" fx:id="objectiveValueDisplay" GridPane.columnIndex="1" GridPane.rowIndex="0" />
     <fx:include source="map.fxml" fx:id="map" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <fx:include source="empty.fxml" fx:id="empty" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <fx:include source="progressBar.fxml" fx:id="progressBar" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 </GridPane>

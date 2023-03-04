@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 
-public class EmptyController {
+public class ProgressBarController {
     @FXML
     private ProgressBar progressBar;
     @FXML

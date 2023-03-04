@@ -2,8 +2,8 @@ package com.targus.ui;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.ui.controllers.EmptyController;
-import com.targus.ui.controllers.InformativeController;
+import com.targus.ui.controllers.ProgressBarController;
+import com.targus.ui.controllers.ObjectiveValueDisplayController;
 import com.targus.ui.controllers.InputsController;
 import com.targus.ui.controllers.MapController;
 import com.targus.ui.widgets.PotentialPosition;
@@ -13,24 +13,24 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 
 public class Mediator {
     private InputsController inputsController;
-    private InformativeController informativeController;
+    private ObjectiveValueDisplayController objectiveValueDisplayController;
     private MapController mapController;
-    private EmptyController emptyController;
+    private ProgressBarController progressBarController;
 
     public void setInputsController(InputsController inputsController) {
         this.inputsController = inputsController;
     }
 
-    public void setInformativeController(InformativeController informativeController) {
-        this.informativeController = informativeController;
+    public void setInformativeController(ObjectiveValueDisplayController objectiveValueDisplayController) {
+        this.objectiveValueDisplayController = objectiveValueDisplayController;
     }
 
     public void setMapController(MapController mapController) {
         this.mapController = mapController;
     }
 
-    public void setEmptyController(EmptyController emptyController) {
-        this.emptyController = emptyController;
+    public void setEmptyController(ProgressBarController progressBarController) {
+        this.progressBarController = progressBarController;
     }
 
     public void resizeMapPane(double width, double height) {
@@ -38,7 +38,7 @@ public class Mediator {
     }
 
     public void display() {
-        informativeController.display();
+        objectiveValueDisplayController.display();
     }
 
     public void addChild(Object child) {
@@ -96,11 +96,11 @@ public class Mediator {
     }
 
     public void setProgressLabelText(String text) {
-        emptyController.setProgressLabelText(text);
+        progressBarController.setProgressLabelText(text);
     }
 
     public void bindProgressBar(ReadOnlyDoubleProperty property) {
-        emptyController.bindProgressBar(property);
+        progressBarController.bindProgressBar(property);
     }
 
     public Solution getSolution() {

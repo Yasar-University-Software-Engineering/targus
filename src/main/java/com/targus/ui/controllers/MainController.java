@@ -7,11 +7,11 @@ public class MainController {
     @FXML
     private InputsController inputsController;
     @FXML
-    private InformativeController informativeController;
+    private ObjectiveValueDisplayController objectiveValueDisplayController;
     @FXML
     private MapController mapController;
     @FXML
-    private EmptyController emptyController;
+    private ProgressBarController progressBarController;
 
     private Mediator mediator;
 
@@ -19,13 +19,13 @@ public class MainController {
         mediator = new Mediator();
 
         mediator.setInputsController(inputsController);
-        mediator.setInformativeController(informativeController);
+        mediator.setInformativeController(objectiveValueDisplayController);
         mediator.setMapController(mapController);
-        mediator.setEmptyController(emptyController);
+        mediator.setEmptyController(progressBarController);
 
         inputsController.setMediator(mediator);
-        informativeController.setMediator(mediator);
+        objectiveValueDisplayController.setMediator(mediator);
         mapController.setMediator(mediator);
-        emptyController.setMediator(mediator);
+        progressBarController.setMediator(mediator);
     }
 }
