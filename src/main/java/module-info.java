@@ -19,4 +19,11 @@ module com.targus {
     opens com.targus.ui to javafx.fxml;
     exports com.targus.ui;
     exports com.targus.utils;
+    exports com.targus.ui.controllers;
+    opens com.targus.ui.controllers to javafx.fxml;
+    exports com.targus.ui.widgets;
+    opens com.targus.ui.widgets to javafx.fxml;
+    exports com.targus.base;
+    opens com.targus.base to javafx.fxml;
+
 }
