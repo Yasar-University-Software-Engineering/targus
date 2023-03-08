@@ -1,29 +1,44 @@
 package com.targus.represent;
 
-import com.targus.base.Representation;
 
-import java.util.ArrayList;
+import core.base.Representation;
+
 import java.util.BitSet;
 import java.util.HashSet;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class BitString implements Representation {
+    int len;
+
     private BitSet bitSet;
-    public BitString(BitSet bitSet) {
+    public BitString(BitSet bitSet, int len) {
         this.bitSet = bitSet;
+        this.len = len;
+    }
+
+    public BitString(int len) {
+        this.bitSet = new BitSet(len);
+        this.len = len;
     }
 
     public HashSet<Integer> ones() {
-        HashSet<Integer> ones= new HashSet<>();
-        for (int i = 0; i < bitSet.size(); i++) {
-            if (bitSet.get(i))
-                ones.add(i);
-        }
-        return ones;
+        return IntStream.range(0, len).
+                filter(x -> bitSet.get(x)).
+                boxed().
+                collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public HashSet<Integer> zeros()
+    {
+        return IntStream.range(0, len).
+                filter(x -> !bitSet.get(x)).
+                boxed().
+                collect(Collectors.toCollection(HashSet::new));
     }
 
     public String toString() {
-        return bitSet.toString();
+        return "["+ bitSet.cardinality()+"] "+ bitSet.toString();
     }
 
     public void flip(int bitIndex) {
@@ -35,7 +50,7 @@ public class BitString implements Representation {
     }
 
     public int length() {
-        return bitSet.length();
+        return len;
     }
 
     public boolean get(int bitIndex) {
@@ -58,6 +73,6 @@ public class BitString implements Representation {
 
     @Override
     public Representation clone() {
-        return new BitString((BitSet) bitSet.clone());
+        return new BitString((BitSet) bitSet.clone(),len);
     }
 }

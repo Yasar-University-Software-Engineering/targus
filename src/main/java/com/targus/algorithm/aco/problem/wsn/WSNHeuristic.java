@@ -1,35 +1,33 @@
-package com.targus.problem.wsn;
+package com.targus.algorithm.aco.problem.wsn;
 
 
-import core.algorithm.aco.problem.wsn.WSNData;
 import core.base.OptimizationProblem;
-import core.base.Solution;
+import core.problems.wsn.Point2D;
+import core.problems.wsn.WSN;
 import core.representation.BitString;
 
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.IntStream;
 
-public class WSNSolutionImprover implements SolutionImprover {
+public class WSNHeuristic {
 
     private final Random random;
-    private final WSN wsn;
     private final WSNData wsnData;
     private final HashMap<Point2D, HashSet<Point2D>> targetToPotentialPositions;
-    private final HashMap<Point2D, HashSet<Point2D>> potentialPositionToTargets;
-    private final HashMap<Point2D, HashSet<Point2D>> potentialPositionToPotentialPosition;
-    private final double IMPROVE_PROBABILITY;
+
     List<Integer> targets;
 
-    public WSNSolutionImprover(WSN wsn, double improveProbability) {
+    public WSNHeuristic(WSN wsn) {
         random = new SecureRandom();
-        this.wsn = wsn;
-        wsnData = new WSNData(wsn);
-        targets= new ArrayList<>(IntStream.range(0, wsnData.targetsSize()).boxed().toList());
+        this.wsnData = new WSNData(wsn);
         targetToPotentialPositions = wsn.getTargetToPotentialPositionMap();
-        potentialPositionToTargets = wsn.getPotentialPositionToTargetMap();
-        potentialPositionToPotentialPosition = wsn.getPotentialPositionToPotentialPositionMap();
-        IMPROVE_PROBABILITY = improveProbability;
+        targets = new ArrayList<>(IntStream.range(0, wsnData.targetsSize()).boxed().toList());
+    }
+
+    public void reset()
+    {
+        Collections.shuffle(targets);
     }
 
     /**
@@ -38,14 +36,11 @@ public class WSNSolutionImprover implements SolutionImprover {
      * value would be { a:1, b:0, c:1, d:0 }
      * @param potentialPositions
      *      array of potential positions
-     * @param solution
-     *      the current solution
      * @return LinkedHashMap that holds key (potential position)
      * value (potential position's state) pairs
      */
-    private LinkedHashMap<Point2D, Boolean> createPotentialPositionStateMap(Point2D[] potentialPositions, Solution solution) {
+    private LinkedHashMap<Point2D, Boolean> createPotentialPositionStateMap(Point2D[] potentialPositions, BitString bitString) {
         LinkedHashMap<Point2D, Boolean> map = new LinkedHashMap<>();
-        BitString bitString = (BitString) solution.getRepresentation();
 
         for (int i = 0; i < potentialPositions.length; i++)
             map.put(potentialPositions[i], bitString.get(i));
@@ -106,7 +101,7 @@ public class WSNSolutionImprover implements SolutionImprover {
         Set<Point2D> targets = targetToPotentialPositions.keySet();
         for (Point2D target : targets) {
             int k = getCoverageForTarget(turnedOnSensors, target);
-            if (k >= wsn.getK()) {
+            if (k >= wsnData.getK()) {
                 continue;
             }
             for (Point2D turnedOffSensor : turnedOffSensors) {
@@ -115,7 +110,7 @@ public class WSNSolutionImprover implements SolutionImprover {
                     turnedOnSensors.add(turnedOffSensor);
                     k++;
 
-                    if (k >= wsn.getK()) {
+                    if (k >= wsnData.getK()) {
                         break;
                     }
                 }
@@ -124,37 +119,15 @@ public class WSNSolutionImprover implements SolutionImprover {
         return sensorToTurnOn;
     }
 
-    /**
-     * Checks if the given sensors can cover the given target
-     * @param turnedOffSensor a sensor
-     * @param target a target
-     * @return true if the given sensor can cover the given target, false otherwise
-     */
-    private boolean doesSensorContributeToCoverage(Point2D turnedOffSensor, Point2D target) {
-        HashSet<Point2D> sensors = targetToPotentialPositions.get(target);
-        return sensors.contains(turnedOffSensor);
-    }
-
-    private int getCoverageForTarget(List<Point2D> turnedOnSensors, Point2D target) {
-        HashSet<Point2D> sensors = targetToPotentialPositions.get(target);
-        int k = 0;
-        for (Point2D sensor : turnedOnSensors) {
-            if (sensors.contains(sensor)) {
-                k++;
-            }
-        }
-        return k;
-    }
-
     public
     int[] getSensorsToTurnOnFast(BitString bs) {
         HashSet<Integer> sensors = bs.ones();
         List<Integer> idles = new ArrayList<>(bs.zeros().stream().toList());
-        Collections.shuffle(targets);
+        //Collections.shuffle(idles);
 
         HashSet<Integer> sensorToTurnOn = new HashSet<>();
 
-        for (Integer t : targets) { // Coverage additions
+        for (Integer t : targets) {
             int k = wsnData.coverage(t,sensors);
             if (k >= wsnData.getK()) {
                 continue;
@@ -174,7 +147,7 @@ public class WSNSolutionImprover implements SolutionImprover {
         }
         if (sensorToTurnOn.isEmpty())
         {
-            for (Integer s:sensors) // Connectivity additions
+            for (Integer s:sensors)
             {
                 if (wsnData.connectivity(s,sensors)>=wsnData.getM())
                     continue;
@@ -192,60 +165,103 @@ public class WSNSolutionImprover implements SolutionImprover {
 
 
     /**
-     * The heuristic that increases the k-coverage
-     * <p>
-     * Calculates each target's coverage (k) value and if the k value is lower
-     * than the aimed k, it turns on sensors to increase the k-coverage
-     * @param sequence current solution's bitstring sequence
-     * @param turnedOnSensors map that holds each turned on sensor and their index in the solution
-     * @param turnedOffSensors map that holds each turned off sensor and their index in the solution
+     * Checks if the given sensors can cover the given target
+     * @param turnedOffSensor a sensor
+     * @param target a target
+     * @return true if the given sensor can cover the given target, false otherwise
      */
-    private void improveKCoverage(BitString sequence, Map<Point2D, Integer> turnedOnSensors, Map<Point2D, Integer> turnedOffSensors) {
+    private boolean doesSensorContributeToCoverage(Point2D turnedOffSensor, Point2D target) {
+        HashSet<Point2D> sensors = targetToPotentialPositions.get(target);
+        return sensors.contains(turnedOffSensor);
+    }
+
+    private int getCoverageForTarget(List<Point2D> turnedOnSensors, Point2D target) {
+        HashSet<Point2D> sensors = targetToPotentialPositions.get(target);
+        int coverage = 0;
+        for (Point2D sensor : turnedOnSensors) {
+            if (sensors.contains(sensor)) {
+                coverage++;
+            }
+        }
+        return coverage;
+    }
+
+
+
+    public int[] sensorToTurnOn(OptimizationProblem problem, BitString bs) {
+        LinkedHashMap<Point2D, Boolean> potentialPositionStateMap = createPotentialPositionStateMap(wsnData.getPotentialPositions(), bs);
+        Map<Point2D, Integer> turnedOnSensors = getTurnedOnSensors(potentialPositionStateMap);
+        Map<Point2D, Integer> turnedOffSensors = getTurnedOffSensors(potentialPositionStateMap);
+
         List<Point2D> shuffledTurnedOffSensors = new ArrayList<>(turnedOffSensors.keySet());
+
         // check getSensorsToTurnOn() method to see why we create the list of turnedOnSensors
         List<Point2D> listOfTurnedOnSensors = new ArrayList<>(turnedOnSensors.keySet());
         List<Point2D> sensorsToTurnOn = getSensorsToTurnOn(listOfTurnedOnSensors, shuffledTurnedOffSensors);
-        for (Point2D sensor : sensorsToTurnOn) {
-            sequence.set(turnedOffSensors.get(sensor), true);
-        }
+        return sensorsToTurnOn.stream().mapToInt(turnedOffSensors::get).toArray();
     }
 
-    @Override
-    public Solution improve(OptimizationProblem problem, Solution solution) {
-        LinkedHashMap<Point2D, Boolean> potentialPositionStateMap = createPotentialPositionStateMap(wsn.getPotentialPositions(), solution);
-        Map<Point2D, Integer> turnedOnSensors = getTurnedOnSensors(potentialPositionStateMap);
-        Map<Point2D, Integer> turnedOffSensors = getTurnedOffSensors(potentialPositionStateMap);
-        BitString improvedSequence = (BitString) solution.getRepresentation();
+    public int[] allSensorsToTurnOn(BitString bs)
+    {
+        HashSet<Integer> sensors = bs.ones();
+        HashSet<Integer> sensorsToTurnOn= new HashSet<>();
+        targets.stream().
+                filter(t->wsnData.coverage(t,sensors)<wsnData.getK()).
+                forEach(t->sensorsToTurnOn.addAll(wsnData.getCoveringPositions(t).stream().
+                        filter(x->!sensors.contains(x)).toList()));
 
-        improveKCoverage(improvedSequence, turnedOnSensors, turnedOffSensors);
-
-        return new BitStringSolution(improvedSequence, problem.objectiveValue(improvedSequence));
-    }
-
-
-    public Solution improveFast(OptimizationProblem problem, Solution solution) {
-        BitString bs= (BitString) solution.getRepresentation();
-        int[] sensorsToTurnOn= getSensorsToTurnOnFast(bs);
-        for (int i:sensorsToTurnOn)
+        if (sensorsToTurnOn.isEmpty())
         {
-            bs.flip(i);
-        }
+            for (Integer s:sensors)
+            {
+                if (wsnData.connectivity(s,sensors)>=wsnData.getM())
+                    continue;
 
-        return new BitStringSolution(bs, problem.objectiveValue(bs));
-    }
+                int[][] arr =wsnData.getConnectedPositions(s).stream().
+                        filter(x->!sensors.contains(x)).
+                        map(x->new int[]{x,wsnData.connectivity(x,sensors)}).sorted(Comparator.comparingInt(x->x[1])).
+                        toArray(int[][]::new);
 
-    @Override
-    public List<Solution> improveAll(OptimizationProblem problem, List<Solution> solutions) {
-        List<Solution> improvedSolutions = new ArrayList<>();
-        for (Solution solution : solutions) {
-            double probability = random.nextDouble();
-            if (probability < IMPROVE_PROBABILITY) {
-                improvedSolutions.add(improve(problem, solution));
-            }
-            else {
-                improvedSolutions.add(solution);
+                sensorsToTurnOn.add(arr[arr.length-1][0]);
             }
         }
-        return improvedSolutions;
+        return sensorsToTurnOn.stream().mapToInt(x->x).toArray();
     }
+
+
+    public int[] sensorsToTurnOn(BitString bs)
+    {
+        HashSet<Integer> sensors = bs.ones();
+        Collections.shuffle(targets);
+        for (int t :targets) {
+            if (wsnData.coverage(t,sensors)>=wsnData.getK())
+                continue;
+
+            int[] arr =wsnData.getCoveringPositions(t).stream().
+                    filter(x->!sensors.contains(x)).
+                    mapToInt(x->x).
+                    toArray();
+            if (arr.length>0)
+                return arr;
+        }
+        HashSet<Integer> newSensors= new HashSet<>();
+        for (Integer s:sensors)
+        {
+            if (wsnData.connectivity(s,sensors)>=wsnData.getM())
+                continue;
+
+            int[][] arr =wsnData.getConnectedPositions(s).stream().
+                    filter(x->!sensors.contains(x)).
+                    map(x->new int[]{x,wsnData.connectivity(x,sensors)}).sorted(Comparator.comparingInt(x->x[1])).
+                    toArray(int[][]::new);
+
+            newSensors.add(arr[arr.length-1][0]);
+        }
+
+
+
+        return newSensors.stream().mapToInt(x->x).toArray();
+    }
+
+
 }
