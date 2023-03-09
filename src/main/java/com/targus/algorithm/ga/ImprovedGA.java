@@ -12,10 +12,12 @@ import java.util.*;
 
 public class ImprovedGA extends GA {
     SolutionImprover improver;
+    double immigrationRate;
 
     public ImprovedGA(Builder builder) {
         super(builder);
         this.improver = builder.improver;
+        this.immigrationRate =  builder.immigrationRate;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class ImprovedGA extends GA {
 
             population.addAll(problem, improved);
             if (iterationCount % Constants.DEFAULT_IMMIGRATION_PERIOD == 0) {
-                population.addAll(problem, BitStringSolution.generate(problem, solutionSize, Constants.DEFAULT_IMMIGRANT_COUNT));
+                population.addAll(problem, BitStringSolution.generate(problem, solutionSize, (int) (population.getIndividuals().size() * immigrationRate)));
             }
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
@@ -74,6 +76,7 @@ public class ImprovedGA extends GA {
     public static class Builder extends GA.Builder {
 
         protected SolutionImprover improver;
+        protected double immigrationRate;
 
         public Builder(OptimizationProblem problem) {
             super(problem);
@@ -82,6 +85,11 @@ public class ImprovedGA extends GA {
 
         public Builder setSolutionImprover(SolutionImprover improver) {
             this.improver = improver;
+            return this;
+        }
+
+        public Builder setMigrationCount(double immigrationRate) {
+            this.immigrationRate = immigrationRate;
             return this;
         }
 
