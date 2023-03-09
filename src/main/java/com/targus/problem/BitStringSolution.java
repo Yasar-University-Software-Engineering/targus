@@ -46,7 +46,7 @@ public class BitStringSolution implements Solution {
         for (int i = 0; i < solutionSize; i++) {
             bitSet.set(i, random.nextBoolean());
         }
-        BitString bitString = new BitString(bitSet);
+        BitString bitString = new BitString(bitSet, solutionSize);
         return new BitStringSolution(bitString, problem.objectiveValue(bitString));
     }
 
