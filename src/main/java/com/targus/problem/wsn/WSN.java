@@ -1,20 +1,25 @@
 package com.targus.problem.wsn;
 
 import com.targus.base.ProblemModel;
+import com.targus.represent.BitString;
 import javafx.geometry.Point2D;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WSN implements ProblemModel {
     private final Point2D[] targets;
     private final Point2D[] potentialPositions;
-    private HashMap<Point2D, Integer> potentialPositionsToIndexMap;
+    private final HashMap<Point2D, Integer> potentialPositionsToIndexMap;
     private final int m;
     private final int k;
     private final double commRange;
     private final double sensRange;
     private int generationCount;
     private double mutationRate;
+
+    private final HashMap<Integer, HashSet<Integer>> targetToPotentialPositionsIndexMap;
+    private final HashMap<Integer, HashSet<Integer>> potentialPositionToPotentialPositionIndexMap;
 
     // holds potential position to potential position(s) map
     // keys represent each potential position
@@ -51,17 +56,47 @@ public class WSN implements ProblemModel {
         this.mutationRate = mutationRate;
 
         potentialPositionToPotentialPositionMap = new HashMap<>();
-        targetToPotentialPositionMap = new HashMap<>();
-        potentialPositionToTargetMap = new HashMap<>();
-
         generateHashMap(potentialPositions, potentialPositions, potentialPositionToPotentialPositionMap, commRange);
+
+        targetToPotentialPositionMap = new HashMap<>();
         generateHashMap(targets, potentialPositions, targetToPotentialPositionMap, sensRange);
+
+        potentialPositionToTargetMap = new HashMap<>();
         generateHashMap(potentialPositions, targets, potentialPositionToTargetMap, sensRange);
-        initPotentialPositionMap();
+
+        targetToPotentialPositionsIndexMap = new HashMap<>();
+        initTargetToPotentialPositionsIndexMap();
+
+        potentialPositionToPotentialPositionIndexMap = new HashMap<>();
+        initPotentialPositionToPotentialPositionIndexMap();
+
+        potentialPositionsToIndexMap = new HashMap<>();
+        initPotentialPositionsToIndexMap();
     }
 
-    private void initPotentialPositionMap() {
-        potentialPositionsToIndexMap = new HashMap<>();
+    private void initPotentialPositionToPotentialPositionIndexMap() {
+        for (int pp = 0; pp < potentialPositions.length; pp++) {
+            HashSet<Integer> positions= potentialPositionToPotentialPositionMap.get(potentialPositions[pp])
+                    .stream()
+                    .mapToInt(potentialPositionsToIndexMap::get)
+                    .boxed()
+                    .collect(Collectors.toCollection(HashSet::new));
+            potentialPositionToPotentialPositionIndexMap.put(pp,positions);
+        }
+    }
+
+    private void initTargetToPotentialPositionsIndexMap() {
+        for (int t = 0; t < targets.length; t++) {
+            HashSet<Integer> positions = targetToPotentialPositionMap.get(targets[t])
+                    .stream()
+                    .mapToInt(potentialPositionsToIndexMap::get)
+                    .boxed()
+                    .collect(Collectors.toCollection(HashSet::new));
+            targetToPotentialPositionsIndexMap.put(t, positions);
+        }
+    }
+
+    private void initPotentialPositionsToIndexMap() {
         for (int i = 0; i < potentialPositions.length; i++) {
             potentialPositionsToIndexMap.put(potentialPositions[i], i);
         }
@@ -91,6 +126,44 @@ public class WSN implements ProblemModel {
         }
 
         return count;
+    }
+
+    public int coverage(Integer target, HashSet<Integer> sensors) {
+        return (int) targetToPotentialPositionsIndexMap.get(target)
+                .stream()
+                .filter(sensors::contains)
+                .count();
+    }
+
+    public int connectivity(Integer sensor, HashSet<Integer> sensors) {
+        return (int) potentialPositionToPotentialPositionIndexMap.get(sensor)
+                .stream()
+                .filter(sensors::contains)
+                .count();
+    }
+
+    public HashSet<Integer> getCoveringPositions(int target)
+    {
+        return targetToPotentialPositionsIndexMap.get(target);
+    }
+
+    public HashSet<Integer> getConnectedPositions(int sensor)
+    {
+        return potentialPositionToPotentialPositionIndexMap.get(sensor);
+    }
+
+    public boolean isFeasible(BitString bs) {
+        HashSet<Integer> sensors = bs.ones();
+        for (int t = 0; t < targets.length; t++) {
+            if (coverage(t, sensors) < k)
+                return false;
+        }
+        for (Integer s : sensors)
+        {
+            if (connectivity(s, sensors) < m)
+                return false;
+        }
+        return true;
     }
 
     public Point2D[] getPotentialPositions() {
