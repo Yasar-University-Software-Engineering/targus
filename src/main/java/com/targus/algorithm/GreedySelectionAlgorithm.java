@@ -52,7 +52,8 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
         for (Integer index : potentialPositionIndexes) {
             bitSetSolution.set(index);
         }
-        BitString bitString = new BitString(bitSetSolution);
+        // 0 is given for temporarily. Its side effect is not tested. Check this code before running this algorithm
+        BitString bitString = new BitString(bitSetSolution, 0);
         return new BitStringSolution(bitString, problem.objectiveValue(bitString));
     }
 
