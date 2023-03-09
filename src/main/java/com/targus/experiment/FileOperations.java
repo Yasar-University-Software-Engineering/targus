@@ -2,9 +2,6 @@ package com.targus.experiment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.targus.algorithm.ga.TerminalState;
-import com.targus.base.OptimizationProblem;
-import com.targus.base.Solution;
 import com.targus.problem.wsn.WSN;
 import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
@@ -14,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Experiment {
+public class FileOperations {
 
     public static void writeToFile(String fileName, String text, boolean append) {
         try(FileWriter fw = new FileWriter(fileName, append);
@@ -28,13 +25,14 @@ public class Experiment {
 
     }
 
-    // TODO: reduce the number of parameters this method takes
-    // TODO: check the if condition in detail
-    public static void writeToJson(WSN wsn, Point2D dimensions, int terminationValue, int communicationRange, int sensingRange, String fileName, boolean override) {
-        String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + fileName;
+    public static boolean doesFileExist(String filePath) {
         File f = new File(filePath);
-        if(f.exists() && !f.isDirectory() && !override) {
-            System.out.println(fileName + " already exists in " + Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + ". No changes made to the file.");
+        return f.exists() && !f.isDirectory();
+    }
+
+    public static void writeToJson(JsonProblem jsonProblem, String filePath, boolean override) {
+        if(doesFileExist(filePath) && !override) {
+            System.out.println(filePath + " already exists. No changes made to the file.");
             System.out.println("\nIf you want to make changes to the file, you may provide 'true' for the override parameter\n");
             return;
         }
@@ -45,10 +43,10 @@ public class Experiment {
             ObjectMapper objectMapper = new ObjectMapper();
 
             Map<String, Object> problemInfo = new HashMap<>();
-            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(dimensions.getX(), dimensions.getY()));
+            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(jsonProblem.getDimensions().getX(), jsonProblem.getDimensions().getY()));
 
             List<double[]> targetList = new ArrayList<>();
-            for (Point2D target : wsn.getTargets()) {
+            for (Point2D target : jsonProblem.getTargets()) {
                 double[] coords = new double[2];
                 coords[0] = target.getX();
                 coords[1] = target.getY();
@@ -57,7 +55,7 @@ public class Experiment {
             problemInfo.put(Constants.TARGETS, targetList);
 
             List<double[]> potentialPositionList = new ArrayList<>();
-            for (Point2D potentialPosition : wsn.getPotentialPositions()) {
+            for (Point2D potentialPosition : jsonProblem.getPotentialPositions()) {
                 double[] coords = new double[2];
                 coords[0] = potentialPosition.getX();
                 coords[1] = potentialPosition.getY();
@@ -65,12 +63,12 @@ public class Experiment {
             }
             problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
 
-            problemInfo.put(Constants.COMMUNICATION_RADIUS, communicationRange);
-            problemInfo.put(Constants.SENSING_RADIUS, sensingRange);
-            problemInfo.put(Constants.M, wsn.getM());
-            problemInfo.put(Constants.K, wsn.getK());
-            problemInfo.put(Constants.GENERATION_COUNT, terminationValue);
-            problemInfo.put(Constants.MUTATION_RATE, wsn.getMutationRate());
+            problemInfo.put(Constants.COMMUNICATION_RADIUS, jsonProblem.getCommunicationRange());
+            problemInfo.put(Constants.SENSING_RADIUS, jsonProblem.getSensingRange());
+            problemInfo.put(Constants.M, jsonProblem.getM());
+            problemInfo.put(Constants.K, jsonProblem.getK());
+            problemInfo.put(Constants.GENERATION_COUNT, jsonProblem.getTerminationValue());
+            problemInfo.put(Constants.MUTATION_RATE, jsonProblem.getMutationRate());
 
             writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
             writer.close();
@@ -119,14 +117,6 @@ public class Experiment {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    // TODO: remove this method (later)
-    public static String getProblemInformation(OptimizationProblem problem) {
-        WSN wsn = (WSN) problem.model();
-        return String.format("K: %d M: %d Mutation Rate: %f Initial Population: %d Communication Range: %d Sensing Range: %d\n\n",
-                wsn.getK(), wsn.getM(), wsn.getMutationRate(), Constants.DEFAULT_POPULATION_COUNT,
-                Constants.DEFAULT_COMMUNICATION_RANGE, Constants.DEFAULT_SENSING_RANGE);
     }
 
 }
