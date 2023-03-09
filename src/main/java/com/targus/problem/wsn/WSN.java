@@ -64,14 +64,14 @@ public class WSN implements ProblemModel {
         potentialPositionToTargetMap = new HashMap<>();
         generateHashMap(potentialPositions, targets, potentialPositionToTargetMap, sensRange);
 
+        potentialPositionsToIndexMap = new HashMap<>();
+        initPotentialPositionsToIndexMap();
+
         targetToPotentialPositionsIndexMap = new HashMap<>();
         initTargetToPotentialPositionsIndexMap();
 
         potentialPositionToPotentialPositionIndexMap = new HashMap<>();
         initPotentialPositionToPotentialPositionIndexMap();
-
-        potentialPositionsToIndexMap = new HashMap<>();
-        initPotentialPositionsToIndexMap();
     }
 
     private void initPotentialPositionToPotentialPositionIndexMap() {
