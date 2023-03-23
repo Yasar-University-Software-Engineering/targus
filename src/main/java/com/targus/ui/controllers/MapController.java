@@ -1,17 +1,24 @@
 package com.targus.ui.controllers;
 
 import com.targus.ui.Mediator;
+import com.targus.ui.widgets.CoordinateSystemPane;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Scale;
 
 public class MapController {
     @FXML
@@ -21,6 +28,21 @@ public class MapController {
     MenuItem createPotentialPosition = new MenuItem("Create Potential Position");
     MenuItem createSensor = new MenuItem("Create Sensor");
     MenuItem removeSensor = new MenuItem("Remove Sensor");
+
+    public void initialize() {
+        Rectangle clip = new Rectangle();
+
+        clip.widthProperty().bind(mainPane.widthProperty());
+        clip.heightProperty().bind(mainPane.heightProperty());
+        mainPane.setClip(clip);
+
+        BorderStroke borderStroke = new BorderStroke(
+                Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
+        Border border = new Border(borderStroke);
+
+        // Set the border on the pane
+        mainPane.setBorder(border);
+    }
 
     @FXML
     void paneClicked(javafx.scene.input.MouseEvent event) {

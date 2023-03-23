@@ -5,10 +5,17 @@ import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNMinimumSensorObjective;
 import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.represent.BitString;
+import com.targus.ui.Main;
 import com.targus.ui.Mediator;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.HashSet;
 
 public class ObjectiveValueDisplayController {
@@ -34,6 +41,23 @@ public class ObjectiveValueDisplayController {
     TextField txtTotalResult;
 
     private Mediator mediator;
+    private Parent root;
+    private Stage stage;
+
+    public ObjectiveValueDisplayController() {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/objectiveValueDisplay.fxml"));
+        loader.setController(this);
+
+        try {
+            root = loader.load();
+            stage = new Stage();
+            stage.initModality(Modality.NONE);
+            stage.initOwner(Main.getPrimaryStage());
+            stage.setScene(new Scene(root));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
@@ -58,6 +82,8 @@ public class ObjectiveValueDisplayController {
 
         double totalResult = weightedSensorValue + weightedMConnValue + weightedKCovValue;
         setTextField(txtTotalResult, totalResult);
+
+        mediator.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
     }
 
     private double sensorValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, BitString bitString) {
@@ -89,5 +115,32 @@ public class ObjectiveValueDisplayController {
 
     private void setTextField(TextField textField, double value) {
         textField.setText(String.valueOf(value));
+    }
+
+    public void show(Stage owner) {
+        if (stage == null) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/createProblemInstance.fxml"));
+            loader.setController(this);
+
+            try {
+                root = loader.load();
+                stage = new Stage();
+                stage.initModality(Modality.NONE);
+                stage.initOwner(owner);
+                stage.setScene(new Scene(root));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        stage.show(); // show the window after owner is set
+    }
+
+    public void hide() {
+        stage.hide();
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 }

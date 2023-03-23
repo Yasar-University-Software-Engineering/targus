@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml" fx:controller="com.targus.ui.controllers.MapController">
-   <Pane fx:id="mainPane" layoutX="14.0" layoutY="14.0" maxHeight="369.0" maxWidth="406.0" onMouseClicked="#paneClicked" prefHeight="369.0" prefWidth="406.0" />
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.layout.Pane?>
+<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml" fx:controller="com.targus.ui.controllers.MapController">
+    <Pane fx:id="mainPane" prefWidth="100" prefHeight="100" onMouseClicked="#paneClicked" />
+<!--    <Rectangle width="600" height="100" fill="#E0E0E0"/>-->
 </AnchorPane>

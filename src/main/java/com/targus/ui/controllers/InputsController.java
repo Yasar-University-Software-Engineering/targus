@@ -24,6 +24,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
@@ -70,16 +71,34 @@ public class InputsController implements Initializable {
 
     @FXML
     ChoiceBox<String> choiceBox = new ChoiceBox<>();
-    private OptimizationProblem optimizationProblem;
+    private OptimizationProblem wsnOptimizationProblem;
     private Solution solution;
     private Mediator mediator;
+    private CheckBox communicationRangeVisibility;
+    private CheckBox sensingRangeVisibility;
+
+    public CheckBox getCommunicationRangeVisibility() {
+        return communicationRangeVisibility;
+    }
+
+    public CheckBox getSensingRangeVisibility() {
+        return sensingRangeVisibility;
+    }
+
+    public void setCommunicationRangeVisibility(CheckBox communicationRangeVisibility) {
+        this.communicationRangeVisibility = communicationRangeVisibility;
+    }
+
+    public void setSensingRangeVisibility(CheckBox sensingRangeVisibility) {
+        this.sensingRangeVisibility = sensingRangeVisibility;
+    }
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
     }
 
-    public OptimizationProblem getOptimizationProblem() {
-        return optimizationProblem;
+    public OptimizationProblem getWsnOptimizationProblem() {
+        return wsnOptimizationProblem;
     }
 
     public Solution getSolution() {
@@ -99,6 +118,17 @@ public class InputsController implements Initializable {
         choiceBox.getItems().add("Improved GA");
         choiceBox.getItems().add("Greedy Algorithm");
         choiceBox.setValue("Standard GA");
+
+//        communicationRangeVisibility.setOnAction(event -> SetCommunicationRangeVisibility(communicationRangeVisibility.isSelected()));
+//        sensingRangeVisibility.setOnAction(event -> SetSensingRangeVisibility(sensingRangeVisibility.isSelected()));
+    }
+
+    public void SetCommunicationRangeVisibility(boolean visible) {
+        Sensor.setCommunicationRangeVisibility(visible);
+    }
+
+    public void SetSensingRangeVisibility(boolean visible) {
+        Sensor.setSensingRangeVisibility(visible);
     }
 
     public void handleLoadFromFile() {
@@ -230,7 +260,7 @@ public class InputsController implements Initializable {
     }
 
     @FXML
-    void handleCleanSolution() {
+    public void handleCleanSolution() {
         for (Sensor sensor : sensors) {
             mediator.removeChild(sensor);
         }
@@ -246,7 +276,7 @@ public class InputsController implements Initializable {
 
     public GA buildStandardGA(WSN wsn) {
         return StandardGA
-                .builder(optimizationProblem)
+                .builder(wsnOptimizationProblem)
                 .setCrossOverOperator(new OnePointCrossOver())
                 .setMutationOperator(new OneBitMutation())
                 .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
@@ -256,7 +286,7 @@ public class InputsController implements Initializable {
     // TODO: replace wsn.getGenerationCount() with time
     public GA buildImprovedGA(WSN wsn) {
         return ImprovedGA
-                .builder(optimizationProblem)
+                .builder(wsnOptimizationProblem)
                 .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
                 .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
                 .setCrossOverOperator(new OnePointCrossOver())
@@ -265,13 +295,13 @@ public class InputsController implements Initializable {
     }
 
     @FXML
-    void handleSolve()  {
+    public void handleSolve()  {
         disableTextField(true);
 
         handleCleanSolution();
         initProblemInstance();
 
-        WSN wsn = (WSN) optimizationProblem.model();
+        WSN wsn = (WSN) wsnOptimizationProblem.model();
 
         GA ga = buildImprovedGA(wsn); // In case choice box doesn't get initialized properly
 
@@ -376,7 +406,7 @@ public class InputsController implements Initializable {
                 generationCountProperty.get(),
                 mutationRateProperty.get());
 
-        optimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
+        wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
     }
 
     @FXML
@@ -448,5 +478,20 @@ public class InputsController implements Initializable {
 
     public void clearSensors() {
         handleCleanSolution();
+    }
+
+    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int paneWidth, int paneHeight) {
+        WSN wsn = (WSN) wsnOptimizationProblem.model();
+
+        this.paneWidth = paneWidth;
+        this.paneHeight = paneHeight;
+        mProperty.set(wsn.getM());
+        kProperty.set(wsn.getK());
+        communicationRangeProperty.set(wsn.getCommRange());
+        sensingRangeProperty.set(wsn.getSensRange());
+        generationCountProperty.set(wsn.getGenerationCount());
+        mutationRateProperty.set(wsn.getMutationRate());
+
+        initProblemInstance();
     }
 }
