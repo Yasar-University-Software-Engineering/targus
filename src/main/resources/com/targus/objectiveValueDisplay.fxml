@@ -3,36 +3,43 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
-    <VBox prefHeight="141.0" prefWidth="378.0" spacing="15.0">
-        <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="380.0" spacing="15.0">
-            <Label prefHeight="18.0" prefWidth="126.0" text="Sensor objective" />
-            <TextField fx:id="txtSensorObjective" editable="false" prefHeight="26.0" prefWidth="50.0" />
-            <Label prefHeight="18.0" prefWidth="10.0" text="X" />
-            <TextField fx:id="txtWeightSensorObjective" editable="false" prefHeight="26.0" prefWidth="47.0" />
-            <Label text="=" />
-            <TextField fx:id="txtWeightSensorObjectiveResult" editable="false" prefHeight="26.0" prefWidth="54.0" />
+<VBox fx:id="vbox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" spacing="30.0">
+    <HBox spacing="30">
+        <Label text="Sensor objective" />
+        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
+            <Label fx:id="lblSensorObjective" text="N/A"/>
+            <Label text="x"/>
+            <Label fx:id="lblWeightSensorObjective" text="N/A"/>
+            <Label text="="/>
+            <Label fx:id="lblWeightSensorObjectiveResult" text="N/A"/>
         </HBox>
-        <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="380.0" spacing="15.0">
-            <Label prefHeight="18.0" prefWidth="126.0" text="Connectivity objective" />
-            <TextField fx:id="txtConnectivityObjective" editable="false" prefHeight="26.0" prefWidth="50.0" />
-            <Label prefHeight="18.0" prefWidth="10.0" text="X" />
-            <TextField fx:id="txtWeightConnectivityObjective" editable="false" prefHeight="26.0" prefWidth="47.0" />
-            <Label text="=" />
-            <TextField fx:id="txtWeightConnectivityObjectiveResult" editable="false" prefHeight="26.0" prefWidth="54.0" />
-        </HBox>
-        <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="380.0" spacing="15.0">
-            <Label prefHeight="18.0" prefWidth="126.0" text="Coverage objective" />
-            <TextField fx:id="txtCoverageObjective" editable="false" prefHeight="26.0" prefWidth="50.0" />
-            <Label prefHeight="18.0" prefWidth="10.0" text="X" />
-            <TextField fx:id="txtWeightCoverageObjective" editable="false" prefHeight="26.0" prefWidth="47.0" />
-            <Label text="=" />
-            <TextField fx:id="txtWeightCoverageObjectiveResult" editable="false" prefHeight="26.0" prefWidth="54.0" />
-        </HBox>
-        <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="380.0" spacing="15.0">
-            <Label alignment="CENTER_RIGHT" prefHeight="18.0" prefWidth="80.0" text="Fitness Value"/>
+    </HBox>
 
-            <TextField fx:id="txtTotalResult" editable="false" prefHeight="26.0" prefWidth="70.0"/>
+    <HBox spacing="30">
+        <Label text="Connectivity objective" />
+        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
+            <Label fx:id="lblConnectivityObjective" text="N/A"/>
+            <Label text="x"/>
+            <Label fx:id="lblWeightConnectivityObjective" text="N/A"/>
+            <Label text="="/>
+            <Label fx:id="lblWeightConnectivityObjectiveResult" text="N/A"/>
         </HBox>
-    </VBox>
-</AnchorPane>
+    </HBox>
+
+    <HBox spacing="30">
+        <Label text="Coverage objective" />
+        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
+            <Label fx:id="lblCoverageObjective" text="N/A"/>
+            <Label text="x"/>
+            <Label fx:id="lblWeightCoverageObjective" text="N/A"/>
+            <Label text="="/>
+            <Label fx:id="lblWeightCoverageObjectiveResult" text="N/A"/>
+        </HBox>
+    </HBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="20.0">
+        <Label alignment="CENTER_RIGHT" text="Fitness Value"/>
+        <Label text="="/>
+        <Label fx:id="lblTotalResult" text="N/A"/>
+    </HBox>
+</VBox>
