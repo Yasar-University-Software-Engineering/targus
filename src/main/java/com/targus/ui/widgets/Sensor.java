@@ -54,8 +54,6 @@ public class Sensor extends Group {
         sensor = new Circle(centerX, centerY, 4);
         sensor.setFill(Color.GREEN);
 
-        sensor.setTranslateZ(1);
-
         communicationRange = initializeCommunicationRange(centerX, centerY);
         sensingRange = initializeSensingRange(centerX, centerY);
 
@@ -65,10 +63,8 @@ public class Sensor extends Group {
     private Circle initializeCommunicationRange(double centerX, double centerY) {
         Circle communicationRange = new Circle(centerX, centerY, COMMUNICATION_RADIUS);
         communicationRange.setStroke(Color.ORANGE);
-        communicationRange.setFill(new Color(1.0, 0.95, 0.88, 0.1));
+        communicationRange.setFill(Color.TRANSPARENT);
         communicationRange.setMouseTransparent(true);
-        communicationRange.setBlendMode(BlendMode.SRC_OVER);
-        communicationRange.setTranslateZ(-1);
         communicationRange.setVisible(communicationRangeVisible);
         return communicationRange;
     }

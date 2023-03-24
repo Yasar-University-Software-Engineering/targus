@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+
+<HBox xmlns="http://javafx.com/javafx" alignment="CENTER_RIGHT" spacing="5">
+    <HBox alignment="CENTER">
+        <Circle fill="RED" radius="10.0" stroke="RED" strokeType="INSIDE" />
+        <Label text=" : Target" />
+    </HBox>
+    <Separator/>
+    <HBox alignment="CENTER">
+        <Circle fill="WHITE" radius="10.0" stroke="RED" strokeType="INSIDE" />
+        <Label text=" : Potential Position" />
+    </HBox>
+    <Separator/>
+    <HBox alignment="CENTER">
+        <Circle fill="GREEN" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
+        <Label text=" : Sensor" />
+    </HBox>
+    <Separator/>
+    <HBox alignment="CENTER">
+        <Circle fill="WHITE" radius="10.0" stroke="BLUE" strokeType="INSIDE" />
+        <Label text=" : Sensing Range" />
+    </HBox>
+    <Separator/>
+    <HBox alignment="CENTER">
+        <Circle fill="WHITE" radius="10.0" stroke="ORANGE" strokeType="INSIDE" />
+        <Label text=" : Communication Range" />
+    </HBox>
+</HBox>

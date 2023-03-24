@@ -152,4 +152,8 @@ public class Mediator {
     public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height) {
         inputsController.createProblemInstance(wsnOptimizationProblem, width, height);
     }
+
+    public void setProgressBarVisible(boolean visible) {
+        progressBarController.setProgressBarVisible(visible);
+    }
 }

@@ -3,12 +3,36 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.Label?>
+<!--<HBox xmlns="http://javafx.com/javafx"-->
+<!--      xmlns:fx="http://javafx.com/fxml"-->
+<!--      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController">-->
+
+<!--    <Label fx:id="sensorObjective" text="Sensor Objective: "/>-->
+<!--    <Label fx:id="connectivityObjective" text="Connectivity Objective: "/>-->
+<!--    <Label fx:id="coverageObjective" text="Coverage Objective: "/>-->
+<!--    <Label fx:id="fitnessValue" text="Fitness Value: "/>-->
+<!--</HBox>-->
+
+<?import javafx.scene.control.Separator?>
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController">
+      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController" spacing="5">
 
-    <Label fx:id="sensorObjective" text="Sensor Objective: "/>
-    <Label fx:id="connectivityObjective" text="Connectivity Objective: "/>
-    <Label fx:id="coverageObjective" text="Coverage Objective: "/>
-    <Label fx:id="fitnessValue" text="Fitness Value: "/>
+    <Label styleClass="objective-label" text="Sensor Objective: "/>
+    <Label fx:id="sensorObjective" styleClass="objective-value" text="0.000"/>
+
+    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+
+    <Label styleClass="objective-label" text="Connectivity Objective: "/>
+    <Label fx:id="connectivityObjective" styleClass="objective-value" text="0.000"/>
+
+    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+
+    <Label styleClass="objective-label" text="Coverage Objective: "/>
+    <Label fx:id="coverageObjective" styleClass="objective-value" text="0.000"/>
+
+    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+
+    <Label styleClass="fitness-label" text="Fitness Value: "/>
+    <Label fx:id="fitnessValue" styleClass="fitness-value" text="0.000"/>
 </HBox>

@@ -2,105 +2,121 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.targus.ui.controllers.MainController">
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.Pane?>
+<BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.targus.ui.controllers.MainController" >
     <top>
-        <ToolBar prefHeight="24.0" prefWidth="1814.0" BorderPane.alignment="CENTER">
-            <Separator prefWidth="20.0" />
-            <Button onAction="#handleCreateProblemInstance">
-                <graphic>
-                    <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../icons/create.png" />
-                    </ImageView>
-                </graphic>
-                <tooltip>
-                    <Tooltip showDelay="100ms" text="Create instance" />
-                </tooltip>
-            </Button>
-            <Separator prefWidth="20.0" />
-            <Button onAction="#handleLoadFromFile">
-                <graphic>
-                    <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../icons/load.png" />
-                    </ImageView>
-                </graphic>
-                <tooltip>
-                    <Tooltip showDelay="100ms" text="Load from file" />
-                </tooltip>
-            </Button>
-            <Separator prefWidth="20.0" />
-            <Button onAction="#handleExportToFile">
-                <graphic>
-                    <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../icons/write.png" />
-                    </ImageView>
-                </graphic>
-                <tooltip>
-                    <Tooltip showDelay="100ms" text="Write to file" />
-                </tooltip>
-            </Button>
-            <Separator prefWidth="20.0" />
-            <Button onAction="#handleSolve">
-                <graphic>
-                    <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../icons/run.png" />
-                    </ImageView>
-                </graphic>
-                <tooltip>
-                    <Tooltip showDelay="100ms" text="Run" />
-                </tooltip>
-            </Button>
-            <Separator prefWidth="20.0" />
-            <Button onAction="#handleCleanSolution">
-                <graphic>
-                    <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../icons/clean.png" />
-                    </ImageView>
-                </graphic>
-                <tooltip>
-                    <Tooltip showDelay="100ms" text="Clean solution" />
-                </tooltip>
-            </Button>
-            <Separator prefWidth="20.0" />
-            <Button onAction="#handleObjectiveValueDisplay">
-                <graphic>
-                    <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../../icons/clean.png" />
-                    </ImageView>
-                </graphic>
-                <tooltip>
-                    <Tooltip showDelay="100ms" text="Show fitness value" />
-                </tooltip>
-            </Button>
-            <HBox alignment="CENTER_RIGHT">
-                <CheckBox fx:id="sensingRangeVisibility" selected="true" text="Sensing Range" />
-                <CheckBox fx:id="communicationRangeVisibility" layoutX="100" selected="true" text="Communication Range" />
+        <ToolBar fx:id="myToolBar">
+            <HBox spacing="20" HBox.hgrow="ALWAYS">
+                <Button onAction="#handleCreateProblemInstance">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/create.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Create instance" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleLoadFromFile">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/load.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Load from file" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleExportToFile">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/write.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Write to file" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleSolve">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/run.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Run" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleCleanSolution">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/clean.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Clean solution" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleObjectiveValueDisplay">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/fitness.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Show fitness value" />
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleResetRegion">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/trash.png" />
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Reset region" />
+                    </tooltip>
+                </Button>
+                <HBox alignment="BASELINE_RIGHT" HBox.hgrow="ALWAYS">
+                    <VBox alignment="CENTER_LEFT" spacing="10">
+                        <CheckBox fx:id="sensingRangeVisibility" selected="true" text="Sensing Range" />
+                        <CheckBox fx:id="communicationRangeVisibility" selected="true" text="Communication Range" />
+                    </VBox>
+                </HBox>
             </HBox>
         </ToolBar>
     </top>
     <left>
-        <fx:include fx:id="inputs" prefHeight="300.0" source="inputs.fxml" />
+        <VBox fx:id="left">
+            <fx:include fx:id="inputs" source="inputs.fxml" VBox.vgrow="ALWAYS"/>
+            <fx:include fx:id="progressBar" source="progressBar.fxml"/>
+        </VBox>
     </left>
     <center>
-        <BorderPane>
+        <BorderPane fx:id="pane">
             <center>
-                <fx:include fx:id="map" prefHeight="300.0" prefWidth="400.0" source="map.fxml" />
+                <fx:include fx:id="map" source="map.fxml" />
             </center>
             <bottom>
-                <fx:include fx:id="progressBar" source="progressBar.fxml" />
             </bottom>
         </BorderPane>
     </center>
     <bottom>
-        <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml" />
+        <VBox>
+            <Separator/>
+            <HBox fx:id="footer">
+                <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml" />
+                <fx:include source="legend.fxml" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
     </bottom>
 </BorderPane>

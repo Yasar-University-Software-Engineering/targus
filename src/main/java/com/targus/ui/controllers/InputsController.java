@@ -320,7 +320,7 @@ public class InputsController implements Initializable {
         }
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
-        progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
+       // progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
         mediator.bindProgressBar(progressTask.progressProperty());
 
         Thread thread = new Thread(progressTask);
@@ -331,12 +331,13 @@ public class InputsController implements Initializable {
         Task<Solution> gaTask = new Task<>() {
             @Override
             protected Solution call() {
+                mediator.setProgressBarVisible(true);
                 return finalGa.perform();
             }
         };
 
         gaTask.setOnSucceeded(e -> {
-            mediator.setProgressLabelText("GA is completed!");
+            mediator.setProgressBarVisible(false);
             solution = gaTask.getValue();
             BitString bitString = (BitString) solution.getRepresentation();
             HashSet<Integer> indexes = bitString.ones();
@@ -362,8 +363,6 @@ public class InputsController implements Initializable {
             disableTextField(false);
         });
         new Thread(gaTask).start();
-        // Below line is duplicated on purpose. It will be removed in the refactoring phase
-        mediator.setProgressLabelText("GA is completed!");
     }
 
     private void disableTextField(boolean bool) {

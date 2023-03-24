@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -13,6 +14,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Polygon;
@@ -26,6 +31,12 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
     public CheckBox sensingRangeVisibility;
     public CheckBox communicationRangeVisibility;
+    public HBox simplifiedObjectiveValueDisplay;
+    public VBox inputs;
+    public AnchorPane map;
+    public ToolBar myToolBar;
+    public HBox footer;
+    public BorderPane borderPane;
     @FXML
     private InputsController inputsController;
     @FXML
@@ -61,6 +72,14 @@ public class MainController implements Initializable {
 
         inputsController.setCommunicationRangeVisibility(communicationRangeVisibility);
         inputsController.setSensingRangeVisibility(sensingRangeVisibility);
+
+//        BorderPane.setMargin(footer, new Insets(10, 10, 10, 10));
+//        BorderPane.setMargin(inputs, new Insets(50, 50, 50, 50));
+//        BorderPane.setMargin(map, new Insets(50, 50, 50, 50));
+
+
+
+        myToolBar.setPadding(new Insets(10, 20, 10, 20));
     }
 
     public void handleCreateProblemInstance(ActionEvent event) throws IOException {
@@ -108,5 +127,8 @@ public class MainController implements Initializable {
         }
     }
 
+    public void handleResetRegion() {
+        mediator.resetRegion();
+    }
 
 }

@@ -15,10 +15,10 @@ public class SimplifiedObjectiveValueDisplayController {
     }
 
     public void simplifiedDisplay(double weightedSensorValue, double weightedMConnValue, double weightedKCovValue) {
-        sensorObjective.setText("Sensor objective: " + weightedSensorValue);
-        connectivityObjective.setText("Connectivity objective: " + weightedMConnValue);
-        coverageObjective.setText("Coverage objective: " + weightedKCovValue);
+        sensorObjective.setText(String.format("%.3f", weightedSensorValue));
+        connectivityObjective.setText(String.format("%.3f", weightedMConnValue));
+        coverageObjective.setText(String.format("%.3f", weightedKCovValue));
         double fitnessValue = weightedSensorValue + weightedMConnValue + weightedKCovValue;
-        coverageObjective.setText("Fitness value: " + fitnessValue);
+        coverageObjective.setText(String.format("%.3f", fitnessValue));
     }
 }

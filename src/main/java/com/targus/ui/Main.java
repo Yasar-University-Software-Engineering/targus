@@ -2,13 +2,9 @@ package com.targus.ui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.Objects;
 
 public class Main extends Application {
     private static Stage primaryStage;
@@ -17,12 +13,20 @@ public class Main extends Application {
         Main.primaryStage = primaryStage;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/main.fxml"));
-        Parent root = loader.load();
-        root.setStyle("-fx-border-color: black; -fx-border-width: 2px;");
+        BorderPane root = loader.load();
+
+//        // Set style for left border
+//        root.getLeft().setStyle("-fx-border-color: grey;");
+//        root.getLeft().setStyle("-fx-border-width: 0px 2px 0px 0px;");
+//        root.getLeft().setStyle("-fx-border-style: solid;");
+//
+//        root.getCenter().setStyle("-fx-background-color: #f0f0f0;");
+//        root.getCenter().setStyle("-fx-border-width: 0px 2px 0px 0px;");
+
         Main.primaryStage.setTitle("Targus");
         Scene scene = new Scene(root, 900, 700);
-        scene.getStylesheets().add("/css/style.css");
-        scene.getStylesheets().add("/css/button.css");
+        scene.getStylesheets().add("/css/styles.css");
+
         Main.primaryStage.setScene(scene);
         Main.primaryStage.setMaximized(true);
         Main.primaryStage.show();

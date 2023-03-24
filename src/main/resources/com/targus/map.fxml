@@ -2,9 +2,7 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 
-<?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.layout.Pane?>
 <AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml" fx:controller="com.targus.ui.controllers.MapController">
-    <Pane fx:id="mainPane" prefWidth="100" prefHeight="100" onMouseClicked="#paneClicked" />
-<!--    <Rectangle width="600" height="100" fill="#E0E0E0"/>-->
+    <Pane fx:id="mainPane" onMouseClicked="#paneClicked" />
 </AnchorPane>
