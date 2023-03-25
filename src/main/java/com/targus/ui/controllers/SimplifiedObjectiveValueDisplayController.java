@@ -18,7 +18,7 @@ public class SimplifiedObjectiveValueDisplayController {
         sensorObjective.setText(String.format("%.3f", weightedSensorValue));
         connectivityObjective.setText(String.format("%.3f", weightedMConnValue));
         coverageObjective.setText(String.format("%.3f", weightedKCovValue));
-        double fitnessValue = weightedSensorValue + weightedMConnValue + weightedKCovValue;
-        coverageObjective.setText(String.format("%.3f", fitnessValue));
+        double total = weightedSensorValue + weightedMConnValue + weightedKCovValue;
+        fitnessValue.setText(String.format("%.3f", total));
     }
 }

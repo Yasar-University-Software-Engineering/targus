@@ -107,6 +107,9 @@ public class MainController implements Initializable {
         dialogStage.initOwner(window);
         dialogStage.setScene(new Scene(root));
         createProblemInstanceController.setDialogStage(dialogStage);
+
+        dialogStage.setTitle("Create a problem instance");
+        dialogStage.setResizable(false);
         dialogStage.showAndWait();
     }
     public void handleLoadFromFile(ActionEvent event) {

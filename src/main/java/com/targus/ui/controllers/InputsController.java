@@ -225,14 +225,28 @@ public class InputsController implements Initializable {
         }
     }
 
-    @FXML
-    void handleGenerateGrid() {
-        for (int i = 5; i < paneHeight; i += 25) {
-            for (int j = 10; j < paneWidth; j += 25) {
+    public void handleGenerateGrid(int distance) {
+        if (distance == 0) {
+            return;
+        }
+
+        for (double i = distance; i < paneHeight; i += distance) {
+            for (double j = distance; j < paneWidth; j += distance) {
                 addPotentialPosition(new PotentialPosition(j, i));
             }
         }
-        initProblemInstance();
+    }
+
+    public void handleGenerateRandomTarget(int numberNodes) {
+        if (numberNodes == 0) {
+            return;
+        }
+
+        for (int i = 0; i < numberNodes; i++) {
+            double x = Math.random() * paneWidth;
+            double y = Math.random() * paneHeight;
+            addTarget(new Target(x, y));
+        }
     }
 
     @FXML
@@ -438,7 +452,7 @@ public class InputsController implements Initializable {
         handleCleanSolution();
     }
 
-    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int paneWidth, int paneHeight) {
+    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int paneWidth, int paneHeight, int distance, int numberNodes) {
         WSN wsn = (WSN) wsnOptimizationProblem.model();
 
         this.paneWidth = paneWidth;
@@ -449,6 +463,9 @@ public class InputsController implements Initializable {
         sensingRangeProperty.set(wsn.getSensRange());
         generationCountProperty.set(wsn.getGenerationCount());
         mutationRateProperty.set(wsn.getMutationRate());
+
+        handleGenerateGrid(distance);
+        handleGenerateRandomTarget(numberNodes);
 
         initProblemInstance();
     }

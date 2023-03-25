@@ -147,8 +147,8 @@ public class Mediator {
         simplifiedObjectiveValueDisplayController.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
     }
 
-    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height) {
-        inputsController.createProblemInstance(wsnOptimizationProblem, width, height);
+    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height, int distance, int numberNodes) {
+        inputsController.createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
     }
 
     public void setProgressBarVisible(boolean visible) {

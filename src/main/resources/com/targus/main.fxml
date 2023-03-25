@@ -9,9 +9,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.Pane?>
+
 <BorderPane fx:id="borderPane" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.targus.ui.controllers.MainController" >
     <top>
         <ToolBar fx:id="myToolBar">
