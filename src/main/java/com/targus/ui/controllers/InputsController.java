@@ -21,13 +21,16 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.BufferedWriter;
@@ -41,10 +44,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class InputsController implements Initializable {
-    @FXML
-    private TextField txtAreaWidth;
-    @FXML
-    private TextField txtAreaHeight;
     @FXML
     private TextField txtM;
     @FXML
@@ -74,24 +73,6 @@ public class InputsController implements Initializable {
     private OptimizationProblem wsnOptimizationProblem;
     private Solution solution;
     private Mediator mediator;
-    private CheckBox communicationRangeVisibility;
-    private CheckBox sensingRangeVisibility;
-
-    public CheckBox getCommunicationRangeVisibility() {
-        return communicationRangeVisibility;
-    }
-
-    public CheckBox getSensingRangeVisibility() {
-        return sensingRangeVisibility;
-    }
-
-    public void setCommunicationRangeVisibility(CheckBox communicationRangeVisibility) {
-        this.communicationRangeVisibility = communicationRangeVisibility;
-    }
-
-    public void setSensingRangeVisibility(CheckBox sensingRangeVisibility) {
-        this.sensingRangeVisibility = sensingRangeVisibility;
-    }
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
@@ -118,30 +99,22 @@ public class InputsController implements Initializable {
         choiceBox.getItems().add("Improved GA");
         choiceBox.getItems().add("Greedy Algorithm");
         choiceBox.setValue("Standard GA");
-
-//        communicationRangeVisibility.setOnAction(event -> SetCommunicationRangeVisibility(communicationRangeVisibility.isSelected()));
-//        sensingRangeVisibility.setOnAction(event -> SetSensingRangeVisibility(sensingRangeVisibility.isSelected()));
     }
 
-    public void SetCommunicationRangeVisibility(boolean visible) {
-        Sensor.setCommunicationRangeVisibility(visible);
-    }
-
-    public void SetSensingRangeVisibility(boolean visible) {
-        Sensor.setSensingRangeVisibility(visible);
-    }
-
-    public void handleLoadFromFile() {
-        mediator.resetRegion();
+    public void handleLoadFromFile(ActionEvent event) {
 
         FileChooser fc = new FileChooser();
         fc.setInitialDirectory(new File("./src/main/resources/json/"));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-        File f = fc.showOpenDialog(null);
+
+        Button button = (Button) event.getSource();
+        Stage stage = (Stage) button.getScene().getWindow();
+        File f = fc.showOpenDialog(stage);
 
         if (f == null) {
             return;
         }
+        mediator.resetRegion();
 
         String src = f.getAbsolutePath();
 
@@ -164,6 +137,7 @@ public class InputsController implements Initializable {
                 Point2D target = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
                 targetArray[i] = target;
             }
+
 
             JsonNode potentialPositionsNode = parser.path(Constants.POTENTIAL_POSITIONS);
             potentialPositionArray = new Point2D[potentialPositionsNode.size()];
@@ -194,16 +168,18 @@ public class InputsController implements Initializable {
         for (Point2D point2D : potentialPositionArray) {
             addPotentialPosition(new PotentialPosition(point2D.getX(), point2D.getY()));
         }
-
         initProblemInstance();
     }
 
-    public void handleExportToFile() {
+    public void handleExportToFile(ActionEvent event) {
         try {
             FileChooser fc = new FileChooser();
             fc.setInitialDirectory(new File("./src/main/resources/json/"));
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-            File f = fc.showSaveDialog(null);
+
+            Button button = (Button) event.getSource();
+            Stage stage = (Stage) button.getScene().getWindow();
+            File f = fc.showSaveDialog(stage);
 
             if (f == null) {
                 return;
@@ -406,23 +382,6 @@ public class InputsController implements Initializable {
                 mutationRateProperty.get());
 
         wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
-    }
-
-    @FXML
-    void handleResetRegion() {
-        mediator.resetRegion();
-    }
-
-    @FXML
-    void handleRemoveChildren() {
-        mediator.removeChildren();
-    }
-
-    @FXML
-    public void handleResizeMapPane() {
-        paneWidth = Integer.parseInt(txtAreaWidth.getText());
-        paneHeight = Integer.parseInt(txtAreaHeight.getText());
-        mediator.resizeMapPane(paneWidth, paneHeight);
     }
 
     public void addTarget(Target target) {

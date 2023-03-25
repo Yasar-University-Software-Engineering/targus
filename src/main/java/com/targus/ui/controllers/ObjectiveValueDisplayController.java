@@ -11,7 +11,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -20,25 +21,25 @@ import java.util.HashSet;
 
 public class ObjectiveValueDisplayController {
     @FXML
-    TextField txtSensorObjective;
+    Label lblSensorObjective;
     @FXML
-    TextField txtWeightSensorObjective;
+    Label lblWeightSensorObjective;
     @FXML
-    TextField txtWeightSensorObjectiveResult;
+    Label lblWeightSensorObjectiveResult;
     @FXML
-    TextField txtConnectivityObjective;
+    Label lblConnectivityObjective;
     @FXML
-    TextField txtWeightConnectivityObjective;
+    Label lblWeightConnectivityObjective;
     @FXML
-    TextField txtWeightConnectivityObjectiveResult;
+    Label lblWeightConnectivityObjectiveResult;
     @FXML
-    TextField txtCoverageObjective;
+    Label lblCoverageObjective;
     @FXML
-    TextField txtWeightCoverageObjective;
+    Label lblWeightCoverageObjective;
     @FXML
-    TextField txtWeightCoverageObjectiveResult;
+    Label lblWeightCoverageObjectiveResult;
     @FXML
-    TextField txtTotalResult;
+    Label lblTotalResult;
 
     private Mediator mediator;
     private Parent root;
@@ -53,7 +54,9 @@ public class ObjectiveValueDisplayController {
             stage = new Stage();
             stage.initModality(Modality.NONE);
             stage.initOwner(Main.getPrimaryStage());
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("/css/fitness-window.css");
+            stage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,7 +84,7 @@ public class ObjectiveValueDisplayController {
         double weightedKCovValue = kCoverageValue(wsnMinimumSensorObjective, wsn, indexes);
 
         double totalResult = weightedSensorValue + weightedMConnValue + weightedKCovValue;
-        setTextField(txtTotalResult, totalResult);
+        setText(lblTotalResult, totalResult);
 
         mediator.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
     }
@@ -89,32 +92,32 @@ public class ObjectiveValueDisplayController {
     private double sensorValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, BitString bitString) {
         double sensorValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
         double weightedSensorValue = sensorValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR;
-        setTextField(txtSensorObjective, sensorValueScaled);
-        setTextField(txtWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
-        setTextField(txtWeightSensorObjectiveResult, weightedSensorValue);
+        setText(lblSensorObjective, sensorValueScaled);
+        setText(lblWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
+        setText(lblWeightSensorObjectiveResult, weightedSensorValue);
         return  weightedSensorValue;
     }
 
     private double mConnectivityValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
         double mConnectivityValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
         double weightedMConnectivityValue = mConnectivityValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM;
-        setTextField(txtConnectivityObjective, mConnectivityValueScaled);
-        setTextField(txtWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
-        setTextField(txtWeightConnectivityObjectiveResult, weightedMConnectivityValue);
+        setText(lblConnectivityObjective, mConnectivityValueScaled);
+        setText(lblWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
+        setText(lblWeightConnectivityObjectiveResult, weightedMConnectivityValue);
         return weightedMConnectivityValue;
     }
 
     private double kCoverageValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
         double kCoverageValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
         double weightedKCoverageValue = kCoverageValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV;
-        setTextField(txtCoverageObjective, kCoverageValueScaled);
-        setTextField(txtWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
-        setTextField(txtWeightCoverageObjectiveResult, weightedKCoverageValue);
+        setText(lblCoverageObjective, kCoverageValueScaled);
+        setText(lblWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
+        setText(lblWeightCoverageObjectiveResult, weightedKCoverageValue);
         return weightedKCoverageValue;
     }
 
-    private void setTextField(TextField textField, double value) {
-        textField.setText(String.valueOf(value));
+    private void setText(Label label, double value) {
+        label.setText(String.format("%.3f", value));
     }
 
     public void show(Stage owner) {

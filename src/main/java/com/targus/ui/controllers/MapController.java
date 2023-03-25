@@ -110,9 +110,9 @@ public class MapController {
 
     public void resizePane(double width, double height) {
         mainPane.setPrefSize(width, height);
+        mainPane.setStyle("-fx-background-color: #e0e0e0;");
         mainPane.setMaxWidth(1000);
         mainPane.setMaxHeight(1000);
-        mainPane.setStyle("-fx-background-color: lightGray;");
     }
 
     public void addChild(Object child) {

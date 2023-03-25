@@ -47,3 +47,7 @@
     -fx-border-color: grey;
 }
 
+.stage > .title-bar {
+    -fx-background-color: #2f4f4f;
+    -fx-text-fill: white;
+}

@@ -1,6 +1,7 @@
 package com.targus.ui.controllers;
 
 import com.targus.ui.Mediator;
+import com.targus.ui.widgets.Sensor;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -56,6 +57,7 @@ public class MainController implements Initializable {
         createProblemInstanceController = new CreateProblemInstanceController();
         objectiveValueDisplayController = new ObjectiveValueDisplayController();
 
+        mediator.setMainController(this);
         mediator.setInputsController(inputsController);
         mediator.setObjectiveValueDisplayController(objectiveValueDisplayController);
         mediator.setSimplifiedObjectiveValueDisplayController(simplifiedObjectiveValueDisplayController);
@@ -70,16 +72,26 @@ public class MainController implements Initializable {
         progressBarController.setMediator(mediator);
         createProblemInstanceController.setMediator(mediator);
 
-        inputsController.setCommunicationRangeVisibility(communicationRangeVisibility);
-        inputsController.setSensingRangeVisibility(sensingRangeVisibility);
-
 //        BorderPane.setMargin(footer, new Insets(10, 10, 10, 10));
 //        BorderPane.setMargin(inputs, new Insets(50, 50, 50, 50));
 //        BorderPane.setMargin(map, new Insets(50, 50, 50, 50));
 
 
+        communicationRangeVisibility.setOnAction(event -> {
+            Sensor.setCommunicationRangeVisibility(communicationRangeVisibility.isSelected());});
+
+        sensingRangeVisibility.setOnAction(event -> {
+            Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected());});
 
         myToolBar.setPadding(new Insets(10, 20, 10, 20));
+    }
+
+    public CheckBox getCommunicationRangeVisibility() {
+        return communicationRangeVisibility;
+    }
+
+    public CheckBox getSensingRangeVisibility() {
+        return sensingRangeVisibility;
     }
 
     public void handleCreateProblemInstance(ActionEvent event) throws IOException {
@@ -97,12 +109,12 @@ public class MainController implements Initializable {
         createProblemInstanceController.setDialogStage(dialogStage);
         dialogStage.showAndWait();
     }
-    public void handleLoadFromFile() {
-        mediator.loadFromFile();
+    public void handleLoadFromFile(ActionEvent event) {
+        mediator.loadFromFile(event);
     }
 
-    public void handleExportToFile() {
-        mediator.exportToFile();
+    public void handleExportToFile(ActionEvent event) {
+        mediator.exportToFile(event);
     }
 
     public void handleSolve() {

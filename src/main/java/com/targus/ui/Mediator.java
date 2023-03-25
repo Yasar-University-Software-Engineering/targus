@@ -8,15 +8,21 @@ import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.event.ActionEvent;
 import javafx.scene.control.CheckBox;
 
+import java.nio.file.StandardWatchEventKinds;
+
 public class Mediator {
+    private MainController mainController;
     private InputsController inputsController;
     private ObjectiveValueDisplayController objectiveValueDisplayController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
     private MapController mapController;
     private ProgressBarController progressBarController;
     private CreateProblemInstanceController createProblemInstanceController;
+
+    public void setMainController(MainController mainController) { this.mainController = mainController; }
 
     public void setInputsController(InputsController inputsController) {
         this.inputsController = inputsController;
@@ -121,20 +127,12 @@ public class Mediator {
         return inputsController.getWsnOptimizationProblem();
     }
 
-    public CheckBox getCommunicationRangeVisibility() {
-        return inputsController.getCommunicationRangeVisibility();
+    public void loadFromFile(ActionEvent event) {
+        inputsController.handleLoadFromFile(event);
     }
 
-    public CheckBox getSensingRangeVisibility() {
-        return inputsController.getSensingRangeVisibility();
-    }
-
-    public void loadFromFile() {
-        inputsController.handleLoadFromFile();
-    }
-
-    public void exportToFile() {
-        inputsController.handleExportToFile();
+    public void exportToFile(ActionEvent event) {
+        inputsController.handleExportToFile(event);
     }
 
     public void solve() {

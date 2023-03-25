@@ -52,6 +52,7 @@ public class CreateProblemInstanceController {
 
     @FXML
     private void submit() {
+        mediator.resetRegion();
         int width = Integer.parseInt(widthField.getText());
         int height = Integer.parseInt(heightField.getText());
         int connectivity = Integer.parseInt(connectivityField.getText());
