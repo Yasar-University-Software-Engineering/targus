@@ -21,12 +21,12 @@
     </HBox>
     <Separator/>
     <HBox alignment="CENTER">
-        <Circle fill="WHITE" radius="10.0" stroke="BLUE" strokeType="INSIDE" />
+        <Circle fill="#D1EAF2" radius="10.0" stroke="#6597B8" strokeType="INSIDE" />
         <Label text=" : Sensing Range" />
     </HBox>
     <Separator/>
     <HBox alignment="CENTER">
-        <Circle fill="WHITE" radius="10.0" stroke="ORANGE" strokeType="INSIDE" />
+        <Circle fill="#FFF5E6" radius="10.0" stroke="#FFA07A" strokeType="INSIDE" />
         <Label text=" : Communication Range" />
     </HBox>
 </HBox>
