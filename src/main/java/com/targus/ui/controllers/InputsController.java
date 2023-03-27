@@ -347,6 +347,7 @@ public class InputsController implements Initializable {
                 }
 
                 mediator.addChild(sensor);
+                mediator.addSensorToPane(sensor);
                 addSensor(sensor);
             }
             mediator.display();
@@ -369,10 +370,12 @@ public class InputsController implements Initializable {
 
         for (Point2D target: targets) {
             mediator.addChild(new Target(target.getX(), target.getY()));
+            mediator.addTargetToPane(new Target(target.getX(), target.getY()));
         }
 
         for (Point2D potentialPosition: potentialPositions) {
             mediator.addChild(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
+            mediator.addPotentialPositionToPane(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
         }
 
         Point2D[] targetArray = new Point2D[targets.size()];

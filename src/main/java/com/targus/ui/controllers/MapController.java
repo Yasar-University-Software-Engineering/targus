@@ -52,11 +52,13 @@ public class MapController {
             context.show(mainPane, event.getScreenX(), event.getScreenY());
             createTarget.setOnAction(actionEvent -> {
                 addChild(new Target(event.getX(), event.getY()));
+                addTargetToPane(new Target(event.getX(), event.getY()));
                 mediator.addTarget(new Target(event.getX(), event.getY()));
             });
 
             createPotentialPosition.setOnAction(actionEvent -> {
                 addChild(new PotentialPosition(event.getX(), event.getY()));
+                addPotentialPositionToPane(new PotentialPosition(event.getX(), event.getY()));
                 mediator.addPotentialPosition(new PotentialPosition(event.getX(), event.getY()));
             });
 
@@ -64,6 +66,7 @@ public class MapController {
                 PotentialPosition potentialPosition = (PotentialPosition) event.getTarget();
                 Sensor sensor = new Sensor(potentialPosition.getCenterX(), potentialPosition.getCenterY());
                 addChild(sensor);
+                addSensorToPane(sensor);
                 mediator.addSensor(sensor);
             });
 
@@ -118,6 +121,18 @@ public class MapController {
     public void addChild(Object child) {
         if (child instanceof Circle) {
             mainPane.getChildren().add((Circle) child);
+    public void addTargetToPane(Target target) {
+        mainPane.getChildren().add(target);
+    }
+
+    public void addPotentialPositionToPane(PotentialPosition potentialPosition) {
+        mainPane.getChildren().add(potentialPosition);
+    }
+
+    public void addSensorToPane(Sensor sensor) {
+        mainPane.getChildren().add(sensor);
+    }
+
         }
         if (child instanceof Group) {
             mainPane.getChildren().add((Group) child);
