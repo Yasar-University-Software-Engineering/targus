@@ -31,5 +31,10 @@ public class Constants {
     public static final int DEFAULT_IMMIGRATION_PERIOD = 100;
     public static final int DEFAULT_SELECTION_COUNT = 8;
     public static final String DEFAULT_BASE_PATH_FOR_JSON_FILES = "./src/main/resources/json/";
+    public static final String NON_APPLICABLE = "N/A ";
+    public static final String STANDARD_GA = "Standard GA";
+    public static final String IMPROVED_GA = "Improved GA";
+    public static final String SIMULATED_ANNEALING = "Simulated Annealing";
+    public static final String GREEDY_ALGORITHM = "Greedy Algorithm";
 
 }
