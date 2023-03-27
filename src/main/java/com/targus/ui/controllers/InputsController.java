@@ -59,10 +59,10 @@ public class InputsController implements Initializable {
     private TextField txtCommunicationRange;
     @FXML
     private TextField txtSensingRange;
-    @FXML
-    private TextField txtMutationRate;
-    @FXML
-    private TextField txtGenerationCount;
+//    @FXML
+//    private TextField txtMutationRate;
+//    @FXML
+//    private TextField txtGenerationCount;
     private int paneWidth;
     private int paneHeight;
     private OptimizationProblem wsnOptimizationProblem;
@@ -87,8 +87,8 @@ public class InputsController implements Initializable {
         txtK.textProperty().bindBidirectional(kProperty, new NumberStringConverter());
         txtCommunicationRange.textProperty().bindBidirectional(communicationRangeProperty, new NumberStringConverter());
         txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
-        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
-        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
+//        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
+//        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
     }
 
     public void handleLoadFromFile(ActionEvent event) {
@@ -404,8 +404,8 @@ public class InputsController implements Initializable {
         txtK.setDisable(bool);
         txtCommunicationRange.setDisable(bool);
         txtSensingRange.setDisable(bool);
-        txtGenerationCount.setDisable(bool);
-        txtMutationRate.setDisable(bool);
+//        txtGenerationCount.setDisable(bool);
+//        txtMutationRate.setDisable(bool);
     }
 
     private void initProblemInstance() {

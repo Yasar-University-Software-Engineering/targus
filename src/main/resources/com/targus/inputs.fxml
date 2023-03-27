@@ -20,12 +20,12 @@
         <Label alignment="CENTER_RIGHT" text="Sensing Range"/>
         <TextField fx:id="txtSensingRange" prefWidth="70.0" alignment="CENTER"/>
     </HBox>
-    <HBox alignment="CENTER_RIGHT" spacing="20.0">
-        <Label alignment="CENTER_RIGHT" text="Generation Count"/>
-        <TextField fx:id="txtGenerationCount" prefWidth="70.0" alignment="CENTER"/>
-    </HBox>
-    <HBox alignment="CENTER_RIGHT" spacing="20.0">
-        <Label alignment="CENTER_RIGHT" text="Mutation Rate"/>
-        <TextField fx:id="txtMutationRate" prefWidth="70.0" alignment="CENTER"/>
-    </HBox>
+<!--    <HBox alignment="CENTER_RIGHT" spacing="20.0">-->
+<!--        <Label alignment="CENTER_RIGHT" text="Generation Count"/>-->
+<!--        <TextField fx:id="txtGenerationCount" prefWidth="70.0" alignment="CENTER"/>-->
+<!--    </HBox>-->
+<!--    <HBox alignment="CENTER_RIGHT" spacing="20.0">-->
+<!--        <Label alignment="CENTER_RIGHT" text="Mutation Rate"/>-->
+<!--        <TextField fx:id="txtMutationRate" prefWidth="70.0" alignment="CENTER"/>-->
+<!--    </HBox>-->
 </VBox>
