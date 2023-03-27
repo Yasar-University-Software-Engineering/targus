@@ -154,4 +154,57 @@ public class Mediator {
     public void setProgressBarVisible(boolean visible) {
         progressBarController.setProgressBarVisible(visible);
     }
+
+
+    public void addTargetToPane(Target target) {
+        mapController.addTargetToPane(target);
+    }
+
+    public void addPotentialPositionToPane(PotentialPosition potentialPosition) {
+        mapController.addPotentialPositionToPane(potentialPosition);
+    }
+
+    public void addSensorToPane(Sensor sensor) {
+        mapController.addSensorToPane(sensor);
+    }
+
+    public void bringTargetsToFront() {
+        mapController.bringTargetsToFront();
+    }
+
+    public void bringPotentialPositionsToFront() {
+        mapController.bringPotentialPositionsToFront();
+    }
+
+    public void bringSensorDevicesToFront() {
+        mapController.bringSensorDevicesToFront();
+    }
+
+    public void displayNonApplicable() {
+        objectiveValueDisplayController.displayNonApplicable();
+    }
+
+    public void simplifiedDisplayNonApplicable() {
+        simplifiedObjectiveValueDisplayController.simplifiedDisplayNonApplicable();
+    }
+
+    public String getAlgorithm() {
+        return mainController.getAlgorithm();
+    }
+
+    public String getMutation() {
+        return mainController.getMutation();
+    }
+
+    public Double getMutationRate() {
+        return mainController.getMutationRate();
+    }
+
+    public String getTermination() {
+        return mainController.getTermination();
+    }
+
+    public int getTerminationValue() {
+        return mainController.getTerminationValue();
+    }
 }
