@@ -133,9 +133,42 @@ public class MapController {
         mainPane.getChildren().add(sensor);
     }
 
+    public void bringTargetsToFront() {
+        List<Node> nodesToMoveToFront = new ArrayList<>();
+        for (Node node : mainPane.getChildren()) {
+            if (node instanceof Target) {
+                nodesToMoveToFront.add(node);
+            }
         }
-        if (child instanceof Group) {
-            mainPane.getChildren().add((Group) child);
+        for (Node node : nodesToMoveToFront) {
+            mainPane.getChildren().remove(node);
+            mainPane.getChildren().add(node);
+        }
+    }
+
+    public void bringPotentialPositionsToFront() {
+        List<Node> nodesToMoveToFront = new ArrayList<>();
+        for (Node node : mainPane.getChildren()) {
+            if (node instanceof PotentialPosition) {
+                nodesToMoveToFront.add(node);
+            }
+        }
+        for (Node node : nodesToMoveToFront) {
+            mainPane.getChildren().remove(node);
+            mainPane.getChildren().add(node);
+        }
+    }
+
+    public void bringSensorDevicesToFront() {
+        List<Node> nodesToMoveToFront = new ArrayList<>();
+        for (Node node : mainPane.getChildren()) {
+            if (node instanceof Sensor) {
+                nodesToMoveToFront.add(((Sensor) node).getSensorDevice());
+            }
+        }
+        for (Node node : nodesToMoveToFront) {
+            mainPane.getChildren().remove(node);
+            mainPane.getChildren().add(node);
         }
     }
 }

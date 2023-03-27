@@ -350,6 +350,11 @@ public class InputsController implements Initializable {
                 mediator.addSensorToPane(sensor);
                 addSensor(sensor);
             }
+
+            mediator.bringTargetsToFront();
+            mediator.bringPotentialPositionsToFront();
+            mediator.bringSensorDevicesToFront();
+
             mediator.display();
             disableTextField(false);
         });
