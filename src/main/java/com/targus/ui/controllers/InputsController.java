@@ -436,8 +436,8 @@ public class InputsController implements Initializable {
                 kProperty.get(),
                 communicationRangeProperty.get(),
                 sensingRangeProperty.get(),
-                generationCountProperty.get(),
-                mutationRateProperty.get());
+                0, // Dummy values
+                0.0);
 
         wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
     }
