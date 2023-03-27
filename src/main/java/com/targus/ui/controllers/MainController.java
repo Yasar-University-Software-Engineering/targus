@@ -30,12 +30,13 @@ import java.util.ResourceBundle;
 public class MainController implements Initializable {
     public CheckBox sensingRangeVisibility;
     public CheckBox communicationRangeVisibility;
-    public HBox simplifiedObjectiveValueDisplay;
-    public VBox inputs;
-    public AnchorPane map;
-    public ToolBar myToolBar;
-    public HBox footer;
-    public BorderPane borderPane;
+    public ComboBox algorithmComboBox;
+    public VBox GAInputs;
+    public StackPane algorithmInputs;
+    public ComboBox mutationComboBox;
+    public TextField mutationRateTextField;
+    public ComboBox terminationComboBox;
+    public TextField terminationTextField;
     @FXML
     private InputsController inputsController;
     @FXML
@@ -75,17 +76,40 @@ public class MainController implements Initializable {
         sensingRangeVisibility.setOnAction(event -> Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected()));
     }
 
-
-
-        myToolBar.setPadding(new Insets(10, 20, 10, 20));
+    public String getAlgorithm() {
+        return algorithmComboBox.getValue().toString();
     }
 
-    public CheckBox getCommunicationRangeVisibility() {
-        return communicationRangeVisibility;
+    public String getMutation() {
+        return mutationComboBox.getValue().toString();
     }
 
-    public CheckBox getSensingRangeVisibility() {
-        return sensingRangeVisibility;
+    public double getMutationRate() {
+        return Double.parseDouble(mutationRateTextField.getText());
+    }
+
+    public String getTermination() {
+        return terminationComboBox.getValue().toString();
+    }
+
+    public int getTerminationValue() {
+        return Integer.parseInt(terminationTextField.getText());
+    }
+
+    @FXML
+    private void handleAlgorithmSelection() {
+        String selectedAlgorithm = (String) algorithmComboBox.getSelectionModel().getSelectedItem();
+        if (selectedAlgorithm.equals(Constants.STANDARD_GA) || selectedAlgorithm.equals(Constants.IMPROVED_GA)) {
+            // Set the visibility of the algorithmInputs StackPane to true
+            algorithmInputs.setVisible(true);
+            // Create a timeline animation to animate the height of the standardGAInputs VBox
+            KeyValue keyValue = new KeyValue(GAInputs.prefHeightProperty(), GAInputs.getPrefHeight());
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds(1), keyValue);
+            Timeline timeline = new Timeline(keyFrame);
+            timeline.play();
+        } else {
+            algorithmInputs.setVisible(false);
+        }
     }
 
     public void handleCreateProblemInstance(ActionEvent event) throws IOException {

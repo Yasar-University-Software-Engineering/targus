@@ -254,23 +254,59 @@ public class InputsController implements Initializable {
         mediator.display();
     }
 
+    public TerminalState buildTerminalState() {
+        TerminalState terminalState;
+        int terminationValue = mediator.getTerminationValue();
+
+        if (mediator.getTermination().equals("Time Based")) {
+            terminalState = new TimeBasedTerminal(terminationValue);
+        } else if (mediator.getTermination().equals("Iteration Based")) {
+            terminalState = new IterationBasedTerminal(terminationValue);
+        } else {
+            terminalState = null;
+        }
+
+        return terminalState;
+    }
+
+    public MutationOperator buildMutationOperator() {
+        MutationOperator mutationOperator;
+        Double mutationRate = mediator.getMutationRate();
+
+        if (mediator.getMutation().equals("OneBitMutation")) {
+            mutationOperator = new OneBitMutation(mutationRate);
+        } else if (mediator.getMutation().equals("KBitMutation")) {
+            mutationOperator = new KBitMutation(mutationRate);
+        } else {
+            mutationOperator = null;
+        }
+
+        return mutationOperator;
+    }
+
     public GA buildStandardGA(WSN wsn) {
+        MutationOperator mutationOperator = buildMutationOperator();
+        TerminalState terminalState = buildTerminalState();
+
         return StandardGA
                 .builder(wsnOptimizationProblem)
                 .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
-                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .setMutationOperator(mutationOperator)
+                .setTerminalState(terminalState)
                 .build();
     }
 
     // TODO: replace wsn.getGenerationCount() with time
     public GA buildImprovedGA(WSN wsn) {
+        MutationOperator mutationOperator = buildMutationOperator();
+        TerminalState terminalState = buildTerminalState();
+
         return ImprovedGA
                 .builder(wsnOptimizationProblem)
                 .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
-                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .setTerminalState(terminalState)
                 .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
+                .setMutationOperator(mutationOperator)
                 .build();
     }
 
@@ -283,19 +319,21 @@ public class InputsController implements Initializable {
 
         WSN wsn = (WSN) wsnOptimizationProblem.model();
 
-        GA ga = buildImprovedGA(wsn); // In case choice box doesn't get initialized properly
+        String algorithmType = mediator.getAlgorithm();
 
-        if (choiceBox.getValue().equals("Standard GA")) {
-            ga = buildStandardGA(wsn);
-        } else if (choiceBox.getValue().equals("Improved GA")) {
-            ga = buildImprovedGA(wsn);
-        } else if (choiceBox.getValue().equals("Greedy Algorithm")) {
-            ga = null;
-        } else {
-            try {
-                throw new Exception("No such algorithm available");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        GA ga;
+
+        switch (algorithmType) {
+            case Constants.STANDARD_GA -> ga = buildStandardGA(wsn);
+            case Constants.IMPROVED_GA -> ga = buildImprovedGA(wsn);
+            case Constants.SIMULATED_ANNEALING -> ga = buildSimulatedAnnealing(wsn);
+            case Constants.GREEDY_ALGORITHM -> ga = buildGreedyAlgorithm(wsn);
+            default -> {
+                try {
+                    throw new Exception("No such algorithm available");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
