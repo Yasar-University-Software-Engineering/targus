@@ -74,12 +74,4 @@ public class BenchmarkTestRunner {
         double average = sum / repeat;
         System.out.println(gaType + " -- Fitness Value (repeated: " + repeat + "): " + average);
     }
-
-    public static void main(String[] args) {
-        String filePath = "C:\\Users\\doguk\\Desktop\\targus\\src\\main\\resources\\json\\big_instance.json";
-        int terminalValue = 20;
-        int repeat = 5;
-        GABenchmarkTest(filePath, "Standard", new OneBitMutation(), new TimeBasedTerminal(terminalValue), repeat);
-        GABenchmarkTest(filePath, "Improved", new KBitMutation(), new TimeBasedTerminal(terminalValue), repeat);
-    }
 }

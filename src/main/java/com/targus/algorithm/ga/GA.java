@@ -56,9 +56,6 @@ public abstract class GA implements SingleObjectiveOA {
             if (crossOverOperator == null) {
                 setCrossOverOperator(new OnePointCrossOver());
             }
-            if (mutationOperator == null) {
-                setMutationOperator(new OneBitMutation());
-            }
             return this;
         }
 

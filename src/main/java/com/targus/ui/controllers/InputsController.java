@@ -284,7 +284,7 @@ public class InputsController implements Initializable {
         return mutationOperator;
     }
 
-    public GA buildStandardGA(WSN wsn) {
+    public GA buildStandardGA() {
         MutationOperator mutationOperator = buildMutationOperator();
         TerminalState terminalState = buildTerminalState();
 
@@ -321,10 +321,13 @@ public class InputsController implements Initializable {
 
         String algorithmType = mediator.getAlgorithm();
 
+        // TODO: we should replace this line with -> SingleObjectiveOA algorithm
+        // I was going to do that but the progress bar fails. Since it takes time
+        // to refactor this, I will leave it for later
         GA ga;
 
         switch (algorithmType) {
-            case Constants.STANDARD_GA -> ga = buildStandardGA(wsn);
+            case Constants.STANDARD_GA -> ga = buildStandardGA();
             case Constants.IMPROVED_GA -> ga = buildImprovedGA(wsn);
             case Constants.SIMULATED_ANNEALING -> ga = buildSimulatedAnnealing(wsn);
             case Constants.GREEDY_ALGORITHM -> ga = buildGreedyAlgorithm(wsn);
@@ -386,6 +389,14 @@ public class InputsController implements Initializable {
             disableTextField(false);
         });
         new Thread(gaTask).start();
+    }
+
+    private GA buildGreedyAlgorithm(WSN wsn) {
+        return null;
+    }
+
+    private GA buildSimulatedAnnealing(WSN wsn) {
+        return null;
     }
 
     private void disableTextField(boolean bool) {
