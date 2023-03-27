@@ -2,10 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox fx:id="vbox" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" spacing="30.0">
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="vbox" xmlns="http://javafx.com/javafx/19" spacing="30.0">
     <HBox spacing="30">
-        <Label text="Sensor objective" />
+        <Label text="Sensor objective"/>
         <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
             <Label fx:id="lblSensorObjective" text="N/A"/>
             <Label text="x"/>
@@ -16,7 +15,7 @@
     </HBox>
 
     <HBox spacing="30">
-        <Label text="Connectivity objective" />
+        <Label text="Connectivity objective"/>
         <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
             <Label fx:id="lblConnectivityObjective" text="N/A"/>
             <Label text="x"/>
@@ -27,7 +26,7 @@
     </HBox>
 
     <HBox spacing="30">
-        <Label text="Coverage objective" />
+        <Label text="Coverage objective"/>
         <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
             <Label fx:id="lblCoverageObjective" text="N/A"/>
             <Label text="x"/>

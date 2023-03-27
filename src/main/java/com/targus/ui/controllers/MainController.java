@@ -2,28 +2,26 @@ package com.targus.ui.controllers;
 
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.Sensor;
+import com.targus.utils.Constants;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.ToolBar;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.StrokeType;
-import javafx.stage.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
@@ -72,16 +70,12 @@ public class MainController implements Initializable {
         progressBarController.setMediator(mediator);
         createProblemInstanceController.setMediator(mediator);
 
-//        BorderPane.setMargin(footer, new Insets(10, 10, 10, 10));
-//        BorderPane.setMargin(inputs, new Insets(50, 50, 50, 50));
-//        BorderPane.setMargin(map, new Insets(50, 50, 50, 50));
+        communicationRangeVisibility.setOnAction(event -> Sensor.setCommunicationRangeVisibility(communicationRangeVisibility.isSelected()));
+
+        sensingRangeVisibility.setOnAction(event -> Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected()));
+    }
 
 
-        communicationRangeVisibility.setOnAction(event -> {
-            Sensor.setCommunicationRangeVisibility(communicationRangeVisibility.isSelected());});
-
-        sensingRangeVisibility.setOnAction(event -> {
-            Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected());});
 
         myToolBar.setPadding(new Insets(10, 20, 10, 20));
     }
@@ -112,6 +106,7 @@ public class MainController implements Initializable {
         dialogStage.setResizable(false);
         dialogStage.showAndWait();
     }
+
     public void handleLoadFromFile(ActionEvent event) {
         mediator.loadFromFile(event);
     }
@@ -128,16 +123,14 @@ public class MainController implements Initializable {
         mediator.clean();
     }
 
-    public void handleObjectiveValueDisplay(ActionEvent event) throws IOException {
+    public void handleObjectiveValueDisplay(ActionEvent event) {
         Button button = (Button) event.getSource();
         Scene scene = button.getScene();
         Stage stage = (Stage) scene.getWindow();
 
         if (objectiveValueDisplayController.getStage().isShowing()) {
-            // close the pop-up window
             objectiveValueDisplayController.hide();
         } else {
-            // open the pop-up window
             objectiveValueDisplayController.show(stage);
         }
     }
@@ -145,5 +138,4 @@ public class MainController implements Initializable {
     public void handleResetRegion() {
         mediator.resetRegion();
     }
-
 }

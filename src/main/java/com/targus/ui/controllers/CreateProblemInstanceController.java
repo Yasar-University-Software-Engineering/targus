@@ -1,9 +1,9 @@
 package com.targus.ui.controllers;
+
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNMinimumSensorObjective;
 import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.ui.Mediator;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
@@ -31,12 +31,6 @@ public class CreateProblemInstanceController {
 
     @FXML
     private TextField sensRadiusField;
-
-//    @FXML
-//    private TextField genCountField;
-//
-//    @FXML
-//    private TextField mutRateField;
 
     @FXML
     private CheckBox gridCheckBox;
@@ -77,8 +71,6 @@ public class CreateProblemInstanceController {
         int coverage = Integer.parseInt(coverageField.getText());
         double commRadius = Double.parseDouble(commRadiusField.getText());
         double sensRadius = Double.parseDouble(sensRadiusField.getText());
-//        int genCount = Integer.parseInt(genCountField.getText());
-//        double mutRate = Double.parseDouble(mutRateField.getText());
         int genCount = 1;
         double mutRate = 0.3;
         int distance = 0;
@@ -101,14 +93,14 @@ public class CreateProblemInstanceController {
                         sensRadius,
                         genCount,
                         mutRate),
-        new WSNMinimumSensorObjective()
+                new WSNMinimumSensorObjective()
         );
 
         createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
         dialogStage.close();
     }
 
-    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height, int distance , int numberNodes) {
+    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height, int distance, int numberNodes) {
         mediator.createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
     }
 

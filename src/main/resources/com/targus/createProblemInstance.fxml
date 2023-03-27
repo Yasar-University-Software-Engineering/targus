@@ -1,63 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1"
           vgap="20" hgap="10"
           style="-fx-font-family: Arial; -fx-font-size: 14px; -fx-padding: 20px;">
 
     <columnConstraints>
-        <ColumnConstraints hgrow="NEVER" />
-        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints hgrow="NEVER"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
 
     <rowConstraints>
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
-        <RowConstraints vgrow="NEVER" />
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
+        <RowConstraints vgrow="NEVER"/>
     </rowConstraints>
 
-    <Label text="Width:" />
-    <TextField fx:id="widthField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" />
+    <Label text="Width:"/>
+    <TextField fx:id="widthField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"/>
 
-    <Label text="Height:" GridPane.rowIndex="1" />
-    <TextField fx:id="heightField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <Label text="Height:" GridPane.rowIndex="1"/>
+    <TextField fx:id="heightField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"
+               GridPane.rowIndex="1"/>
 
-    <Label text="Connectivity (m):" GridPane.rowIndex="2" />
-    <TextField fx:id="connectivityField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+    <Label text="Connectivity (m):" GridPane.rowIndex="2"/>
+    <TextField fx:id="connectivityField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"
+               GridPane.rowIndex="2"/>
 
-    <Label text="Coverage (k):" GridPane.rowIndex="3" />
-    <TextField fx:id="coverageField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    <Label text="Coverage (k):" GridPane.rowIndex="3"/>
+    <TextField fx:id="coverageField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"
+               GridPane.rowIndex="3"/>
 
-    <Label text="Communication radius:" GridPane.rowIndex="4" />
-    <TextField fx:id="commRadiusField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+    <Label text="Communication radius:" GridPane.rowIndex="4"/>
+    <TextField fx:id="commRadiusField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"
+               GridPane.rowIndex="4"/>
 
-    <Label text="Sensing radius:" GridPane.rowIndex="5" />
-    <TextField fx:id="sensRadiusField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    <Label text="Sensing radius:" GridPane.rowIndex="5"/>
+    <TextField fx:id="sensRadiusField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"
+               GridPane.rowIndex="5"/>
 
-    <CheckBox fx:id="gridCheckBox" text="Grid layout" onAction="#toggleGridFields" GridPane.rowIndex="6" />
+    <CheckBox fx:id="gridCheckBox" text="Potential Position Grid Placement" onAction="#toggleGridFields"
+              GridPane.rowIndex="6"/>
 
-    <Label fx:id="distanceLabel" text="Distance between nodes:" disable="true" GridPane.rowIndex="7" />
-    <TextField fx:id="distanceField" prefWidth="70" maxWidth="70" alignment="CENTER" disable="true" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+    <Label fx:id="distanceLabel" text="Distance between nodes:" disable="true" GridPane.rowIndex="7"/>
+    <TextField fx:id="distanceField" prefWidth="70" maxWidth="70" alignment="CENTER" disable="true"
+               GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-    <CheckBox fx:id="randomPlacementCheckbox" text="Random Target Placement" GridPane.rowIndex="8" onAction="#toggleRandomPlacement"/>
+    <CheckBox fx:id="randomPlacementCheckbox" text="Random Target Placement" GridPane.rowIndex="8"
+              onAction="#toggleRandomPlacement"/>
 
-    <Label fx:id="numNodesLabel" text="Number of Nodes:" disable="true" GridPane.rowIndex="9" />
-    <TextField fx:id="numNodesField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1" disable="true" GridPane.rowIndex="9" />
+    <Label fx:id="numNodesLabel" text="Number of Nodes:" disable="true" GridPane.rowIndex="9"/>
+    <TextField fx:id="numNodesField" prefWidth="70" maxWidth="70" alignment="CENTER" GridPane.columnIndex="1"
+               disable="true" GridPane.rowIndex="9"/>
 
     <Button text="OK" onAction="#submit" GridPane.rowIndex="10" GridPane.columnSpan="2"
-            style="-fx-background-color: #BEBEBE; -fx-font-family: Arial; -fx-font-size: 16" GridPane.halignment="CENTER"/>
+            style="-fx-background-color: #BEBEBE; -fx-font-family: Arial; -fx-font-size: 16"
+            GridPane.halignment="CENTER"/>
 </GridPane>

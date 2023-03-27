@@ -1,6 +1,7 @@
 package com.targus.ui.controllers;
 
 import com.targus.ui.Mediator;
+import com.targus.utils.Constants;
 import javafx.scene.control.Label;
 
 public class SimplifiedObjectiveValueDisplayController {

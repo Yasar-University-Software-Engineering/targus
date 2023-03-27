@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-
-<?import javafx.scene.control.Label?>
-<!--<HBox xmlns="http://javafx.com/javafx"-->
-<!--      xmlns:fx="http://javafx.com/fxml"-->
-<!--      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController">-->
-
-<!--    <Label fx:id="sensorObjective" text="Sensor Objective: "/>-->
-<!--    <Label fx:id="connectivityObjective" text="Connectivity Objective: "/>-->
-<!--    <Label fx:id="coverageObjective" text="Coverage Objective: "/>-->
-<!--    <Label fx:id="fitnessValue" text="Fitness Value: "/>-->
-<!--</HBox>-->
-
-<?import javafx.scene.control.Separator?>
-<HBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<HBox xmlns:fx="http://javafx.com/fxml"
+      xmlns="http://javafx.com/javafx"
       fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController" spacing="5">
 
     <Label styleClass="objective-label" text="Sensor Objective: "/>

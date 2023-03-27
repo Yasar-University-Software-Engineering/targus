@@ -2,31 +2,30 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.Circle?>
-
+<?import javafx.scene.shape.*?>
 <HBox xmlns="http://javafx.com/javafx" alignment="CENTER_RIGHT" spacing="5">
     <HBox alignment="CENTER">
-        <Circle fill="RED" radius="10.0" stroke="RED" strokeType="INSIDE" />
-        <Label text=" : Target" />
+        <Circle fill="RED" radius="10.0" stroke="RED" strokeType="INSIDE"/>
+        <Label text=" : Target"/>
     </HBox>
     <Separator/>
     <HBox alignment="CENTER">
-        <Circle fill="WHITE" radius="10.0" stroke="RED" strokeType="INSIDE" />
-        <Label text=" : Potential Position" />
+        <Circle fill="WHITE" radius="10.0" stroke="RED" strokeType="INSIDE"/>
+        <Label text=" : Potential Position"/>
     </HBox>
     <Separator/>
     <HBox alignment="CENTER">
-        <Circle fill="GREEN" radius="10.0" stroke="BLACK" strokeType="INSIDE" />
-        <Label text=" : Sensor" />
+        <Circle fill="GREEN" radius="10.0" stroke="BLACK" strokeType="INSIDE"/>
+        <Label text=" : Sensor"/>
     </HBox>
     <Separator/>
     <HBox alignment="CENTER">
-        <Circle fill="#D1EAF2" radius="10.0" stroke="#6597B8" strokeType="INSIDE" />
-        <Label text=" : Sensing Range" />
+        <Circle fill="#D1EAF2" radius="10.0" stroke="#6597B8" strokeType="INSIDE"/>
+        <Label text=" : Sensing Range"/>
     </HBox>
     <Separator/>
     <HBox alignment="CENTER">
-        <Circle fill="#FFF5E6" radius="10.0" stroke="#FFA07A" strokeType="INSIDE" />
-        <Label text=" : Communication Range" />
+        <Circle fill="#FFF5E6" radius="10.0" stroke="#FFA07A" strokeType="INSIDE"/>
+        <Label text=" : Communication Range"/>
     </HBox>
 </HBox>

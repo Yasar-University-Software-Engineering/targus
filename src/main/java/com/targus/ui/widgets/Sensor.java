@@ -1,10 +1,9 @@
 package com.targus.ui.widgets;
 
 import javafx.scene.Group;
-import javafx.scene.control.CheckBox;
 import javafx.scene.effect.BlendMode;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
@@ -15,10 +14,25 @@ public class Sensor extends Group {
     private static boolean STATIC_VARIABLES_INITIALIZED = false;
     private static boolean communicationRangeVisible = true;
     private static boolean sensingRangeVisible = true;
-    private Circle sensor;
-    private Circle communicationRange;
-    private Circle sensingRange;
-    private static ArrayList<Sensor> allSensors = new ArrayList<>();
+    private static final ArrayList<Sensor> allSensors = new ArrayList<>();
+    private final Circle sensorDevice;
+    private final Circle communicationRange;
+    private final Circle sensingRange;
+
+    public Sensor(double centerX, double centerY) {
+        if (!staticVariablesInitialized()) {
+            throw new IllegalStateException("Radii are not initialized.");
+        }
+        allSensors.add(this);
+
+        sensorDevice = new Circle(centerX, centerY, 4);
+        sensorDevice.setFill(Color.GREEN);
+
+        communicationRange = initializeCommunicationRange(centerX, centerY);
+        sensingRange = initializeSensingRange(centerX, centerY);
+
+        getChildren().addAll(sensorDevice, sensingRange, communicationRange);
+    }
 
     public static void initializeRadii(double communicationRadius, double sensingRadius) {
         setCommunicationRadius(communicationRadius);
@@ -45,21 +59,6 @@ public class Sensor extends Group {
         }
     }
 
-    public Sensor(double centerX, double centerY) {
-        if (!staticVariablesInitialized()) {
-            throw new IllegalStateException("Radii are not initialized.");
-        }
-        allSensors.add(this);
-
-        sensor = new Circle(centerX, centerY, 4);
-        sensor.setFill(Color.GREEN);
-
-        communicationRange = initializeCommunicationRange(centerX, centerY);
-        sensingRange = initializeSensingRange(centerX, centerY);
-
-        getChildren().addAll(sensor, sensingRange, communicationRange);
-    }
-
     private Circle initializeCommunicationRange(double centerX, double centerY) {
         Circle communicationRange = new Circle(centerX, centerY, COMMUNICATION_RADIUS);
         communicationRange.setStroke(Paint.valueOf("#FFA07A"));
@@ -71,7 +70,7 @@ public class Sensor extends Group {
     }
 
     private Circle initializeSensingRange(double centerX, double centerY) {
-        Circle sensingRange = new Circle(centerX ,centerY, SENSING_RADIUS);
+        Circle sensingRange = new Circle(centerX, centerY, SENSING_RADIUS);
         sensingRange.setStroke(Paint.valueOf("#6597B8"));
         sensingRange.setFill(Paint.valueOf("#D1EAF2"));
         sensingRange.setBlendMode(BlendMode.SRC_OVER);
@@ -81,11 +80,11 @@ public class Sensor extends Group {
     }
 
     public double getCenterX() {
-        return sensor.getCenterX();
+        return sensorDevice.getCenterX();
     }
 
     public double getCenterY() {
-        return sensor.getCenterY();
+        return sensorDevice.getCenterY();
     }
 
     public double getCommunicationRadius() {
@@ -112,11 +111,7 @@ public class Sensor extends Group {
         return sensingRange;
     }
 
-    public void addToPane(Pane pane) {
-        pane.getChildren().add(this);
-    }
-
-    public void removeFromPane(Pane pane) {
-        pane.getChildren().remove(this);
+    public Circle getSensorDevice() {
+        return sensorDevice;
     }
 }

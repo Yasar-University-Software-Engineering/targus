@@ -26,8 +26,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -44,6 +42,15 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class InputsController implements Initializable {
+    private final ArrayList<Point2D> targets = new ArrayList<>();
+    private final ArrayList<Point2D> potentialPositions = new ArrayList<>();
+    private final ArrayList<Sensor> sensors = new ArrayList<>();
+    private final IntegerProperty mProperty = new SimpleIntegerProperty(1);
+    private final IntegerProperty kProperty = new SimpleIntegerProperty(1);
+    private final DoubleProperty communicationRangeProperty = new SimpleDoubleProperty(100);
+    private final DoubleProperty sensingRangeProperty = new SimpleDoubleProperty(50);
+    private final IntegerProperty generationCountProperty = new SimpleIntegerProperty(1000);
+    private final DoubleProperty mutationRateProperty = new SimpleDoubleProperty(0.3);
     @FXML
     private TextField txtM;
     @FXML
@@ -58,18 +65,6 @@ public class InputsController implements Initializable {
     private TextField txtGenerationCount;
     private int paneWidth;
     private int paneHeight;
-    private final ArrayList<Point2D> targets = new ArrayList<>();
-    private final ArrayList<Point2D> potentialPositions = new ArrayList<>();
-    private final ArrayList<Sensor> sensors = new ArrayList<>();
-    private final IntegerProperty mProperty = new SimpleIntegerProperty(1);
-    private final IntegerProperty kProperty = new SimpleIntegerProperty(1);
-    private final DoubleProperty communicationRangeProperty = new SimpleDoubleProperty(100);
-    private final DoubleProperty sensingRangeProperty = new SimpleDoubleProperty(50);
-    private final IntegerProperty generationCountProperty = new SimpleIntegerProperty(1000);
-    private final DoubleProperty mutationRateProperty = new SimpleDoubleProperty(0.3);
-
-    @FXML
-    ChoiceBox<String> choiceBox = new ChoiceBox<>();
     private OptimizationProblem wsnOptimizationProblem;
     private Solution solution;
     private Mediator mediator;
@@ -94,17 +89,12 @@ public class InputsController implements Initializable {
         txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
         txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
         txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
-
-        choiceBox.getItems().add("Standard GA");
-        choiceBox.getItems().add("Improved GA");
-        choiceBox.getItems().add("Greedy Algorithm");
-        choiceBox.setValue("Standard GA");
     }
 
     public void handleLoadFromFile(ActionEvent event) {
 
         FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File("./src/main/resources/json/"));
+        fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
 
         Button button = (Button) event.getSource();
@@ -174,7 +164,7 @@ public class InputsController implements Initializable {
     public void handleExportToFile(ActionEvent event) {
         try {
             FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("./src/main/resources/json/"));
+            fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
 
             Button button = (Button) event.getSource();
@@ -285,7 +275,7 @@ public class InputsController implements Initializable {
     }
 
     @FXML
-    public void handleSolve()  {
+    public void handleSolve() {
         disableTextField(true);
 
         handleCleanSolution();
@@ -310,7 +300,7 @@ public class InputsController implements Initializable {
         }
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
-       // progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
+        // progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
         mediator.bindProgressBar(progressTask.progressProperty());
 
         Thread thread = new Thread(progressTask);
@@ -336,7 +326,7 @@ public class InputsController implements Initializable {
 
             Sensor.initializeRadii(communicationRangeProperty.get(), sensingRangeProperty.get());
 
-            for (Integer index: indexes) {
+            for (Integer index : indexes) {
                 Point2D potentialPosition = potentialPositionArray[index];
                 Sensor sensor = null;
 
@@ -346,7 +336,6 @@ public class InputsController implements Initializable {
                     throw new IllegalStateException(illegalStateException.getMessage());
                 }
 
-                mediator.addChild(sensor);
                 mediator.addSensorToPane(sensor);
                 addSensor(sensor);
             }
@@ -373,13 +362,11 @@ public class InputsController implements Initializable {
     private void initProblemInstance() {
         mediator.resizeMapPane(paneWidth, paneHeight);
 
-        for (Point2D target: targets) {
-            mediator.addChild(new Target(target.getX(), target.getY()));
+        for (Point2D target : targets) {
             mediator.addTargetToPane(new Target(target.getX(), target.getY()));
         }
 
-        for (Point2D potentialPosition: potentialPositions) {
-            mediator.addChild(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
+        for (Point2D potentialPosition : potentialPositions) {
             mediator.addPotentialPositionToPane(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
         }
 
@@ -439,7 +426,7 @@ public class InputsController implements Initializable {
 
         for (int i = 0; i < potentialPositions.size(); i++) {
             if (df.format(potentialPositions.get(i).getX()).equals(df.format(x))
-            && df.format(potentialPositions.get(i).getY()).equals(df.format(y))) {
+                    && df.format(potentialPositions.get(i).getY()).equals(df.format(y))) {
                 BitString bitString = (BitString) solution.getRepresentation();
                 bitString.set(i, false);
             }

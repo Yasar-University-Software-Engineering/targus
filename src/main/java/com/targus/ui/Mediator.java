@@ -9,9 +9,6 @@ import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
-import javafx.scene.control.CheckBox;
-
-import java.nio.file.StandardWatchEventKinds;
 
 public class Mediator {
     private MainController mainController;
@@ -22,7 +19,9 @@ public class Mediator {
     private ProgressBarController progressBarController;
     private CreateProblemInstanceController createProblemInstanceController;
 
-    public void setMainController(MainController mainController) { this.mainController = mainController; }
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
 
     public void setInputsController(InputsController inputsController) {
         this.inputsController = inputsController;
@@ -55,11 +54,6 @@ public class Mediator {
 
     public void display() {
         objectiveValueDisplayController.display();
-    }
-
-    public void addChild(Object child) {
-        mapController.addChild(child);
-        display();
     }
 
     public void removeChild(Object child) {

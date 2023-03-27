@@ -7,11 +7,11 @@ import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.represent.BitString;
 import com.targus.ui.Main;
 import com.targus.ui.Mediator;
+import com.targus.utils.Constants;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -95,7 +95,7 @@ public class ObjectiveValueDisplayController {
         setText(lblSensorObjective, sensorValueScaled);
         setText(lblWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
         setText(lblWeightSensorObjectiveResult, weightedSensorValue);
-        return  weightedSensorValue;
+        return weightedSensorValue;
     }
 
     private double mConnectivityValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
@@ -116,7 +116,11 @@ public class ObjectiveValueDisplayController {
         return weightedKCoverageValue;
     }
 
-    private void setText(Label label, double value) {
+    private void setText(Label label, String value) {
+        label.setText(value);
+    }
+
+    private void setText(Label label, Double value) {
         label.setText(String.format("%.3f", value));
     }
 
@@ -136,7 +140,7 @@ public class ObjectiveValueDisplayController {
             }
         }
 
-        stage.show(); // show the window after owner is set
+        stage.show();
     }
 
     public void hide() {

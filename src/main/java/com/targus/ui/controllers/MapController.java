@@ -1,33 +1,30 @@
 package com.targus.ui.controllers;
 
 import com.targus.ui.Mediator;
-import com.targus.ui.widgets.CoordinateSystemPane;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import javafx.fxml.FXML;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Scale;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapController {
     @FXML
     public Pane mainPane;
-    private Mediator mediator;
     MenuItem createTarget = new MenuItem("Create Target");
     MenuItem createPotentialPosition = new MenuItem("Create Potential Position");
     MenuItem createSensor = new MenuItem("Create Sensor");
     MenuItem removeSensor = new MenuItem("Remove Sensor");
+    private Mediator mediator;
 
     public void initialize() {
         Rectangle clip = new Rectangle();
@@ -51,13 +48,11 @@ public class MapController {
         if (event.getButton() == MouseButton.SECONDARY) {
             context.show(mainPane, event.getScreenX(), event.getScreenY());
             createTarget.setOnAction(actionEvent -> {
-                addChild(new Target(event.getX(), event.getY()));
                 addTargetToPane(new Target(event.getX(), event.getY()));
                 mediator.addTarget(new Target(event.getX(), event.getY()));
             });
 
             createPotentialPosition.setOnAction(actionEvent -> {
-                addChild(new PotentialPosition(event.getX(), event.getY()));
                 addPotentialPositionToPane(new PotentialPosition(event.getX(), event.getY()));
                 mediator.addPotentialPosition(new PotentialPosition(event.getX(), event.getY()));
             });
@@ -65,7 +60,6 @@ public class MapController {
             createSensor.setOnAction(actionEvent -> {
                 PotentialPosition potentialPosition = (PotentialPosition) event.getTarget();
                 Sensor sensor = new Sensor(potentialPosition.getCenterX(), potentialPosition.getCenterY());
-                addChild(sensor);
                 addSensorToPane(sensor);
                 mediator.addSensor(sensor);
             });
@@ -78,12 +72,12 @@ public class MapController {
                 for (Node node : mainPane.getChildren()) {
                     if (node instanceof Sensor) {
                         if (circle.getCenterX() == ((Sensor) node).getCenterX()
-                        && circle.getCenterY() == ((Sensor) node).getCenterY()) {
+                                && circle.getCenterY() == ((Sensor) node).getCenterY()) {
                             sensor = (Sensor) node;
                         }
                     }
                 }
-                
+
                 removeChild(sensor);
                 mediator.removeSensor(sensor);
             });
@@ -108,7 +102,8 @@ public class MapController {
 
     public void resetRegion() {
         removeChildren();
-        mainPane.setMaxSize(0,0);
+        mainPane.setMaxSize(0, 0);
+        mediator.displayNonApplicable();
     }
 
     public void resizePane(double width, double height) {
@@ -118,9 +113,6 @@ public class MapController {
         mainPane.setMaxHeight(1000);
     }
 
-    public void addChild(Object child) {
-        if (child instanceof Circle) {
-            mainPane.getChildren().add((Circle) child);
     public void addTargetToPane(Target target) {
         mainPane.getChildren().add(target);
     }
