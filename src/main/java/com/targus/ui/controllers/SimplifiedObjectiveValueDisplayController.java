@@ -21,4 +21,11 @@ public class SimplifiedObjectiveValueDisplayController {
         double total = weightedSensorValue + weightedMConnValue + weightedKCovValue;
         fitnessValue.setText(String.format("%.3f", total));
     }
+
+    public void simplifiedDisplayNonApplicable() {
+        sensorObjective.setText(Constants.NON_APPLICABLE);
+        connectivityObjective.setText(Constants.NON_APPLICABLE);
+        coverageObjective.setText(Constants.NON_APPLICABLE);
+        fitnessValue.setText(Constants.NON_APPLICABLE);
+    }
 }

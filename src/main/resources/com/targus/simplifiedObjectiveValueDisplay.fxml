@@ -19,20 +19,20 @@
       fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController" spacing="5">
 
     <Label styleClass="objective-label" text="Sensor Objective: "/>
-    <Label fx:id="sensorObjective" styleClass="objective-value" text="0.000"/>
+    <Label fx:id="sensorObjective" styleClass="objective-value" text="N/A"/>
 
     <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
 
     <Label styleClass="objective-label" text="Connectivity Objective: "/>
-    <Label fx:id="connectivityObjective" styleClass="objective-value" text="0.000"/>
+    <Label fx:id="connectivityObjective" styleClass="objective-value" text="N/A"/>
 
     <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
 
     <Label styleClass="objective-label" text="Coverage Objective: "/>
-    <Label fx:id="coverageObjective" styleClass="objective-value" text="0.000"/>
+    <Label fx:id="coverageObjective" styleClass="objective-value" text="N/A"/>
 
     <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
 
     <Label styleClass="fitness-label" text="Fitness Value: "/>
-    <Label fx:id="fitnessValue" styleClass="fitness-value" text="0.000"/>
+    <Label fx:id="fitnessValue" styleClass="fitness-value" text="N/A"/>
 </HBox>

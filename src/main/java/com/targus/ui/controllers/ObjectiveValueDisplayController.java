@@ -146,4 +146,22 @@ public class ObjectiveValueDisplayController {
     public Stage getStage() {
         return stage;
     }
+
+    public void displayNonApplicable() {
+        setText(lblSensorObjective, Constants.NON_APPLICABLE);
+        setText(lblWeightSensorObjective, Constants.NON_APPLICABLE);
+        setText(lblWeightSensorObjectiveResult, Constants.NON_APPLICABLE);
+
+        setText(lblConnectivityObjective, Constants.NON_APPLICABLE);
+        setText(lblWeightConnectivityObjective, Constants.NON_APPLICABLE);
+        setText(lblWeightConnectivityObjectiveResult, Constants.NON_APPLICABLE);
+
+        setText(lblCoverageObjective, Constants.NON_APPLICABLE);
+        setText(lblWeightCoverageObjective, Constants.NON_APPLICABLE);
+        setText(lblWeightCoverageObjectiveResult, Constants.NON_APPLICABLE);
+
+        setText(lblTotalResult, Constants.NON_APPLICABLE);
+
+        mediator.simplifiedDisplayNonApplicable();
+    }
 }
