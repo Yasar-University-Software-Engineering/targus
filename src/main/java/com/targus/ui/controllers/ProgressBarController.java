@@ -14,6 +14,10 @@ public class ProgressBarController {
 
     private Mediator mediator;
 
+    public void initialize() {
+        setProgressBarVisible(false);
+    }
+
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
     }
@@ -24,5 +28,10 @@ public class ProgressBarController {
 
     public void bindProgressBar(ReadOnlyDoubleProperty property) {
         progressBar.progressProperty().bind(property);
+    }
+
+    public void setProgressBarVisible(boolean visible) {
+        progressBar.setVisible(visible);
+        gaProgressLabel.setVisible(visible);
     }
 }

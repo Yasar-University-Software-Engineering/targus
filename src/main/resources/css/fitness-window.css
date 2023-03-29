@@ -1,0 +1,25 @@
+/* Set background color */
+.root {
+    -fx-background-color: #f4f4f4;
+}
+
+/* Style labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Style the "Fitness Value" label */
+#txtTotalResult {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Style the HBox elements */
+.hbox {
+    -fx-spacing: 10px;
+}
+
+#vbox {
+    -fx-padding: 10px;
+}

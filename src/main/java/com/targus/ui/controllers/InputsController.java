@@ -21,12 +21,14 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 import java.io.BufferedWriter;
@@ -40,24 +42,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class InputsController implements Initializable {
-    @FXML
-    private TextField txtAreaWidth;
-    @FXML
-    private TextField txtAreaHeight;
-    @FXML
-    private TextField txtM;
-    @FXML
-    private TextField txtK;
-    @FXML
-    private TextField txtCommunicationRange;
-    @FXML
-    private TextField txtSensingRange;
-    @FXML
-    private TextField txtMutationRate;
-    @FXML
-    private TextField txtGenerationCount;
-    private int paneWidth;
-    private int paneHeight;
     private final ArrayList<Point2D> targets = new ArrayList<>();
     private final ArrayList<Point2D> potentialPositions = new ArrayList<>();
     private final ArrayList<Sensor> sensors = new ArrayList<>();
@@ -67,10 +51,21 @@ public class InputsController implements Initializable {
     private final DoubleProperty sensingRangeProperty = new SimpleDoubleProperty(50);
     private final IntegerProperty generationCountProperty = new SimpleIntegerProperty(1000);
     private final DoubleProperty mutationRateProperty = new SimpleDoubleProperty(0.3);
-
     @FXML
-    ChoiceBox<String> choiceBox = new ChoiceBox<>();
-    private OptimizationProblem optimizationProblem;
+    private TextField txtM;
+    @FXML
+    private TextField txtK;
+    @FXML
+    private TextField txtCommunicationRange;
+    @FXML
+    private TextField txtSensingRange;
+//    @FXML
+//    private TextField txtMutationRate;
+//    @FXML
+//    private TextField txtGenerationCount;
+    private int paneWidth;
+    private int paneHeight;
+    private OptimizationProblem wsnOptimizationProblem;
     private Solution solution;
     private Mediator mediator;
 
@@ -78,8 +73,8 @@ public class InputsController implements Initializable {
         this.mediator = mediator;
     }
 
-    public OptimizationProblem getOptimizationProblem() {
-        return optimizationProblem;
+    public OptimizationProblem getWsnOptimizationProblem() {
+        return wsnOptimizationProblem;
     }
 
     public Solution getSolution() {
@@ -92,26 +87,24 @@ public class InputsController implements Initializable {
         txtK.textProperty().bindBidirectional(kProperty, new NumberStringConverter());
         txtCommunicationRange.textProperty().bindBidirectional(communicationRangeProperty, new NumberStringConverter());
         txtSensingRange.textProperty().bindBidirectional(sensingRangeProperty, new NumberStringConverter());
-        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
-        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
-
-        choiceBox.getItems().add("Standard GA");
-        choiceBox.getItems().add("Improved GA");
-        choiceBox.getItems().add("Greedy Algorithm");
-        choiceBox.setValue("Standard GA");
+//        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
+//        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
     }
 
-    public void handleLoadFromFile() {
-        mediator.resetRegion();
+    public void handleLoadFromFile(ActionEvent event) {
 
         FileChooser fc = new FileChooser();
-        fc.setInitialDirectory(new File("./src/main/resources/json/"));
+        fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-        File f = fc.showOpenDialog(null);
+
+        Button button = (Button) event.getSource();
+        Stage stage = (Stage) button.getScene().getWindow();
+        File f = fc.showOpenDialog(stage);
 
         if (f == null) {
             return;
         }
+        mediator.resetRegion();
 
         String src = f.getAbsolutePath();
 
@@ -134,6 +127,7 @@ public class InputsController implements Initializable {
                 Point2D target = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
                 targetArray[i] = target;
             }
+
 
             JsonNode potentialPositionsNode = parser.path(Constants.POTENTIAL_POSITIONS);
             potentialPositionArray = new Point2D[potentialPositionsNode.size()];
@@ -164,16 +158,18 @@ public class InputsController implements Initializable {
         for (Point2D point2D : potentialPositionArray) {
             addPotentialPosition(new PotentialPosition(point2D.getX(), point2D.getY()));
         }
-
         initProblemInstance();
     }
 
-    public void handleExportToFile() {
+    public void handleExportToFile(ActionEvent event) {
         try {
             FileChooser fc = new FileChooser();
-            fc.setInitialDirectory(new File("./src/main/resources/json/"));
+            fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
-            File f = fc.showSaveDialog(null);
+
+            Button button = (Button) event.getSource();
+            Stage stage = (Stage) button.getScene().getWindow();
+            File f = fc.showSaveDialog(stage);
 
             if (f == null) {
                 return;
@@ -219,18 +215,32 @@ public class InputsController implements Initializable {
         }
     }
 
-    @FXML
-    void handleGenerateGrid() {
-        for (int i = 5; i < paneHeight; i += 25) {
-            for (int j = 10; j < paneWidth; j += 25) {
+    public void handleGenerateGrid(int distance) {
+        if (distance == 0) {
+            return;
+        }
+
+        for (double i = distance; i < paneHeight; i += distance) {
+            for (double j = distance; j < paneWidth; j += distance) {
                 addPotentialPosition(new PotentialPosition(j, i));
             }
         }
-        initProblemInstance();
+    }
+
+    public void handleGenerateRandomTarget(int numberNodes) {
+        if (numberNodes == 0) {
+            return;
+        }
+
+        for (int i = 0; i < numberNodes; i++) {
+            double x = Math.random() * paneWidth;
+            double y = Math.random() * paneHeight;
+            addTarget(new Target(x, y));
+        }
     }
 
     @FXML
-    void handleCleanSolution() {
+    public void handleCleanSolution() {
         for (Sensor sensor : sensors) {
             mediator.removeChild(sensor);
         }
@@ -244,53 +254,94 @@ public class InputsController implements Initializable {
         mediator.display();
     }
 
-    public GA buildStandardGA(WSN wsn) {
+    public TerminalState buildTerminalState() {
+        TerminalState terminalState;
+        int terminationValue = mediator.getTerminationValue();
+
+        if (mediator.getTermination().equals("Time Based")) {
+            terminalState = new TimeBasedTerminal(terminationValue);
+        } else if (mediator.getTermination().equals("Iteration Based")) {
+            terminalState = new IterationBasedTerminal(terminationValue);
+        } else {
+            terminalState = null;
+        }
+
+        return terminalState;
+    }
+
+    public MutationOperator buildMutationOperator() {
+        MutationOperator mutationOperator;
+        Double mutationRate = mediator.getMutationRate();
+
+        if (mediator.getMutation().equals("OneBitMutation")) {
+            mutationOperator = new OneBitMutation(mutationRate);
+        } else if (mediator.getMutation().equals("KBitMutation")) {
+            mutationOperator = new KBitMutation(mutationRate);
+        } else {
+            mutationOperator = null;
+        }
+
+        return mutationOperator;
+    }
+
+    public GA buildStandardGA() {
+        MutationOperator mutationOperator = buildMutationOperator();
+        TerminalState terminalState = buildTerminalState();
+
         return StandardGA
-                .builder(optimizationProblem)
+                .builder(wsnOptimizationProblem)
                 .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
-                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .setMutationOperator(mutationOperator)
+                .setTerminalState(terminalState)
                 .build();
     }
 
     // TODO: replace wsn.getGenerationCount() with time
     public GA buildImprovedGA(WSN wsn) {
+        MutationOperator mutationOperator = buildMutationOperator();
+        TerminalState terminalState = buildTerminalState();
+
         return ImprovedGA
-                .builder(optimizationProblem)
+                .builder(wsnOptimizationProblem)
                 .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
-                .setTerminalState(new TimeBasedTerminal(wsn.getGenerationCount()))
+                .setTerminalState(terminalState)
                 .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(new OneBitMutation())
+                .setMutationOperator(mutationOperator)
                 .build();
     }
 
     @FXML
-    void handleSolve()  {
+    public void handleSolve() {
         disableTextField(true);
 
         handleCleanSolution();
         initProblemInstance();
 
-        WSN wsn = (WSN) optimizationProblem.model();
+        WSN wsn = (WSN) wsnOptimizationProblem.model();
 
-        GA ga = buildImprovedGA(wsn); // In case choice box doesn't get initialized properly
+        String algorithmType = mediator.getAlgorithm();
 
-        if (choiceBox.getValue().equals("Standard GA")) {
-            ga = buildStandardGA(wsn);
-        } else if (choiceBox.getValue().equals("Improved GA")) {
-            ga = buildImprovedGA(wsn);
-        } else if (choiceBox.getValue().equals("Greedy Algorithm")) {
-            ga = null;
-        } else {
-            try {
-                throw new Exception("No such algorithm available");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+        // TODO: we should replace this line with -> SingleObjectiveOA algorithm
+        // I was going to do that but the progress bar fails. Since it takes time
+        // to refactor this, I will leave it for later
+        GA ga;
+
+        switch (algorithmType) {
+            case Constants.STANDARD_GA -> ga = buildStandardGA();
+            case Constants.IMPROVED_GA -> ga = buildImprovedGA(wsn);
+            case Constants.SIMULATED_ANNEALING -> ga = buildSimulatedAnnealing(wsn);
+            case Constants.GREEDY_ALGORITHM -> ga = buildGreedyAlgorithm(wsn);
+            default -> {
+                try {
+                    throw new Exception("No such algorithm available");
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
         ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
-        progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
+        // progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
         mediator.bindProgressBar(progressTask.progressProperty());
 
         Thread thread = new Thread(progressTask);
@@ -301,12 +352,13 @@ public class InputsController implements Initializable {
         Task<Solution> gaTask = new Task<>() {
             @Override
             protected Solution call() {
+                mediator.setProgressBarVisible(true);
                 return finalGa.perform();
             }
         };
 
         gaTask.setOnSucceeded(e -> {
-            mediator.setProgressLabelText("GA is completed!");
+            mediator.setProgressBarVisible(false);
             solution = gaTask.getValue();
             BitString bitString = (BitString) solution.getRepresentation();
             HashSet<Integer> indexes = bitString.ones();
@@ -315,7 +367,7 @@ public class InputsController implements Initializable {
 
             Sensor.initializeRadii(communicationRangeProperty.get(), sensingRangeProperty.get());
 
-            for (Integer index: indexes) {
+            for (Integer index : indexes) {
                 Point2D potentialPosition = potentialPositionArray[index];
                 Sensor sensor = null;
 
@@ -325,15 +377,26 @@ public class InputsController implements Initializable {
                     throw new IllegalStateException(illegalStateException.getMessage());
                 }
 
-                mediator.addChild(sensor);
+                mediator.addSensorToPane(sensor);
                 addSensor(sensor);
             }
+
+            mediator.bringTargetsToFront();
+            mediator.bringPotentialPositionsToFront();
+            mediator.bringSensorDevicesToFront();
+
             mediator.display();
             disableTextField(false);
         });
         new Thread(gaTask).start();
-        // Below line is duplicated on purpose. It will be removed in the refactoring phase
-        mediator.setProgressLabelText("GA is completed!");
+    }
+
+    private GA buildGreedyAlgorithm(WSN wsn) {
+        return null;
+    }
+
+    private GA buildSimulatedAnnealing(WSN wsn) {
+        return null;
     }
 
     private void disableTextField(boolean bool) {
@@ -341,19 +404,19 @@ public class InputsController implements Initializable {
         txtK.setDisable(bool);
         txtCommunicationRange.setDisable(bool);
         txtSensingRange.setDisable(bool);
-        txtGenerationCount.setDisable(bool);
-        txtMutationRate.setDisable(bool);
+//        txtGenerationCount.setDisable(bool);
+//        txtMutationRate.setDisable(bool);
     }
 
     private void initProblemInstance() {
         mediator.resizeMapPane(paneWidth, paneHeight);
 
-        for (Point2D target: targets) {
-            mediator.addChild(new Target(target.getX(), target.getY()));
+        for (Point2D target : targets) {
+            mediator.addTargetToPane(new Target(target.getX(), target.getY()));
         }
 
-        for (Point2D potentialPosition: potentialPositions) {
-            mediator.addChild(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
+        for (Point2D potentialPosition : potentialPositions) {
+            mediator.addPotentialPositionToPane(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
         }
 
         Point2D[] targetArray = new Point2D[targets.size()];
@@ -373,27 +436,10 @@ public class InputsController implements Initializable {
                 kProperty.get(),
                 communicationRangeProperty.get(),
                 sensingRangeProperty.get(),
-                generationCountProperty.get(),
-                mutationRateProperty.get());
+                0, // Dummy values
+                0.0);
 
-        optimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
-    }
-
-    @FXML
-    void handleResetRegion() {
-        mediator.resetRegion();
-    }
-
-    @FXML
-    void handleRemoveChildren() {
-        mediator.removeChildren();
-    }
-
-    @FXML
-    public void handleResizeMapPane() {
-        paneWidth = Integer.parseInt(txtAreaWidth.getText());
-        paneHeight = Integer.parseInt(txtAreaHeight.getText());
-        mediator.resizeMapPane(paneWidth, paneHeight);
+        wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
     }
 
     public void addTarget(Target target) {
@@ -429,7 +475,7 @@ public class InputsController implements Initializable {
 
         for (int i = 0; i < potentialPositions.size(); i++) {
             if (df.format(potentialPositions.get(i).getX()).equals(df.format(x))
-            && df.format(potentialPositions.get(i).getY()).equals(df.format(y))) {
+                    && df.format(potentialPositions.get(i).getY()).equals(df.format(y))) {
                 BitString bitString = (BitString) solution.getRepresentation();
                 bitString.set(i, false);
             }
@@ -448,5 +494,23 @@ public class InputsController implements Initializable {
 
     public void clearSensors() {
         handleCleanSolution();
+    }
+
+    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int paneWidth, int paneHeight, int distance, int numberNodes) {
+        WSN wsn = (WSN) wsnOptimizationProblem.model();
+
+        this.paneWidth = paneWidth;
+        this.paneHeight = paneHeight;
+        mProperty.set(wsn.getM());
+        kProperty.set(wsn.getK());
+        communicationRangeProperty.set(wsn.getCommRange());
+        sensingRangeProperty.set(wsn.getSensRange());
+        generationCountProperty.set(wsn.getGenerationCount());
+        mutationRateProperty.set(wsn.getMutationRate());
+
+        handleGenerateGrid(distance);
+        handleGenerateRandomTarget(numberNodes);
+
+        initProblemInstance();
     }
 }

@@ -1,18 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
-<GridPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.targus.ui.controllers.MainController">
-    <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="50.0" vgrow="SOMETIMES" />
-    </rowConstraints>
-    <fx:include source="inputs.fxml" fx:id="inputs" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-    <fx:include source="objectiveValueDisplay.fxml" fx:id="objectiveValueDisplay" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-    <fx:include source="map.fxml" fx:id="map" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-    <fx:include source="progressBar.fxml" fx:id="progressBar" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-</GridPane>
+<?import java.lang.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19"
+            fx:controller="com.targus.ui.controllers.MainController">
+    <top>
+        <ToolBar>
+            <HBox spacing="20" HBox.hgrow="ALWAYS">
+                <Button onAction="#handleCreateProblemInstance">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/create.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Create instance"/>
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleLoadFromFile">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/load.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Load from file"/>
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleExportToFile">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/write.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Write to file"/>
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleSolve">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/run.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Run"/>
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleCleanSolution">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/clean.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Clean solution"/>
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleObjectiveValueDisplay">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/fitness.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Show fitness value"/>
+                    </tooltip>
+                </Button>
+                <Button onAction="#handleResetRegion">
+                    <graphic>
+                        <ImageView fitHeight="40.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../../icons/trash.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip showDelay="100ms" text="Reset region"/>
+                    </tooltip>
+                </Button>
+                <HBox alignment="BASELINE_RIGHT" HBox.hgrow="ALWAYS">
+                    <VBox alignment="CENTER_LEFT" spacing="10">
+                        <CheckBox fx:id="sensingRangeVisibility" selected="true" text="Sensing Range"/>
+                        <CheckBox fx:id="communicationRangeVisibility" selected="true" text="Communication Range"/>
+                    </VBox>
+                </HBox>
+            </HBox>
+        </ToolBar>
+    </top>
+    <left>
+        <VBox fx:id="left" spacing="30">
+            <fx:include fx:id="inputs" source="inputs.fxml"/>
+            <Separator VBox.vgrow="ALWAYS"/>
+            <ComboBox fx:id="algorithmComboBox" onAction="#handleAlgorithmSelection" value="Please select algorithm">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Standard GA"/>
+                        <String fx:value="Improved GA"/>
+                        <String fx:value="Simulated Annealing"/>
+                        <String fx:value="Greedy Algorithm"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <StackPane fx:id="algorithmInputs" style="-fx-background-color: #f2f2f2;" visible="false">
+                <VBox fx:id="GAInputs" spacing="20">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Mutation Operator: " prefWidth="128"/>
+                        <ComboBox fx:id="mutationComboBox" value="OneBitMutation" prefWidth="128">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="OneBitMutation"/>
+                                    <String fx:value="KBitMutation"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </HBox>
+                    <HBox>
+                        <Label text="Mutation Rate (in %): " prefWidth="128"/>
+                        <TextField fx:id="mutationRateTextField" prefWidth="128" alignment="CENTER"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Termination Type: " prefWidth="128"/>
+                        <ComboBox fx:id="terminationComboBox" prefWidth="128" value="Time Based">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Time Based"/>
+                                    <String fx:value="Iteration Based"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </HBox>
+                    <HBox>
+                        <Label text="Termination value:  " prefWidth="128"/>
+                        <TextField fx:id="terminationTextField" prefWidth="128" alignment="CENTER"/>
+                    </HBox>
+                </VBox>
+            </StackPane>
+            <fx:include fx:id="progressBar" alignment="BOTTOM_CENTER" source="progressBar.fxml" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+    <center>
+        <BorderPane fx:id="pane">
+            <center>
+                <fx:include fx:id="map" source="map.fxml"/>
+            </center>
+            <bottom>
+            </bottom>
+        </BorderPane>
+    </center>
+    <bottom>
+        <VBox>
+            <Separator/>
+            <HBox>
+                <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml"/>
+                <fx:include source="legend.fxml" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>
