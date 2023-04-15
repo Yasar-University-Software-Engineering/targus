@@ -13,11 +13,9 @@ import javafx.event.ActionEvent;
 public class Mediator {
     private MainController mainController;
     private InputsController inputsController;
-    private ObjectiveValueDisplayController objectiveValueDisplayController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
     private MapController mapController;
     private ProgressBarController progressBarController;
-    private CreateProblemInstanceController createProblemInstanceController;
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
@@ -25,10 +23,6 @@ public class Mediator {
 
     public void setInputsController(InputsController inputsController) {
         this.inputsController = inputsController;
-    }
-
-    public void setObjectiveValueDisplayController(ObjectiveValueDisplayController objectiveValueDisplayController) {
-        this.objectiveValueDisplayController = objectiveValueDisplayController;
     }
 
     public void setSimplifiedObjectiveValueDisplayController(
@@ -44,16 +38,12 @@ public class Mediator {
         this.progressBarController = progressBarController;
     }
 
-    public void setCreateProblemInstanceController(CreateProblemInstanceController createProblemInstanceController) {
-        this.createProblemInstanceController = createProblemInstanceController;
-    }
-
     public void resizeMapPane(double width, double height) {
         mapController.resizePane(width, height);
     }
 
     public void display() {
-        objectiveValueDisplayController.display();
+//        objectiveValueDisplayController.display();
     }
 
     public void removeChild(Object child) {
@@ -175,7 +165,7 @@ public class Mediator {
     }
 
     public void displayNonApplicable() {
-        objectiveValueDisplayController.displayNonApplicable();
+//        objectiveValueDisplayController.displayNonApplicable();
     }
 
     public void simplifiedDisplayNonApplicable() {
@@ -200,5 +190,8 @@ public class Mediator {
 
     public int getTerminationValue() {
         return mainController.getTerminationValue();
+    }
+
+    public void setToolBarController(ToolBarController toolBarController) {
     }
 }
