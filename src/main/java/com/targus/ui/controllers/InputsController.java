@@ -37,8 +37,6 @@ import java.util.*;
 public class InputsController implements Initializable {
     private WSNPrototype wsnPrototype = new WSNPrototype();
     private final ArrayList<Sensor> sensors = new ArrayList<>();
-    //    private final IntegerProperty generationCountProperty = new SimpleIntegerProperty(1000);
-//    private final DoubleProperty mutationRateProperty = new SimpleDoubleProperty(0.3);
     @FXML
     private TextField txtM;
     @FXML
@@ -47,14 +45,17 @@ public class InputsController implements Initializable {
     private TextField txtCommunicationRange;
     @FXML
     private TextField txtSensingRange;
-//    @FXML
-//    private TextField txtMutationRate;
-//    @FXML
-//    private TextField txtGenerationCount;
-
     private OptimizationProblem wsnOptimizationProblem;
     private Solution solution;
     private Mediator mediator;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        txtM.textProperty().bindBidirectional(wsnPrototype.getMProperty(), new NumberStringConverter());
+        txtK.textProperty().bindBidirectional(wsnPrototype.getKProperty(), new NumberStringConverter());
+        txtCommunicationRange.textProperty().bindBidirectional(wsnPrototype.getCommunicationRangeProperty(), new NumberStringConverter());
+        txtSensingRange.textProperty().bindBidirectional(wsnPrototype.getSensingRangeProperty(), new NumberStringConverter());
+    }
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
@@ -66,16 +67,6 @@ public class InputsController implements Initializable {
 
     public Solution getSolution() {
         return solution;
-    }
-
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        txtM.textProperty().bindBidirectional(wsnPrototype.getMProperty(), new NumberStringConverter());
-        txtK.textProperty().bindBidirectional(wsnPrototype.getKProperty(), new NumberStringConverter());
-        txtCommunicationRange.textProperty().bindBidirectional(wsnPrototype.getCommunicationRangeProperty(), new NumberStringConverter());
-        txtSensingRange.textProperty().bindBidirectional(wsnPrototype.getSensingRangeProperty(), new NumberStringConverter());
-//        txtGenerationCount.textProperty().bindBidirectional(generationCountProperty, new NumberStringConverter());
-//        txtMutationRate.textProperty().bindBidirectional(mutationRateProperty, new NumberStringConverter());
     }
 
     public void handleLoadFromFile(ActionEvent event) {
@@ -124,19 +115,16 @@ public class InputsController implements Initializable {
                 potentialPositionArray[i] = potentialPos;
             }
 
-            wsnPrototype.getMProperty().set(parser.path(Constants.M).asInt());
-            wsnPrototype.getKProperty().set(parser.path(Constants.K).asInt());
-            wsnPrototype.getCommunicationRangeProperty().set(Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText()));
-            wsnPrototype.getSensingRangeProperty().set(Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText()));
-//            generationCountProperty.set(parser.path(Constants.GENERATION_COUNT).asInt());
-//            mutationRateProperty.set(Double.parseDouble(parser.path(Constants.MUTATION_RATE).asText()));
-
+            wsnPrototype.setM(parser.path(Constants.M).asInt());
+            wsnPrototype.setK(parser.path(Constants.K).asInt());
+            wsnPrototype.setCommunicationRange(Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText()));
+            wsnPrototype.setSensingRange(Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        wsnPrototype.getPaneWidthProperty().set((int) dimensions.getX());
-        wsnPrototype.getPaneHeightProperty().set((int) dimensions.getY());
+        wsnPrototype.setPaneWidth((int) dimensions.getX());
+        wsnPrototype.setPaneHeight((int) dimensions.getY());
 
         for (Point2D point2D : targetArray) {
             addTarget(new Target(point2D.getX(), point2D.getY()));
@@ -169,8 +157,8 @@ public class InputsController implements Initializable {
 
             Map<String, Object> problemInfo = new HashMap<>();
             problemInfo.put(Constants.DIMENSIONS, Arrays.asList(
-                    wsnPrototype.getPaneWidthProperty().get(),
-                    wsnPrototype.getPaneHeightProperty().get()));
+                    wsnPrototype.getPaneWidth(),
+                    wsnPrototype.getPaneHeight()));
 
             List<double[]> targetList = new ArrayList<>();
             for (Point2D target : wsnPrototype.getTargets()) {
@@ -190,12 +178,10 @@ public class InputsController implements Initializable {
             }
             problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
 
-            problemInfo.put(Constants.COMMUNICATION_RADIUS, wsnPrototype.getCommunicationRangeProperty().get());
-            problemInfo.put(Constants.SENSING_RADIUS, wsnPrototype.getSensingRangeProperty().get());
-            problemInfo.put(Constants.M, wsnPrototype.getMProperty().get());
-            problemInfo.put(Constants.K, wsnPrototype.getKProperty().get());
-            problemInfo.put(Constants.GENERATION_COUNT, 0);
-            problemInfo.put(Constants.MUTATION_RATE, 0.0);
+            problemInfo.put(Constants.COMMUNICATION_RADIUS, wsnPrototype.getCommunicationRange());
+            problemInfo.put(Constants.SENSING_RADIUS, wsnPrototype.getSensingRange());
+            problemInfo.put(Constants.M, wsnPrototype.getM());
+            problemInfo.put(Constants.K, wsnPrototype.getK());
 
             writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
             writer.close();
@@ -209,8 +195,8 @@ public class InputsController implements Initializable {
             return;
         }
 
-        for (double i = distance; i < wsnPrototype.getPaneHeightProperty().get(); i += distance) {
-            for (double j = distance; j < wsnPrototype.getPaneWidthProperty().get(); j += distance) {
+        for (double i = distance; i < wsnPrototype.getPaneHeight(); i += distance) {
+            for (double j = distance; j < wsnPrototype.getPaneWidth(); j += distance) {
                 addPotentialPosition(new PotentialPosition(j, i));
             }
         }
@@ -222,8 +208,8 @@ public class InputsController implements Initializable {
         }
 
         for (int i = 0; i < numberNodes; i++) {
-            double x = Math.random() * wsnPrototype.getPaneWidthProperty().get();
-            double y = Math.random() * wsnPrototype.getPaneHeightProperty().get();
+            double x = Math.random() * wsnPrototype.getPaneWidth();
+            double y = Math.random() * wsnPrototype.getPaneHeight();
             addTarget(new Target(x, y));
         }
     }
@@ -355,8 +341,8 @@ public class InputsController implements Initializable {
             Point2D[] potentialPositionArray = wsn.getPotentialPositions();
 
             Sensor.initializeRadii(
-                    wsnPrototype.getCommunicationRangeProperty().get(),
-                    wsnPrototype.getSensingRangeProperty().get());
+                    wsnPrototype.getCommunicationRange(),
+                    wsnPrototype.getSensingRange());
 
             for (Integer index : indexes) {
                 Point2D potentialPosition = potentialPositionArray[index];
@@ -395,12 +381,14 @@ public class InputsController implements Initializable {
         txtK.setDisable(bool);
         txtCommunicationRange.setDisable(bool);
         txtSensingRange.setDisable(bool);
-//        txtGenerationCount.setDisable(bool);
-//        txtMutationRate.setDisable(bool);
     }
 
     private void initProblemInstance() {
         mediator.resizeMapPane(wsnPrototype.getPaneWidthProperty().get(), wsnPrototype.getPaneHeightProperty().get());
+
+        // TODO: In MapController, add options to add targets
+        //  or potential positions by Point2D
+        //  or with their respective objects.
 
         for (Point2D target : wsnPrototype.getTargets()) {
             mediator.addTargetToPane(new Target(target.getX(), target.getY()));
@@ -410,23 +398,23 @@ public class InputsController implements Initializable {
             mediator.addPotentialPositionToPane(new PotentialPosition(potentialPosition.getX(), potentialPosition.getY()));
         }
 
-        Point2D[] targetArray = new Point2D[wsnPrototype.getTargets().size()];
-        Point2D[] potentialPositionArray = new Point2D[wsnPrototype.getPotentialPositions().size()];
+        Point2D[] targetArray = new Point2D[wsnPrototype.getTargetsSize()];
+        Point2D[] potentialPositionArray = new Point2D[wsnPrototype.getPotentialPositionsSize()];
 
         for (int i = 0; i < targetArray.length; i++) {
-            targetArray[i] = wsnPrototype.getTargets().get(i);
+            targetArray[i] = wsnPrototype.getTargetByIndex(i);
         }
 
         for (int i = 0; i < potentialPositionArray.length; i++) {
-            potentialPositionArray[i] = wsnPrototype.getPotentialPositions().get(i);
+            potentialPositionArray[i] = wsnPrototype.getPotentialPositionByIndex(i);
         }
 
         WSN wsn = new WSN(targetArray,
                 potentialPositionArray,
-                wsnPrototype.getMProperty().get(),
-                wsnPrototype.getKProperty().get(),
-                wsnPrototype.getCommunicationRangeProperty().get(),
-                wsnPrototype.getSensingRangeProperty().get(),
+                wsnPrototype.getM(),
+                wsnPrototype.getK(),
+                wsnPrototype.getCommunicationRange(),
+                wsnPrototype.getSensingRange(),
                 0, // Dummy values
                 0.0);
 
@@ -434,11 +422,11 @@ public class InputsController implements Initializable {
     }
 
     public void addTarget(Target target) {
-        wsnPrototype.getTargets().add(new Point2D(target.getCenterX(), target.getCenterY()));
+        wsnPrototype.addTarget(target);
     }
 
     public void addPotentialPosition(PotentialPosition potentialPosition) {
-        wsnPrototype.getPotentialPositions().add(new Point2D(potentialPosition.getCenterX(), potentialPosition.getCenterY()));
+        wsnPrototype.addPotentialPosition(potentialPosition);
     }
 
     public void addSensor(Sensor sensor) {
@@ -448,8 +436,8 @@ public class InputsController implements Initializable {
         DecimalFormat df = new DecimalFormat("#.##");
 
         for (int i = 0; i < wsnPrototype.getPotentialPositions().size(); i++) {
-            if (df.format(wsnPrototype.getPotentialPositions().get(i).getX()).equals(df.format(x))
-                    && df.format(wsnPrototype.getPotentialPositions().get(i).getY()).equals(df.format(y))) {
+            if (df.format(wsnPrototype.getPotentialPositionByIndex(i).getX()).equals(df.format(x))
+                    && df.format(wsnPrototype.getPotentialPositionByIndex(i).getY()).equals(df.format(y))) {
                 BitString bitString = (BitString) solution.getRepresentation();
                 bitString.set(i, true);
             }
@@ -465,8 +453,8 @@ public class InputsController implements Initializable {
         DecimalFormat df = new DecimalFormat("#.##");
 
         for (int i = 0; i < wsnPrototype.getPotentialPositions().size(); i++) {
-            if (df.format(wsnPrototype.getPotentialPositions().get(i).getX()).equals(df.format(x))
-                    && df.format(wsnPrototype.getPotentialPositions().get(i).getY()).equals(df.format(y))) {
+            if (df.format(wsnPrototype.getPotentialPositionByIndex(i).getX()).equals(df.format(x))
+                    && df.format(wsnPrototype.getPotentialPositionByIndex(i).getY()).equals(df.format(y))) {
                 BitString bitString = (BitString) solution.getRepresentation();
                 bitString.set(i, false);
             }
@@ -476,11 +464,11 @@ public class InputsController implements Initializable {
     }
 
     public void clearTargets() {
-        wsnPrototype.getTargets().clear();
+        wsnPrototype.clearTargets();
     }
 
     public void clearPotentialPositions() {
-        wsnPrototype.getPotentialPositions().clear();
+        wsnPrototype.clearPotentialPositions();
     }
 
     public void clearSensors() {
