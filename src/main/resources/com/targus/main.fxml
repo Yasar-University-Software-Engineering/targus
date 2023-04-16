@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19"
             fx:controller="com.targus.ui.controllers.MainController">
     <top>
@@ -13,50 +11,7 @@
         <VBox fx:id="left" spacing="30">
             <fx:include fx:id="inputs" source="inputs.fxml"/>
             <Separator VBox.vgrow="ALWAYS"/>
-            <ComboBox fx:id="algorithmComboBox" onAction="#handleAlgorithmSelection" value="Please select algorithm">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Standard GA"/>
-                        <String fx:value="Improved GA"/>
-                        <String fx:value="Simulated Annealing"/>
-                        <String fx:value="Greedy Algorithm"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
-            <StackPane fx:id="algorithmInputs" style="-fx-background-color: #f2f2f2;" visible="false">
-                <VBox fx:id="GAInputs" spacing="20">
-                    <HBox alignment="CENTER_LEFT">
-                        <Label text="Mutation Operator: " prefWidth="128"/>
-                        <ComboBox fx:id="mutationComboBox" value="OneBitMutation" prefWidth="128">
-                            <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="OneBitMutation"/>
-                                    <String fx:value="KBitMutation"/>
-                                </FXCollections>
-                            </items>
-                        </ComboBox>
-                    </HBox>
-                    <HBox>
-                        <Label text="Mutation Rate (in %): " prefWidth="128"/>
-                        <TextField fx:id="mutationRateTextField" prefWidth="128" alignment="CENTER"/>
-                    </HBox>
-                    <HBox alignment="CENTER_LEFT">
-                        <Label text="Termination Type: " prefWidth="128"/>
-                        <ComboBox fx:id="terminationComboBox" prefWidth="128" value="Time Based">
-                            <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="Time Based"/>
-                                    <String fx:value="Iteration Based"/>
-                                </FXCollections>
-                            </items>
-                        </ComboBox>
-                    </HBox>
-                    <HBox>
-                        <Label text="Termination value:  " prefWidth="128"/>
-                        <TextField fx:id="terminationTextField" prefWidth="128" alignment="CENTER"/>
-                    </HBox>
-                </VBox>
-            </StackPane>
+            <fx:include fx:id="algorithmSelection" source="algorithmSelection.fxml"/>
             <fx:include fx:id="progressBar" alignment="BOTTOM_CENTER" source="progressBar.fxml" VBox.vgrow="ALWAYS"/>
         </VBox>
     </left>

@@ -16,6 +16,7 @@ public class Mediator {
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
     private MapController mapController;
     private ProgressBarController progressBarController;
+    private AlgorithmSelectionController algorithmSelectionController;
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
@@ -36,6 +37,10 @@ public class Mediator {
 
     public void setProgressBarController(ProgressBarController progressBarController) {
         this.progressBarController = progressBarController;
+    }
+
+    public void setAlgorithmSelectionController(AlgorithmSelectionController algorithmSelectionController) {
+        this.algorithmSelectionController = algorithmSelectionController;
     }
 
     public void resizeMapPane(double width, double height) {
@@ -173,23 +178,23 @@ public class Mediator {
     }
 
     public String getAlgorithm() {
-        return mainController.getAlgorithm();
+        return algorithmSelectionController.getAlgorithm();
     }
 
     public String getMutation() {
-        return mainController.getMutation();
+        return algorithmSelectionController.getMutation();
     }
 
     public Double getMutationRate() {
-        return mainController.getMutationRate();
+        return algorithmSelectionController.getMutationRate();
     }
 
     public String getTermination() {
-        return mainController.getTermination();
+        return algorithmSelectionController.getTermination();
     }
 
     public int getTerminationValue() {
-        return mainController.getTerminationValue();
+        return algorithmSelectionController.getTerminationValue();
     }
 
     public void setToolBarController(ToolBarController toolBarController) {
