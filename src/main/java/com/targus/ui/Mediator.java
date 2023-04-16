@@ -2,7 +2,7 @@ package com.targus.ui;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.problem.wsn.WSNOptimizationProblem;
+import com.targus.problem.wsn.WSNPrototype;
 import com.targus.ui.controllers.*;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
@@ -136,8 +136,8 @@ public class Mediator {
         simplifiedObjectiveValueDisplayController.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
     }
 
-    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height, int distance, int numberNodes) {
-        inputsController.createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
+    public void createProblemInstance(WSNPrototype wsnPrototype, int distance, int numberNodes) {
+        inputsController.createProblemInstance(wsnPrototype, distance, numberNodes);
     }
 
     public void setProgressBarVisible(boolean visible) {
