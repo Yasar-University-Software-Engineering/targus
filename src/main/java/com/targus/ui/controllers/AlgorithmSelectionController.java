@@ -25,6 +25,9 @@ public class AlgorithmSelectionController {
     }
 
     public String getMutation() {
+        if (algorithmComboBox.getValue().toString() != "StandardGA" || algorithmComboBox.getValue().toString() != "ImprovedGA") {
+            return "";
+        }
         return mutationComboBox.getValue().toString();
     }
 
