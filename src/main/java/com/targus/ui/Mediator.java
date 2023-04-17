@@ -2,7 +2,7 @@ package com.targus.ui;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.problem.wsn.WSNOptimizationProblem;
+import com.targus.problem.wsn.WSNPrototype;
 import com.targus.ui.controllers.*;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
@@ -13,11 +13,10 @@ import javafx.event.ActionEvent;
 public class Mediator {
     private MainController mainController;
     private InputsController inputsController;
-    private ObjectiveValueDisplayController objectiveValueDisplayController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
     private MapController mapController;
     private ProgressBarController progressBarController;
-    private CreateProblemInstanceController createProblemInstanceController;
+    private AlgorithmSelectionController algorithmSelectionController;
 
     public void setMainController(MainController mainController) {
         this.mainController = mainController;
@@ -25,10 +24,6 @@ public class Mediator {
 
     public void setInputsController(InputsController inputsController) {
         this.inputsController = inputsController;
-    }
-
-    public void setObjectiveValueDisplayController(ObjectiveValueDisplayController objectiveValueDisplayController) {
-        this.objectiveValueDisplayController = objectiveValueDisplayController;
     }
 
     public void setSimplifiedObjectiveValueDisplayController(
@@ -44,8 +39,8 @@ public class Mediator {
         this.progressBarController = progressBarController;
     }
 
-    public void setCreateProblemInstanceController(CreateProblemInstanceController createProblemInstanceController) {
-        this.createProblemInstanceController = createProblemInstanceController;
+    public void setAlgorithmSelectionController(AlgorithmSelectionController algorithmSelectionController) {
+        this.algorithmSelectionController = algorithmSelectionController;
     }
 
     public void resizeMapPane(double width, double height) {
@@ -53,7 +48,7 @@ public class Mediator {
     }
 
     public void display() {
-        objectiveValueDisplayController.display();
+//        objectiveValueDisplayController.display();
     }
 
     public void removeChild(Object child) {
@@ -141,8 +136,8 @@ public class Mediator {
         simplifiedObjectiveValueDisplayController.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
     }
 
-    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height, int distance, int numberNodes) {
-        inputsController.createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
+    public void createProblemInstance(WSNPrototype wsnPrototype, int distance, int numberNodes) {
+        inputsController.createProblemInstance(wsnPrototype, distance, numberNodes);
     }
 
     public void setProgressBarVisible(boolean visible) {
@@ -175,7 +170,7 @@ public class Mediator {
     }
 
     public void displayNonApplicable() {
-        objectiveValueDisplayController.displayNonApplicable();
+//        objectiveValueDisplayController.displayNonApplicable();
     }
 
     public void simplifiedDisplayNonApplicable() {
@@ -183,22 +178,25 @@ public class Mediator {
     }
 
     public String getAlgorithm() {
-        return mainController.getAlgorithm();
+        return algorithmSelectionController.getAlgorithm();
     }
 
     public String getMutation() {
-        return mainController.getMutation();
+        return algorithmSelectionController.getMutation();
     }
 
     public Double getMutationRate() {
-        return mainController.getMutationRate();
+        return algorithmSelectionController.getMutationRate();
     }
 
     public String getTermination() {
-        return mainController.getTermination();
+        return algorithmSelectionController.getTermination();
     }
 
     public int getTerminationValue() {
-        return mainController.getTerminationValue();
+        return algorithmSelectionController.getTerminationValue();
+    }
+
+    public void setToolBarController(ToolBarController toolBarController) {
     }
 }

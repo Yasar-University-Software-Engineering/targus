@@ -1,11 +1,8 @@
 package com.targus.ui.controllers;
 
-import com.targus.problem.wsn.WSN;
-import com.targus.problem.wsn.WSNMinimumSensorObjective;
-import com.targus.problem.wsn.WSNOptimizationProblem;
+import com.targus.problem.wsn.WSNPrototype;
 import com.targus.ui.Mediator;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -71,8 +68,6 @@ public class CreateProblemInstanceController {
         int coverage = Integer.parseInt(coverageField.getText());
         double commRadius = Double.parseDouble(commRadiusField.getText());
         double sensRadius = Double.parseDouble(sensRadiusField.getText());
-        int genCount = 1;
-        double mutRate = 0.3;
         int distance = 0;
         int numberNodes = 0;
 
@@ -84,24 +79,20 @@ public class CreateProblemInstanceController {
             numberNodes = Integer.parseInt(numNodesField.getText());
         }
 
-        WSNOptimizationProblem wsnOptimizationProblem = new WSNOptimizationProblem(
-                new WSN(new Point2D[0],
-                        new Point2D[0],
-                        connectivity,
-                        coverage,
-                        commRadius,
-                        sensRadius,
-                        genCount,
-                        mutRate),
-                new WSNMinimumSensorObjective()
-        );
+        WSNPrototype wsnPrototype = new WSNPrototype(
+                width,
+                height,
+                connectivity,
+                coverage,
+                commRadius,
+                sensRadius);
 
-        createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
+        createProblemInstance(wsnPrototype, distance, numberNodes);
         dialogStage.close();
     }
 
-    public void createProblemInstance(WSNOptimizationProblem wsnOptimizationProblem, int width, int height, int distance, int numberNodes) {
-        mediator.createProblemInstance(wsnOptimizationProblem, width, height, distance, numberNodes);
+    public void createProblemInstance(WSNPrototype wsnPrototype, int distance, int numberNodes) {
+        mediator.createProblemInstance(wsnPrototype, distance, numberNodes);
     }
 
     @FXML

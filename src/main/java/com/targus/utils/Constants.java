@@ -16,12 +16,14 @@ public class Constants {
     public static final String STANDARD_GA_EXPERIMENT_FILE_NAME = "standard_ga_benchmark_tests.txt";
     public static final String IMPROVED_GA_EXPERIMENT_FILE_NAME = "improved_ga_benchmark_tests.txt";
     public static final String GREEDY_SELECTION_ALGORITHM_EXPERIMENT_FILE_NAME = "greedy_selection_algorithm_benchmark_tests.txt";
-    public static final int DEFAULT_POPULATION_COUNT = 60;
+    public static final int DEFAULT_PANE_WIDTH = 0;
+    public static final int DEFAULT_PANE_HEIGHT = 0;
     public static final int DEFAULT_COMMUNICATION_RANGE = 100;
     public static final int DEFAULT_SENSING_RANGE = 50;
-    public static final double DEFAULT_MUTATION_RATE = 0.03;
     public static final int DEFAULT_M = 1;
     public static final int DEFAULT_K = 2;
+    public static final int DEFAULT_POPULATION_COUNT = 60;
+    public static final double DEFAULT_MUTATION_RATE = 0.03;
     public static final int DEFAULT_ITERATION_COUNT = 10000;
     public static final int DEFAULT_TIME_IN_SECONDS = 10;
     public static final int DEFAULT_GRID_SIZE = 25;

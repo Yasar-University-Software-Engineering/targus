@@ -25,5 +25,7 @@ module com.targus {
     opens com.targus.ui.widgets to javafx.fxml;
     exports com.targus.base;
     opens com.targus.base to javafx.fxml;
+    exports com.targus.problem.wsn;
+    opens com.targus.problem.wsn to javafx.fxml;
 
 }
