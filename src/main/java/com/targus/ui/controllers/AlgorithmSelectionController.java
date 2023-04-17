@@ -11,6 +11,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.util.Objects;
+
 public class AlgorithmSelectionController {
     public ComboBox algorithmComboBox;
     public VBox GAInputs;
@@ -25,19 +27,39 @@ public class AlgorithmSelectionController {
     }
 
     public String getMutation() {
-        return mutationComboBox.getValue().toString();
+        if (Objects.equals(algorithmComboBox.getValue().toString(), Constants.STANDARD_GA)
+                || Objects.equals(algorithmComboBox.getValue().toString(), Constants.IMPROVED_GA)) {
+            return mutationComboBox.getValue().toString();
+        }
+        return "";
     }
 
     public double getMutationRate() {
-        return Double.parseDouble(mutationRateTextField.getText());
+        if (Objects.equals(algorithmComboBox.getValue().toString(), Constants.STANDARD_GA)
+                || Objects.equals(algorithmComboBox.getValue().toString(), Constants.IMPROVED_GA)) {
+            if (Double.parseDouble(mutationRateTextField.getText()) > 0) {
+                return Double.parseDouble(mutationRateTextField.getText());
+            }
+        }
+        return 0.0;
     }
 
     public String getTermination() {
-        return terminationComboBox.getValue().toString();
+        if (Objects.equals(algorithmComboBox.getValue().toString(), Constants.STANDARD_GA)
+                || Objects.equals(algorithmComboBox.getValue().toString(), Constants.IMPROVED_GA)) {
+            return terminationComboBox.getValue().toString();
+        }
+        return "";
     }
 
     public int getTerminationValue() {
-        return Integer.parseInt(terminationTextField.getText());
+        if (Objects.equals(algorithmComboBox.getValue().toString(), Constants.STANDARD_GA)
+                || Objects.equals(algorithmComboBox.getValue().toString(), Constants.IMPROVED_GA)) {
+            if (Integer.parseInt(terminationTextField.getText()) > 0) {
+                return Integer.parseInt(terminationTextField.getText());
+            }
+        }
+        return 0;
     }
 
     @FXML
