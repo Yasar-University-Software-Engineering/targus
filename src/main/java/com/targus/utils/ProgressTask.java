@@ -16,7 +16,7 @@ public class ProgressTask extends Task {
         long start = terminalState.getCurrentState();
         long end = terminalState.getFinishState();
         while (start < end) {
-            updateValue("GA progress: " + start + "/" + end);
+            updateValue(start + "/" + end);
             updateProgress(start, end);
             start = terminalState.getCurrentState();
         }

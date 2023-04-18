@@ -14,20 +14,21 @@ import java.util.Random;
 public class KBitMutation implements MutationOperator {
 
     private final Random random;
+    private double mutationRate;
 
-    public KBitMutation() {
+    public KBitMutation(double mutationRate) {
         random = new SecureRandom();
+        this.mutationRate = mutationRate;
     }
 
     @Override
     public List<Solution> apply(OptimizationProblem problem, List<Solution> solutions) {
         List<Solution> newSolutions = new ArrayList<>();
         WSN model = (WSN) problem.model();
-        double mutationProbability = model.getMutationRate();
         int solutionSize = model.getSolutionSize();
 
         for (Solution s : solutions) {
-            if (random.nextDouble() < mutationProbability) {
+            if (random.nextDouble() < mutationRate) {
                 BitString individual = (BitString) s.clone().getRepresentation();
                 int k = random.nextInt(solutionSize);
                 for (int i = 0; i < k; i++) {
