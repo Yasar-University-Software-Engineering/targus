@@ -1,0 +1,11 @@
+{
+  "sensingRadius" : 20.0,
+  "communicationRadius" : 20.0,
+  "generationCount" : 1000,
+  "mutationRate" : 0.03,
+  "k" : 2,
+  "targets" : [ [ 170.20000000000005, 136.60000000000002 ] ],
+  "m" : 2,
+  "potentialPositions" : [ ],
+  "dimensions" : [ 400, 400 ]
+}

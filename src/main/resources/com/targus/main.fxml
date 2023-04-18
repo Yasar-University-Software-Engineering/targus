@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19"
+            fx:controller="com.targus.ui.controllers.MainController">
+    <top>
+        <fx:include fx:id="toolBar" source="toolBar.fxml"/>
+    </top>
+    <left>
+        <VBox fx:id="left" spacing="30">
+            <fx:include fx:id="inputs" source="inputs.fxml"/>
+            <Separator VBox.vgrow="ALWAYS"/>
+            <fx:include fx:id="algorithmSelection" source="algorithmSelection.fxml"/>
+            <fx:include fx:id="progressBar" alignment="BOTTOM_CENTER" source="progressBar.fxml" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+    <center>
+        <BorderPane fx:id="pane">
+            <center>
+                <fx:include fx:id="map" source="map.fxml"/>
+            </center>
+            <bottom>
+            </bottom>
+        </BorderPane>
+    </center>
+    <bottom>
+        <VBox>
+            <Separator/>
+            <HBox>
+                <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml"/>
+                <fx:include source="legend.fxml" HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

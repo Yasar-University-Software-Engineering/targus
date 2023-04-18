@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="vbox" xmlns="http://javafx.com/javafx/19" spacing="30.0">
+    <HBox spacing="30">
+        <Label text="Sensor objective"/>
+        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
+            <Label fx:id="lblSensorObjective" text="N/A"/>
+            <Label text="x"/>
+            <Label fx:id="lblWeightSensorObjective" text="N/A"/>
+            <Label text="="/>
+            <Label fx:id="lblWeightSensorObjectiveResult" text="N/A"/>
+        </HBox>
+    </HBox>
+
+    <HBox spacing="30">
+        <Label text="Connectivity objective"/>
+        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
+            <Label fx:id="lblConnectivityObjective" text="N/A"/>
+            <Label text="x"/>
+            <Label fx:id="lblWeightConnectivityObjective" text="N/A"/>
+            <Label text="="/>
+            <Label fx:id="lblWeightConnectivityObjectiveResult" text="N/A"/>
+        </HBox>
+    </HBox>
+
+    <HBox spacing="30">
+        <Label text="Coverage objective"/>
+        <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="20.0">
+            <Label fx:id="lblCoverageObjective" text="N/A"/>
+            <Label text="x"/>
+            <Label fx:id="lblWeightCoverageObjective" text="N/A"/>
+            <Label text="="/>
+            <Label fx:id="lblWeightCoverageObjectiveResult" text="N/A"/>
+        </HBox>
+    </HBox>
+
+    <HBox alignment="CENTER_RIGHT" spacing="20.0">
+        <Label alignment="CENTER_RIGHT" text="Fitness Value"/>
+        <Label text="="/>
+        <Label fx:id="lblTotalResult" text="N/A"/>
+    </HBox>
+</VBox>

@@ -186,6 +186,14 @@ public class WSN implements ProblemModel {
         return potentialPositions.length;
     }
 
+    public double getCommRange() {
+        return commRange;
+    }
+
+    public double getSensRange() {
+        return sensRange;
+    }
+
     public int getGenerationCount() {
         return generationCount;
     }

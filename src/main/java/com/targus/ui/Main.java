@@ -6,23 +6,30 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.Objects;
-
 public class Main extends Application {
-    @Override
-    public void start(Stage primaryStage) throws Exception{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/sample.fxml"));
-        Parent root = loader.load();
-        primaryStage.setTitle("Targus");
-        primaryStage.setScene(new Scene(root, 900, 700));
-        primaryStage.setMaximized(true);
-        primaryStage.show();
-
-    }
-
+    private static Stage primaryStage;
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Main.primaryStage = primaryStage;
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/main.fxml"));
+        Parent root = loader.load();
+
+        Main.primaryStage.setTitle("Targus");
+        Scene scene = new Scene(root, 900, 700);
+        scene.getStylesheets().add("/css/styles.css");
+
+        Main.primaryStage.setScene(scene);
+        Main.primaryStage.setMaximized(true);
+        Main.primaryStage.show();
     }
 }
