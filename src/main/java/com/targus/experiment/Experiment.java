@@ -6,7 +6,6 @@ import com.targus.problem.wsn.WSN;
 import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
-import java.io.File;
 import java.util.*;
 
 public abstract class Experiment {
@@ -94,26 +93,6 @@ public abstract class Experiment {
             i++;
         }
         return fileToProblemMap;
-    }
-
-    /**
-     * Retrieves a list of file paths for all JSON files located in the specified directory.
-     *
-     * @param path  a {@code String} representing the path to the directory containing the JSON files
-     * @return a {@code List<String>} containing the file paths of all JSON files in the specified directory;
-     *         an empty list is returned if the directory contains no files or the specified path is invalid
-     */
-    public List<String> getJsonFiles(String path) {
-        File folder = new File(path);
-        File[] listOfFiles = folder.listFiles();
-
-        List<String> files = new ArrayList<>();
-        for (File file : Objects.requireNonNull(listOfFiles)) {
-            if (file.isFile()) {
-                files.add(path + "/" + file.getName());
-            }
-        }
-        return files;
     }
 
     public OptimizationProblem buildDefaultProblemInstance(Point2D[] targets, Point2D[] potentialPositions, int terminationValue) {

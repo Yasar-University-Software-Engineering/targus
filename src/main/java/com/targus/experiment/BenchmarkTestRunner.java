@@ -1,6 +1,7 @@
 package com.targus.experiment;
 
 import com.targus.algorithm.ga.*;
+import com.targus.algorithm.sa.*;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.experiment.wsn.WSNProblemGenerator;
@@ -257,9 +258,25 @@ public class BenchmarkTestRunner {
         this.GAPopulationCount = GAPopulationCount;
     }
 
+    private SA buildSA(OptimizationProblem problem) {
+        return new SA(problem, new RandomSolutionGenerator(), new LinearCooling(100, 0, 0.1), new SimpleNF(), new BoltzmanAF(), 100);
+    }
+
+    private void runSA() {
+        List<String> jsonFiles = getJsonFiles();
+        for (String filePath : jsonFiles) {
+            OptimizationProblem optimizationProblem = WSNProblemGenerator.generateProblemInstanceFromJson(filePath);
+            SA sa = buildSA(optimizationProblem);
+            Solution solution = sa.perform();
+            System.out.println(solution.objectiveValue());
+        }
+    }
+
     public static void main(String[] args) {
         BenchmarkTestRunner runner = new BenchmarkTestRunner(15);
-        runner.initProblemInstances(new int[]{1, 2, 3}, new int[]{1, 2, 3}, new int[]{100, 200, 300});
+        runner.initProblemInstances(new int[]{1}, new int[]{1}, new int[]{100});
+//        runner.runTests();
+        runner.runSA();
         runner.runTests();
     }
 }

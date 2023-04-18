@@ -7,7 +7,6 @@ import com.targus.experiment.wsn.WSNProblemGenerator;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNSolutionImprover;
 import com.targus.represent.BitString;
-import com.targus.utils.Constants;
 
 import java.security.InvalidParameterException;
 
@@ -21,7 +20,7 @@ public class GAExperiment extends Experiment{
         this.pathForResults = pathForResults;
     }
 
-    public GA buildGA(OptimizationProblem optimizationProblem, WSN wsn, String gaType) {
+    public GA buildGA(OptimizationProblem optimizationProblem, WSN wsn, String gaType, int pc, double impRate, double immRate) {
         GA ga = null;
         switch (gaType) {
             case "Standard" -> ga = StandardGA.builder(optimizationProblem)
@@ -30,17 +29,17 @@ public class GAExperiment extends Experiment{
                     .setSurvivalPolicy(new RouletteWheelSurvival())
                     .setSelectionPolicy(new InverseRouletteWheelSelection())
                     .setTerminalState(terminalCondition)
-                    .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
+                    .setPopulation(new SimplePopulation(optimizationProblem, pc))
                     .build();
             case "Improved" -> ga = ImprovedGA.builder(optimizationProblem)
-                    .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
-                    .setMigrationCount(Constants.DEFAULT_IMMIGRATION_RATE)
+                    .setSolutionImprover(new WSNSolutionImprover(wsn, impRate))
+                    .setMigrationCount(immRate)
                     .setCrossOverOperator(new OnePointCrossOver())
                     .setMutationOperator(new KBitMutation())
                     .setSurvivalPolicy(new RouletteWheelSurvival())
                     .setSelectionPolicy(new InverseRouletteWheelSelection())
                     .setTerminalState(terminalCondition)
-                    .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
+                    .setPopulation(new SimplePopulation(optimizationProblem, pc))
                     .build();
             default -> System.out.println("Invalid class name. Make sure there is no typo in the class name");
         }
@@ -64,13 +63,13 @@ public class GAExperiment extends Experiment{
      *       provided {@code gaType}, and executes the GA {@code repeat} times. The average fitness value and number of
      *       activated sensors across all executions are calculated and written to the output file.
      */
-    public void GABenchmarkTest(String filePath, String gaType, String outputFileName, int repeat) {
+    public void GABenchmarkTest(String filePath, String gaType, String outputFileName, int repeat, int pc, double impRate, double immRate) {
         OptimizationProblem optimizationProblem = WSNProblemGenerator.generateProblemInstanceFromJson(filePath);
         WSN wsn = (WSN) optimizationProblem.model();
 
         double sum = 0.0;
         double sensorSum = 0;
-        GA ga = buildGA(optimizationProblem, wsn, gaType);
+        GA ga = buildGA(optimizationProblem, wsn, gaType, pc, impRate, immRate);
         for (int i = 0; i < repeat; i++) {
             Solution solution = ga.perform();
             BitString bitString = (BitString) solution.getRepresentation();

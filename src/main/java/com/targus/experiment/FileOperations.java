@@ -25,6 +25,26 @@ public class FileOperations {
 
     }
 
+    /**
+     * Retrieves a list of file paths for all JSON files located in the specified directory.
+     *
+     * @param path  a {@code String} representing the path to the directory containing the JSON files
+     * @return a {@code List<String>} containing the file paths of all JSON files in the specified directory;
+     *         an empty list is returned if the directory contains no files or the specified path is invalid
+     */
+    public static List<String> getJsonFiles(String path) {
+        File folder = new File(path);
+        File[] listOfFiles = folder.listFiles();
+
+        List<String> files = new ArrayList<>();
+        for (File file : Objects.requireNonNull(listOfFiles)) {
+            if (file.isFile()) {
+                files.add(path + "/" + file.getName());
+            }
+        }
+        return files;
+    }
+
     public static boolean doesFileExist(String filePath) {
         File f = new File(filePath);
         return f.exists() && !f.isDirectory();
