@@ -11,12 +11,6 @@ import java.util.*;
 
 public abstract class Experiment {
 
-    private String pathForJsonFiles = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES;
-
-    public void setPathForJsonFiles(String path) {
-        this.pathForJsonFiles = path;
-    }
-
     /**
      * Creates problem instances for WSN problem instances based on the combinations
      * of input parameters and saves each instance as a JSON file.
@@ -84,7 +78,7 @@ public abstract class Experiment {
             int targetCount = parameters[i][2];
             Point2D dimension = new Point2D(600, 600);
             String fileName = "m_" + m + "_k_" + k + "_tc_" + targetCount + "_dim_" + (int) dimension.getX() + "_" + (int) dimension.getY() + ".json";
-            String filePath = pathForJsonFiles + fileName;
+            String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + fileName;
             if(FileOperations.doesFileExist(filePath)) {
                 System.out.println(filePath + " already exists");
                 i++;
