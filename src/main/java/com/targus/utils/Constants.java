@@ -29,7 +29,7 @@ public class Constants {
     public static final int DEFAULT_GRID_SIZE = 25;
     public static final Point2D DEFAULT_GRID_PADDING = new Point2D(DEFAULT_GRID_SIZE, DEFAULT_GRID_SIZE);
     public static final double DEFAULT_IMPROVE_PROBABILITY = 0.5;
-    public static final int DEFAULT_IMMIGRANT_COUNT = (int) (DEFAULT_POPULATION_COUNT * 0.4);
+    public static final double DEFAULT_IMMIGRATION_RATE = 0.4;
     public static final int DEFAULT_IMMIGRATION_PERIOD = 100;
     public static final int DEFAULT_SELECTION_COUNT = 8;
     public static final String DEFAULT_BASE_PATH_FOR_JSON_FILES = "./src/main/resources/json/";

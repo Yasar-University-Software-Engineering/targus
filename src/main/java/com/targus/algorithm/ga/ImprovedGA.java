@@ -2,7 +2,7 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.experiment.Experiment;
+import com.targus.experiment.FileOperations;
 import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.SolutionImprover;
 import com.targus.problem.wsn.WSN;
@@ -12,10 +12,12 @@ import java.util.*;
 
 public class ImprovedGA extends GA {
     SolutionImprover improver;
+    double immigrationRate;
 
     public ImprovedGA(Builder builder) {
         super(builder);
         this.improver = builder.improver;
+        this.immigrationRate =  builder.immigrationRate;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class ImprovedGA extends GA {
 
             population.addAll(problem, improved);
             if (iterationCount % Constants.DEFAULT_IMMIGRATION_PERIOD == 0) {
-                population.addAll(problem, BitStringSolution.generate(problem, solutionSize, Constants.DEFAULT_IMMIGRANT_COUNT));
+                population.addAll(problem, BitStringSolution.generate(problem, solutionSize, (int) (population.getIndividuals().size() * immigrationRate)));
             }
             survivalPolicy.apply(problem, population);
             terminalState.nextState();
@@ -56,11 +58,11 @@ public class ImprovedGA extends GA {
             }
         }
 
-        Experiment.writeToFile("plot_data_imp.txt", plotData.toString(), false);
-        Experiment.writeToFile("time_based_plot_data_imp.txt", timeBasedPlotData.toString(), false);
-        Experiment.writeToFile("best_solutions_imp.txt", bestSolutionTracker.append("\n\n").toString(), true);
-        Experiment.writeToFile("best_worst_individual_imp.txt", bestWorstIndividual.toString(), true);
-        Experiment.writeToFile("result_imp.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
+        FileOperations.writeToFile("plot_data_imp.txt", plotData.toString(), false);
+        FileOperations.writeToFile("time_based_plot_data_imp.txt", timeBasedPlotData.toString(), false);
+        FileOperations.writeToFile("best_solutions_imp.txt", bestSolutionTracker.append("\n\n").toString(), true);
+        FileOperations.writeToFile("best_worst_individual_imp.txt", bestWorstIndividual.toString(), true);
+        FileOperations.writeToFile("result_imp.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
 
         terminalState.reset();
         population.clear();
@@ -74,6 +76,7 @@ public class ImprovedGA extends GA {
     public static class Builder extends GA.Builder {
 
         protected SolutionImprover improver;
+        protected double immigrationRate;
 
         public Builder(OptimizationProblem problem) {
             super(problem);
@@ -82,6 +85,11 @@ public class ImprovedGA extends GA {
 
         public Builder setSolutionImprover(SolutionImprover improver) {
             this.improver = improver;
+            return this;
+        }
+
+        public Builder setMigrationCount(double immigrationRate) {
+            this.immigrationRate = immigrationRate;
             return this;
         }
 
