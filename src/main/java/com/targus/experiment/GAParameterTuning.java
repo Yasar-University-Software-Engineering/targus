@@ -1,7 +1,5 @@
 package com.targus.experiment;
 
-import com.targus.algorithm.ga.*;
-
 import com.targus.utils.Constants;
 
 import java.util.*;
@@ -16,10 +14,9 @@ public class GAParameterTuning {
     private String pathForResults;
     private GAExperiment gaExperiment;
 
-    public GAParameterTuning() {
-        // TODO: change this
+    public GAParameterTuning(GAExperiment gaExperiment) {
         this.pathForResults = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "param_tuning";
-        this.gaExperiment = new GAExperiment(new TimeBasedTerminal(15), pathForResults);
+        this.gaExperiment = gaExperiment;
     }
 
     public GAParameterTuning(double GAImprovementRate, double GAImmigrationRate, int GAPopulationCount) {
@@ -38,14 +35,14 @@ public class GAParameterTuning {
             for (String filePath : jsonFiles) {
                 resetGAParameters();
                 setPopulationCount(populationSize);
-                gaExperiment.GABenchmarkTest(filePath, "Improved", pathForResults, repeat, populationCount, improvementRate, immigrationRate);
+                gaExperiment.Run(filePath, "Improved", pathForResults, repeat, populationCount, improvementRate, immigrationRate);
             }
         }
         for (Double improvementRate : improvementRates) {
             for (String filePath : jsonFiles) {
                 resetGAParameters();
                 setImprovementRate(improvementRate);
-                gaExperiment.GABenchmarkTest(filePath, "Improved", pathForResults, repeat, populationCount, improvementRate, immigrationRate);
+                gaExperiment.Run(filePath, "Improved", pathForResults, repeat, populationCount, improvementRate, immigrationRate);
             }
         }
 
@@ -53,7 +50,7 @@ public class GAParameterTuning {
             for (String filePath : jsonFiles) {
                 resetGAParameters();
                 setImmigrationRate(immigrantCount);
-                gaExperiment.GABenchmarkTest(filePath, "Improved", pathForResults, repeat, populationCount, improvementRate, immigrationRate);
+                gaExperiment.Run(filePath, "Improved", pathForResults, repeat, populationCount, improvementRate, immigrationRate);
             }
         }
     }

@@ -77,7 +77,7 @@ public abstract class Experiment {
             int targetCount = parameters[i][2];
             Point2D dimension = new Point2D(600, 600);
             String fileName = "m_" + m + "_k_" + k + "_tc_" + targetCount + "_dim_" + (int) dimension.getX() + "_" + (int) dimension.getY() + ".json";
-            String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + fileName;
+            String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "reference/" + fileName;
             if(FileOperations.doesFileExist(filePath)) {
                 System.out.println(filePath + " already exists");
                 i++;
@@ -120,6 +120,15 @@ public abstract class Experiment {
                 .build();
 
         return wsnProblemGenerator.generateProblemInstance(targets, potentialPositions);
+    }
+
+    public void initProblemInstances(int[] mValues, int [] kValues, int[] targetCounts) {
+        Map<String, JsonProblem> map = generateFileToProblemMap(mValues, kValues, targetCounts);
+        for (Map.Entry<String, JsonProblem> entry : map.entrySet()) {
+            String filePath = entry.getKey();
+            JsonProblem jsonProblem = entry.getValue();
+            FileOperations.writeToJson(jsonProblem, filePath, false);
+        }
     }
 
 }
