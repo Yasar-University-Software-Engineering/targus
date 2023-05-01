@@ -2,7 +2,7 @@ package com.targus.algorithm.ga;
 
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.experiment.Experiment;
+import com.targus.experiment.FileOperations;
 
 import java.util.List;
 
@@ -44,11 +44,11 @@ public class StandardGA extends GA {
             }
         }
 
-        Experiment.writeToFile("plot_data_std.txt", plotData.toString(), false);
-        Experiment.writeToFile("time_based_plot_data_std.txt", timeBasedPlotData.toString(), false);
-        Experiment.writeToFile("best_solutions_std.txt", bestSolutionTracker.append("\n").toString(), true);
-        Experiment.writeToFile("best_worst_individual_std.txt", bestWorstIndividual.toString(), true);
-        Experiment.writeToFile("result_std.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
+        FileOperations.writeToFile("plot_data_std.txt", plotData.toString(), false);
+        FileOperations.writeToFile("time_based_plot_data_std.txt", timeBasedPlotData.toString(), false);
+        FileOperations.writeToFile("best_solutions_std.txt", bestSolutionTracker.append("\n").toString(), true);
+        FileOperations.writeToFile("best_worst_individual_std.txt", bestWorstIndividual.toString(), true);
+        FileOperations.writeToFile("result_std.txt", iterationCount + "," + bestSolution.objectiveValue(), true);
 
         terminalState.reset();
         population.clear();

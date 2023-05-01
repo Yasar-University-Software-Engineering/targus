@@ -1,132 +1,134 @@
 package com.targus.experiment;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.targus.algorithm.ga.TerminalState;
 import com.targus.base.OptimizationProblem;
-import com.targus.base.Solution;
+import com.targus.experiment.wsn.WSNProblemGenerator;
 import com.targus.problem.wsn.WSN;
 import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
-public class Experiment {
+public abstract class Experiment {
 
-    public static void writeToFile(String fileName, String text, boolean append) {
-        try(FileWriter fw = new FileWriter(fileName, append);
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter out = new PrintWriter(bw))
-        {
-            out.println(text);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    // TODO: reduce the number of parameters this method takes
-    // TODO: check the if condition in detail
-    public static void writeToJson(WSN wsn, Point2D dimensions, int terminationValue, int communicationRange, int sensingRange, String fileName, boolean override) {
-        String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + fileName;
-        File f = new File(filePath);
-        if(f.exists() && !f.isDirectory() && !override) {
-            System.out.println(fileName + " already exists in " + Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + ". No changes made to the file.");
-            System.out.println("\nIf you want to make changes to the file, you may provide 'true' for the override parameter\n");
-            return;
-        }
-
-        BufferedWriter writer;
-        try {
-            writer = Files.newBufferedWriter(Paths.get(filePath));
-            ObjectMapper objectMapper = new ObjectMapper();
-
-            Map<String, Object> problemInfo = new HashMap<>();
-            problemInfo.put(Constants.DIMENSIONS, Arrays.asList(dimensions.getX(), dimensions.getY()));
-
-            List<double[]> targetList = new ArrayList<>();
-            for (Point2D target : wsn.getTargets()) {
-                double[] coords = new double[2];
-                coords[0] = target.getX();
-                coords[1] = target.getY();
-                targetList.add(coords);
-            }
-            problemInfo.put(Constants.TARGETS, targetList);
-
-            List<double[]> potentialPositionList = new ArrayList<>();
-            for (Point2D potentialPosition : wsn.getPotentialPositions()) {
-                double[] coords = new double[2];
-                coords[0] = potentialPosition.getX();
-                coords[1] = potentialPosition.getY();
-                potentialPositionList.add(coords);
-            }
-            problemInfo.put(Constants.POTENTIAL_POSITIONS, potentialPositionList);
-
-            problemInfo.put(Constants.COMMUNICATION_RADIUS, communicationRange);
-            problemInfo.put(Constants.SENSING_RADIUS, sensingRange);
-            problemInfo.put(Constants.M, wsn.getM());
-            problemInfo.put(Constants.K, wsn.getK());
-            problemInfo.put(Constants.GENERATION_COUNT, terminationValue);
-            problemInfo.put(Constants.MUTATION_RATE, wsn.getMutationRate());
-
-            writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Something went wrong when writing to json file. " + e);
+    /**
+     * Creates problem instances for WSN problem instances based on the combinations
+     * of input parameters and saves each instance as a JSON file.
+     *
+     * @param mValues       an array of integers representing the m values, where m is the number of sensors in the WSN
+     * @param kValues       an array of integers representing the k values, where k is the number of relay nodes in the WSN
+     * @param targetCounts  an array of integers representing the number of target points in the WSN
+     * <p>
+     * Note: This method generates a mapping of file paths to {@code JsonProblem} instances based on the input parameters
+     *       and writes each {@code JsonProblem} instance to a JSON file at the specified file path.
+     */
+    public void createProblemInstances(int[] mValues, int [] kValues, int[] targetCounts) {
+        Map<String, JsonProblem> map = generateFileToProblemMap(mValues, kValues, targetCounts);
+        for (Map.Entry<String, JsonProblem> entry : map.entrySet()) {
+            String filePath = entry.getKey();
+            JsonProblem jsonProblem = entry.getValue();
+            FileOperations.writeToJson(jsonProblem, filePath, false);
         }
     }
 
-    public static WSN readFromJson(String filePath) {
-        Point2D dimensions;
-        Point2D[] targetArray;
-        Point2D[] potentialPositionArray;
+    /**
+     * Generates combinations of the given arrays
+     *
+     * @param mValues m values
+     * @param kValues k values
+     * @param targetCounts target count values
+     * @return 2D array containing an array of length 3. The order goes like this:
+     * mValue (index -> 0), kValue (index -> 1), targetCountValue (index -> 2)
+     */
+    private int[][] generateCombinations(int[] mValues, int [] kValues, int[] targetCounts) {
+        int[][] combinations = new int[mValues.length * kValues.length * targetCounts.length][3];
 
-        try {
-            Reader reader = Files.newBufferedReader(Paths.get(filePath));
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode parser = objectMapper.readTree(reader);
-
-            JsonNode dimensionsNode = parser.path(Constants.DIMENSIONS);
-            dimensions = new Point2D(dimensionsNode.get(0).asDouble(), dimensionsNode.get(1).asDouble());
-
-            JsonNode targetsNode = parser.path(Constants.TARGETS);
-            targetArray = new Point2D[targetsNode.size()];
-            for (int i = 0; i < targetsNode.size(); i++) {
-                JsonNode node = targetsNode.get(i);
-                Point2D target = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
-                targetArray[i] = target;
+        int index = 0;
+        for (Integer mValue : mValues) {
+            for (Integer kValue : kValues) {
+                for (Integer targetCount : targetCounts) {
+                    int[] temp = {mValue, kValue, targetCount};
+                    combinations[index++] = temp;
+                }
             }
-
-            JsonNode potentialPositionsNode = parser.path(Constants.POTENTIAL_POSITIONS);
-            potentialPositionArray = new Point2D[potentialPositionsNode.size()];
-            for (int i = 0; i < potentialPositionsNode.size(); i++) {
-                JsonNode node = potentialPositionsNode.get(i);
-                Point2D potentialPos = new Point2D(node.get(0).asDouble(), node.get(1).asDouble());
-                potentialPositionArray[i] = potentialPos;
-            }
-
-            int m = parser.path(Constants.M).asInt();
-            int k = parser.path(Constants.K).asInt();
-            double communicationRadius = Double.parseDouble(parser.path(Constants.COMMUNICATION_RADIUS).asText());
-            double sensingRadius = Double.parseDouble(parser.path(Constants.SENSING_RADIUS).asText());
-            int terminationValue = parser.path(Constants.GENERATION_COUNT).asInt();
-            double mutationRate = Double.parseDouble(parser.path(Constants.MUTATION_RATE).asText());
-
-            return new WSN(targetArray, potentialPositionArray, m, k, communicationRadius, sensingRadius, terminationValue, mutationRate);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return combinations;
     }
 
-    // TODO: remove this method (later)
-    public static String getProblemInformation(OptimizationProblem problem) {
-        WSN wsn = (WSN) problem.model();
-        return String.format("K: %d M: %d Mutation Rate: %f Initial Population: %d Communication Range: %d Sensing Range: %d\n\n",
-                wsn.getK(), wsn.getM(), wsn.getMutationRate(), Constants.DEFAULT_POPULATION_COUNT,
-                Constants.DEFAULT_COMMUNICATION_RANGE, Constants.DEFAULT_SENSING_RANGE);
+    /**
+     *
+     * Generates a mapping of file paths to {@code JsonProblem} instances based on the combinations of input parameters.
+     * Each {@code JsonProblem} instance represents an optimization problem for a WSN.
+     * @param mValues an array of integers representing the m values, where m is the number of sensors in the WSN
+     * @param kValues an array of integers representing the k values, where k is the number of relay nodes in the WSN
+     * @param targetCounts an array of integers representing the number of target points in the WSN
+     * @return a {@code Map<String, JsonProblem>} where the key is a file path and the value is a {@code JsonProblem}
+     * instance representing an optimization problem for the given parameters; the map is generated based on the
+     * combination of input parameters (mValues, kValues, and targetCounts)
+     *
+     */
+    private Map<String, JsonProblem> generateFileToProblemMap(int[] mValues, int [] kValues, int[] targetCounts) {
+        Map<String, JsonProblem> fileToProblemMap =  new HashMap<>();
+        int i = 0;
+        int[][] parameters = generateCombinations(mValues, kValues, targetCounts);
+        int size = parameters.length;
+        while (i < size) {
+            int m = parameters[i][0];
+            int k = parameters[i][1];
+            int targetCount = parameters[i][2];
+            Point2D dimension = new Point2D(600, 600);
+            String fileName = "m_" + m + "_k_" + k + "_tc_" + targetCount + "_dim_" + (int) dimension.getX() + "_" + (int) dimension.getY() + ".json";
+            String filePath = Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "reference/" + fileName;
+            if(FileOperations.doesFileExist(filePath)) {
+                System.out.println(filePath + " already exists");
+                i++;
+                continue;
+            }
+
+            OptimizationProblem optimizationProblem = buildProblemInstance(m, k,
+                    WSNProblemGenerator.generateRandomPoint2D(dimension, targetCount),
+                    WSNProblemGenerator.generateGrid(dimension, Constants.DEFAULT_GRID_PADDING, Constants.DEFAULT_GRID_SIZE), 15);
+            WSN wsn = (WSN) optimizationProblem.model();
+            JsonProblem jsonProblem = new JsonProblem(wsn, dimension, 15);
+            fileToProblemMap.put(filePath, jsonProblem);
+            i++;
+        }
+        return fileToProblemMap;
+    }
+
+    public OptimizationProblem buildDefaultProblemInstance(Point2D[] targets, Point2D[] potentialPositions, int terminationValue) {
+        WSNProblemGenerator wsnProblemGenerator = WSNProblemGenerator.builder()
+                .communicatingRange(Constants.DEFAULT_COMMUNICATION_RANGE)
+                .sensingRange(Constants.DEFAULT_SENSING_RANGE)
+                .m(Constants.DEFAULT_M)
+                .k(Constants.DEFAULT_K)
+                .terminationValue(terminationValue)
+                .mutationRate(Constants.DEFAULT_MUTATION_RATE)
+                .build();
+
+        return wsnProblemGenerator.generateProblemInstance(targets, potentialPositions);
+    }
+
+
+    public OptimizationProblem buildProblemInstance(int m, int k, Point2D[] targets, Point2D[] potentialPositions, int terminationValue) {
+        WSNProblemGenerator wsnProblemGenerator = WSNProblemGenerator.builder()
+                .communicatingRange(Constants.DEFAULT_COMMUNICATION_RANGE)
+                .sensingRange(Constants.DEFAULT_SENSING_RANGE)
+                .m(m)
+                .k(k)
+                .terminationValue(terminationValue)
+                .mutationRate(Constants.DEFAULT_MUTATION_RATE)
+                .build();
+
+        return wsnProblemGenerator.generateProblemInstance(targets, potentialPositions);
+    }
+
+    public void initProblemInstances(int[] mValues, int [] kValues, int[] targetCounts) {
+        Map<String, JsonProblem> map = generateFileToProblemMap(mValues, kValues, targetCounts);
+        for (Map.Entry<String, JsonProblem> entry : map.entrySet()) {
+            String filePath = entry.getKey();
+            JsonProblem jsonProblem = entry.getValue();
+            FileOperations.writeToJson(jsonProblem, filePath, false);
+        }
     }
 
 }

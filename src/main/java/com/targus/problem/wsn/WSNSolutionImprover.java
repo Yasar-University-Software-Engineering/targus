@@ -8,7 +8,7 @@ import javafx.geometry.Point2D;
 
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class WSNSolutionImprover implements SolutionImprover {
 
@@ -18,6 +18,7 @@ public class WSNSolutionImprover implements SolutionImprover {
     private final HashMap<Point2D, HashSet<Point2D>> potentialPositionToTargets;
     private final HashMap<Point2D, HashSet<Point2D>> potentialPositionToPotentialPosition;
     private final double IMPROVE_PROBABILITY;
+    List<Integer> targets;
 
     public WSNSolutionImprover(WSN wsn, double improveProbability) {
         random = new SecureRandom();
@@ -26,6 +27,7 @@ public class WSNSolutionImprover implements SolutionImprover {
         potentialPositionToTargets = wsn.getPotentialPositionToTargetMap();
         potentialPositionToPotentialPosition = wsn.getPotentialPositionToPotentialPositionMap();
         IMPROVE_PROBABILITY = improveProbability;
+        targets= new ArrayList<>(IntStream.range(0, wsn.targetsSize()).boxed().toList());
     }
 
     /**
@@ -47,33 +49,6 @@ public class WSNSolutionImprover implements SolutionImprover {
             map.put(potentialPositions[i], bitString.get(i));
 
         return map;
-    }
-
-    // TODO: this method will be removed
-    /**
-     * Checks if the given potential position covers a target
-     * @param potentialPosition
-     *      sensor to check if it covers any target
-     * @return true if the given sensor covers any target, false otherwise
-     */
-    private boolean doesCoverTarget(Point2D potentialPosition) {
-        HashSet<Point2D> targets = potentialPositionToTargets.get(potentialPosition);
-        return targets.size() != 0;
-    }
-
-    // TODO: this method will be removed
-    /**
-     * Checks if any of the given chain of sensors cover a target
-     * @param chain
-     *      a sequence of sensor coordinates
-     * @return true if a sensor covers a target, false otherwise
-     */
-    private boolean doesChainCoverTarget(LinkedList<Point2D> chain) {
-        for (Point2D pp : chain) {
-            if (doesCoverTarget(pp))
-                return true;
-        }
-        return false;
     }
 
     /**
@@ -110,132 +85,6 @@ public class WSNSolutionImprover implements SolutionImprover {
             index += 1;
         }
         return map;
-    }
-
-    // TODO: this method will be removed
-    /**
-     * Creates a map that holds the information of which sensor is currently communicating with which sensor
-     * The result is similar to below. Note that the numbers are arbitrary and arrays represent Point2D objects:
-     * Point2D [x = 35.0, y = 5.0] = [ Point2D [x = 10.0, y = 5.0], Point2D [x = 35.0, y = 30.0] ]
-     * @param sensors
-     *      map of turned on sensors
-     * @return map of connectivity
-     */
-    private Map<Point2D, HashSet<Point2D>> createConnectivityMap(Map<Point2D, Integer> sensors) {
-        Map<Point2D, HashSet<Point2D>> map = new HashMap<>();
-        Set<Point2D> sensorKeySet = sensors.keySet();
-        for (Point2D sensor : sensorKeySet) {
-            HashSet<Point2D> temp = new HashSet<>();
-            Set<Point2D> neighborSensors = potentialPositionToPotentialPosition.get(sensor);
-            for (Point2D s : neighborSensors) {
-                if (sensorKeySet.contains(s)) {
-                    temp.add(s);
-                }
-            }
-            map.put(sensor, temp);
-        }
-        return map;
-    }
-
-    // TODO: this method will be removed
-    /**
-     * Gets random element from the given set
-     * @param set
-     *      set to pick random element from
-     * @return random element from the given set
-     */
-    private Point2D getRandomElementFromSet(Set<Point2D> set) {
-        int index = random.nextInt(set.size());
-        int i = 0;
-        for (Point2D s : set) {
-            if (i == index) {
-                return s;
-            }
-            i += 1;
-        }
-        return null;
-    }
-
-    // TODO: this method will be removed
-    /**
-     * Checks whether the given linked list contains cycle
-     * @param linkedList
-     *      linked list to check
-     * @return true if the linked list contains cycle, false otherwise
-     */
-    private boolean doesContainCycle(LinkedList<Point2D> linkedList) {
-        Set<Point2D> set = new HashSet<>();
-        for (Point2D elem : linkedList) {
-            if (set.contains(elem)) {
-                return true;
-            }
-            set.add(elem);
-        }
-        return false;
-    }
-
-    /* TODO: this method will be removed. because the amount of work it does does not worth the trouble
-        to gain performance we do not call this method. we plan to remove this later on but just for now
-        we will keep it
-     */
-    /**
-     * Finds unnecessary sensors and returns them in a list
-     * @param connectivityMap
-     *      map that holds the information of which sensors are communicating with which sensors
-     * @return list of turned off sensors
-     */
-    private List<Point2D> getSensorsToTurnOff(Map<Point2D, HashSet<Point2D>> connectivityMap) {
-        List<Point2D> sensorsToRemove = new ArrayList<>();
-
-        connectivityMap.entrySet()
-                .stream()
-                .filter(entry -> entry.getValue().isEmpty())
-                .forEach(entry -> sensorsToRemove.add(entry.getKey()));
-
-        sensorsToRemove.forEach(connectivityMap::remove);
-
-        for (Map.Entry<Point2D, HashSet<Point2D>> entry : connectivityMap.entrySet()) {
-            Point2D sensor = entry.getKey();
-            HashSet<Point2D> communicatingSensors = entry.getValue();
-
-            LinkedList<Point2D> chain = new LinkedList<>();
-            chain.add(sensor);
-            do {
-                sensor = getRandomElementFromSet(communicatingSensors);
-                chain.add(sensor);
-                communicatingSensors = connectivityMap.get(sensor);
-            } while (!doesContainCycle(chain));
-            if (!doesChainCoverTarget(chain)) {
-                chain.removeLast();
-                sensorsToRemove.addAll(chain);
-            }
-        }
-        return sensorsToRemove;
-    }
-
-    // TODO: this method will be removed
-    private void removeSensorFromConnectivityMap(Map<Point2D, HashSet<Point2D>> connectivityMap, Point2D sensor) {
-        HashSet<Point2D> sensorKeysToUpdate = connectivityMap.get(sensor);
-        for (Point2D sensorToUpdate : sensorKeysToUpdate) {
-            HashSet<Point2D> values = connectivityMap.get(sensorToUpdate);
-            HashSet<Point2D> newValues = (HashSet<Point2D>) values.stream().filter(s -> !s.equals(sensor)).collect(Collectors.toSet());
-            // values.remove(sensor);
-            connectivityMap.replace(sensorToUpdate, newValues);
-        }
-    }
-
-    // TODO: this method will be removed
-    private boolean doesSensorContributeToConnectivity(Map<Point2D, HashSet<Point2D>> connectivityMap, Point2D sensor, int m) {
-        boolean doesContribute = false;
-        HashSet<Point2D> sensorsToCheck = connectivityMap.get(sensor);
-        for (Point2D s : sensorsToCheck) {
-            HashSet<Point2D> sensors = connectivityMap.get(s);
-            if (sensors.size() - 1 < m * m) {
-                doesContribute = true;
-                break;
-            }
-        }
-        return doesContribute;
     }
 
     /**
@@ -293,15 +142,6 @@ public class WSNSolutionImprover implements SolutionImprover {
         return k;
     }
 
-    // TODO: this method will be removed
-    private void improveMConnectivity(BitString sequence, Map<Point2D, Integer> turnedOnSensors) {
-        Map<Point2D, HashSet<Point2D>> connectivityMap = createConnectivityMap(turnedOnSensors);
-        List<Point2D> removedSensors = getSensorsToTurnOff(connectivityMap);
-        for (Point2D sensor : removedSensors) {
-            sequence.set(turnedOnSensors.get(sensor), false);
-        }
-    }
-
     /**
      * The heuristic that increases the k-coverage
      * <p>
@@ -321,17 +161,17 @@ public class WSNSolutionImprover implements SolutionImprover {
         }
     }
 
-    @Override
-    public Solution improve(OptimizationProblem problem, Solution solution) {
-        LinkedHashMap<Point2D, Boolean> potentialPositionStateMap = createPotentialPositionStateMap(wsn.getPotentialPositions(), solution);
-        Map<Point2D, Integer> turnedOnSensors = getTurnedOnSensors(potentialPositionStateMap);
-        Map<Point2D, Integer> turnedOffSensors = getTurnedOffSensors(potentialPositionStateMap);
-        BitString improvedSequence = (BitString) solution.getRepresentation();
-
-        improveKCoverage(improvedSequence, turnedOnSensors, turnedOffSensors);
-
-        return new BitStringSolution(improvedSequence, problem.objectiveValue(improvedSequence));
-    }
+//    @Override
+//    public Solution improve(OptimizationProblem problem, Solution solution) {
+//        LinkedHashMap<Point2D, Boolean> potentialPositionStateMap = createPotentialPositionStateMap(wsn.getPotentialPositions(), solution);
+//        Map<Point2D, Integer> turnedOnSensors = getTurnedOnSensors(potentialPositionStateMap);
+//        Map<Point2D, Integer> turnedOffSensors = getTurnedOffSensors(potentialPositionStateMap);
+//        BitString improvedSequence = (BitString) solution.getRepresentation();
+//
+//        improveKCoverage(improvedSequence, turnedOnSensors, turnedOffSensors);
+//
+//        return new BitStringSolution(improvedSequence, problem.objectiveValue(improvedSequence));
+//    }
 
     @Override
     public List<Solution> improveAll(OptimizationProblem problem, List<Solution> solutions) {
@@ -347,4 +187,57 @@ public class WSNSolutionImprover implements SolutionImprover {
         }
         return improvedSolutions;
     }
+
+    public int[] getSensorsToTurnOnFast(BitString bs) {
+        HashSet<Integer> sensors = bs.ones();
+        List<Integer> idles = new ArrayList<>(bs.zeros().stream().toList());
+        Collections.shuffle(targets);
+
+        HashSet<Integer> sensorToTurnOn = new HashSet<>();
+
+        for (Integer t : targets) { // Coverage additions
+            int k = wsn.coverage(t,sensors);
+            if (k >= wsn.getK()) {
+                continue;
+            }
+            for (Integer is : idles) {
+                if (wsn.getCoveringPositions(t).contains(is)) {
+                    sensorToTurnOn.add(is);
+                    sensors.add(is);
+                    k++;
+
+                    if (k >= wsn.getK()) {
+                        break;
+                    }
+                }
+            }
+        }
+        if (sensorToTurnOn.isEmpty()) {
+            // Connectivity additions
+            for (Integer s:sensors) {
+                if (wsn.connectivity(s,sensors)>=wsn.getM())
+                    continue;
+
+                int[][] arr =wsn.getConnectedPositions(s).stream().
+                        filter(x->!sensors.contains(x)).
+                        map(x->new int[]{x,wsn.connectivity(x,sensors)}).sorted(Comparator.comparingInt(x->x[1])).
+                        toArray(int[][]::new);
+
+                sensorToTurnOn.add(arr[arr.length-1][0]);
+            }
+        }
+        return sensorToTurnOn.stream().mapToInt(x->x).toArray();
+    }
+
+    public Solution improve(OptimizationProblem problem, Solution solution) {
+        BitString bs= (BitString) solution.getRepresentation();
+        int[] sensorsToTurnOn = getSensorsToTurnOnFast(bs);
+        for (int i : sensorsToTurnOn) {
+            bs.flip(i);
+        }
+
+        return new BitStringSolution(bs, problem.objectiveValue(bs));
+    }
+
+
 }

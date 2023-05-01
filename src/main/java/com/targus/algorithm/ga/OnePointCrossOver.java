@@ -8,7 +8,6 @@ import com.targus.represent.BitString;
 
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class OnePointCrossOver implements CrossOverOperator{
 
@@ -31,25 +30,25 @@ public class OnePointCrossOver implements CrossOverOperator{
             BitString parentTwo = (BitString) pTwo.getRepresentation();
 
             int crossOverPoint = random.nextInt(solutionSize);
-            BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint);
-            BitString childTwo = generateChild(parentTwo, parentOne, crossOverPoint);
+            BitString childOne = generateChild(parentOne, parentTwo, crossOverPoint, solutionSize);
+            BitString childTwo = generateChild(parentTwo, parentOne, crossOverPoint, solutionSize);
 
-            result.add(new BitStringSolution(generateChild(parentOne, parentTwo, crossOverPoint), problem.objectiveValue(childOne)));
-            result.add(new BitStringSolution(generateChild(parentTwo, parentOne, crossOverPoint), problem.objectiveValue(childTwo)));
+            result.add(new BitStringSolution(childOne, problem.objectiveValue(childOne)));
+            result.add(new BitStringSolution(childTwo, problem.objectiveValue(childTwo)));
         }
 
         return result;
     }
 
-    private BitString generateChild(BitString parentOne, BitString parentTwo, int crossOverPoint) {
-        BitSet child = new BitSet(parentOne.length());
+    private BitString generateChild(BitString parentOne, BitString parentTwo, int crossOverPoint, int solutionSize) {
+        BitSet child = new BitSet(solutionSize);
         for (int j = 0; j < crossOverPoint; j++) {
             child.set(j, parentTwo.get(j));
         }
-        for (int j = crossOverPoint; j < parentOne.length() ; j++) {
+        for (int j = crossOverPoint; j < solutionSize ; j++) {
             child.set(j, parentOne.get(j));
         }
-        return new BitString(child);
+        return new BitString(child, solutionSize);
     }
 
 }

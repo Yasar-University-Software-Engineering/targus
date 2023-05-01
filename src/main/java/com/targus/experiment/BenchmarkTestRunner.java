@@ -1,77 +1,53 @@
 package com.targus.experiment;
 
-import com.targus.algorithm.ga.*;
+import com.targus.algorithm.ga.TimeBasedTerminal;
+import com.targus.algorithm.sa.*;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.experiment.wsn.WSNProblemGenerator;
-import com.targus.problem.wsn.WSN;
-import com.targus.problem.wsn.WSNSolutionImprover;
+import com.targus.represent.BitString;
 import com.targus.utils.Constants;
-import javafx.geometry.Point2D;
 
-import java.security.InvalidParameterException;
+import java.util.*;
 
 public class BenchmarkTestRunner {
 
-    public static GA buildGA(OptimizationProblem optimizationProblem, WSN wsn, String gaType, MutationOperator mutationOperator, TerminalState terminalState) {
-        GA ga = null;
-        switch (gaType) {
-            case "Standard":
-                ga = StandardGA.builder(optimizationProblem)
-                        .setCrossOverOperator(new OnePointCrossOver())
-                        .setMutationOperator(mutationOperator)
-                        .setSurvivalPolicy(new RouletteWheelSurvival())
-                        .setTerminalState(terminalState)
-                        .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
-                        .build();
-                break;
-            case "Improved":
-                ga = ImprovedGA.builder(optimizationProblem)
-                        .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
-                        .setCrossOverOperator(new OnePointCrossOver())
-                        .setMutationOperator(mutationOperator)
-                        .setSurvivalPolicy(new RouletteWheelSurvival())
-                        .setTerminalState(terminalState)
-                        .setPopulation(new SimplePopulation(optimizationProblem, Constants.DEFAULT_POPULATION_COUNT))
-                        .build();
-                break;
-            default:
-                System.out.println("Invalid class name. Make sure there is no typo in the class name");
-                break;
-        }
-
-        if (ga == null) {
-            throw new InvalidParameterException("Type " + gaType + " could not found.");
-        }
-
-        return ga;
+    private SA buildSA(OptimizationProblem problem) {
+        return new SA(problem, new RandomSolutionGenerator(), new LinearCooling(100, 0, 0.1), new SimpleNF(), new BoltzmanAF(), 100);
     }
 
-    public static OptimizationProblem buildRandomProblemInstanceWithDefault(Point2D[] targets, Point2D[] potentialPositions, int terminalValue) {
-        WSNProblemGenerator wsnProblemGenerator = WSNProblemGenerator.builder()
-                .communicatingRange(Constants.DEFAULT_COMMUNICATION_RANGE)
-                .sensingRange(Constants.DEFAULT_SENSING_RANGE)
-                .m(Constants.DEFAULT_M)
-                .k(Constants.DEFAULT_K)
-                .terminationValue(terminalValue)
-                .mutationRate(Constants.DEFAULT_MUTATION_RATE)
-                .build();
-
-        return wsnProblemGenerator.generateProblemInstance(targets, potentialPositions);
+    private void runSA(int repeat) {
+        List<String> jsonFiles = FileOperations.getJsonFiles(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "reference/");
+        for (String file : jsonFiles) {
+            double sum = 0.0;
+            int sensorCount = 0;
+            for (int i = 0; i < repeat; i++) {
+                OptimizationProblem optimizationProblem = WSNProblemGenerator.generateProblemInstanceFromJson(file);
+                SA sa = buildSA(optimizationProblem);
+                Solution solution = sa.perform();
+                sum += solution.objectiveValue();
+                BitString bitString = (BitString) solution.getRepresentation();
+                sensorCount += bitString.ones().size();
+            }
+            System.out.println("SA -- Fitness Value (repeated: " + repeat + "): " + sum / repeat + " SC: " + sensorCount / repeat);
+            FileOperations.writeToFile(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "results/sa.txt", sum / repeat + "," + sensorCount / repeat, true);
+        }
     }
 
-    public static void GABenchmarkTest(String filePath, String gaType, MutationOperator mutationOperator, TerminalState terminalState, int repeat) {
-        OptimizationProblem optimizationProblem = WSNProblemGenerator.generateProblemInstanceFromJson(filePath);
-        WSN wsn = (WSN) optimizationProblem.model();
-
-        double sum = 0.0;
-        GA ga = buildGA(optimizationProblem, wsn, gaType, mutationOperator, terminalState);
-        for (int i = 0; i < repeat; i++) {
-            Solution solution = ga.perform();
-            sum += solution.objectiveValue();
+    public static void main(String[] args) {
+        BenchmarkTestRunner runner = new BenchmarkTestRunner();
+        GAExperiment gaExperiment = new GAExperiment(new TimeBasedTerminal(15), "./src/main/resources/json/ga");
+        // init 5 times
+        gaExperiment.initProblemInstances(new int[]{1, 2, 3}, new int[]{1, 2, 3}, new int[]{100, 200, 300});
+        int repeat = 10;
+//        runner.runSA(repeat);
+        List<String> jsonFiles = FileOperations.getJsonFiles(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "reference/");
+        for (String file : jsonFiles) {
+            gaExperiment.Run(file, "Standard", "", repeat, 50, 0.8, 0.4);
         }
 
-        double average = sum / repeat;
-        System.out.println(gaType + " -- Fitness Value (repeated: " + repeat + "): " + average);
+        for (String file : jsonFiles) {
+            gaExperiment.Run(file, "Improved", "", repeat, 50, 0.8, 0.4);        }
+
     }
 }
