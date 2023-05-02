@@ -7,6 +7,7 @@ import com.targus.experiment.wsn.WSNProblemGenerator;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNSolutionImprover;
 import com.targus.represent.BitString;
+import com.targus.utils.Constants;
 
 import java.security.InvalidParameterException;
 
@@ -20,12 +21,12 @@ public class GAExperiment extends Experiment{
         this.pathForResults = pathForResults;
     }
 
-    public GA buildGA(OptimizationProblem optimizationProblem, WSN wsn, String gaType, int pc, double impRate, double immRate) {
+    private GA buildGA(OptimizationProblem optimizationProblem, WSN wsn, String gaType, int pc, double impRate, double immRate) {
         GA ga = null;
         switch (gaType) {
             case "Standard" -> ga = StandardGA.builder(optimizationProblem)
                     .setCrossOverOperator(new OnePointCrossOver())
-                    .setMutationOperator(new OneBitMutation())
+                    .setMutationOperator(new OneBitMutation(0.03))
                     .setSurvivalPolicy(new RouletteWheelSurvival())
                     .setSelectionPolicy(new InverseRouletteWheelSelection())
                     .setTerminalState(terminalCondition)
@@ -35,7 +36,7 @@ public class GAExperiment extends Experiment{
                     .setSolutionImprover(new WSNSolutionImprover(wsn, impRate))
                     .setMigrationCount(immRate)
                     .setCrossOverOperator(new OnePointCrossOver())
-                    .setMutationOperator(new KBitMutation())
+                    .setMutationOperator(new KBitMutation(0.03))
                     .setSurvivalPolicy(new RouletteWheelSurvival())
                     .setSelectionPolicy(new InverseRouletteWheelSelection())
                     .setTerminalState(terminalCondition)
@@ -63,24 +64,22 @@ public class GAExperiment extends Experiment{
      *       provided {@code gaType}, and executes the GA {@code repeat} times. The average fitness value and number of
      *       activated sensors across all executions are calculated and written to the output file.
      */
-    public void GABenchmarkTest(String filePath, String gaType, String outputFileName, int repeat, int pc, double impRate, double immRate) {
+    public void Run(String filePath, String gaType, String outputFileName, int repeat, int pc, double impRate, double immRate) {
         OptimizationProblem optimizationProblem = WSNProblemGenerator.generateProblemInstanceFromJson(filePath);
         WSN wsn = (WSN) optimizationProblem.model();
 
         double sum = 0.0;
-        double sensorSum = 0;
+        int sensorCount = 0;
         GA ga = buildGA(optimizationProblem, wsn, gaType, pc, impRate, immRate);
         for (int i = 0; i < repeat; i++) {
             Solution solution = ga.perform();
             BitString bitString = (BitString) solution.getRepresentation();
-            sensorSum += bitString.ones().size();
+            sensorCount += bitString.ones().size();
             sum += solution.objectiveValue();
         }
 
-        double average = sum / repeat;
-        int sensorAverage = (int) (sensorSum / repeat);
-        FileOperations.writeToFile(pathForResults + outputFileName, average + "," + sensorAverage, true);
-        System.out.println(gaType + " -- Fitness Value (repeated: " + repeat + "): " + average);
+        System.out.println(gaType + " -- Fitness Value (repeated: " + repeat + "): " + sum / repeat + " SC: " + sensorCount / repeat);
+        FileOperations.writeToFile(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES + "results/" + gaType + ".txt", sum / repeat + "," + sensorCount / repeat, true);
     }
 
 }
