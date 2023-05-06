@@ -1,5 +1,6 @@
 package com.targus.ui.controllers;
 
+import com.targus.BestSolutionUpdater;
 import com.targus.ui.Mediator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,20 +21,24 @@ public class MainController implements Initializable {
     private AlgorithmSelectionController algorithmSelectionController;
     @FXML
     private ProgressBarController progressBarController;
-    private Mediator mediator;
+    @FXML
+    private FitnessGraphController fitnessGraphController;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mediator = new Mediator();
+        Mediator mediator = new Mediator();
+        ObjectiveValueDisplayController objectiveValueDisplayController = new ObjectiveValueDisplayController();
+        BestSolutionUpdater.setObjectiveValueDisplayController(objectiveValueDisplayController);
+        BestSolutionUpdater.setMediator(mediator);
 
-        mediator.setMainController(this);
-        mediator.setToolBarController(toolBarController);
+        mediator.setObjectiveValueDisplayController(objectiveValueDisplayController);
         mediator.setInputsController(inputsController);
         mediator.setSimplifiedObjectiveValueDisplayController(simplifiedObjectiveValueDisplayController);
         mediator.setMapController(mapController);
         mediator.setProgressBarController(progressBarController);
-        mediator.setToolBarController(toolBarController);
         mediator.setAlgorithmSelectionController(algorithmSelectionController);
+        mediator.setFitnessGraphController(fitnessGraphController);
 
         toolBarController.setMediator(mediator);
         inputsController.setMediator(mediator);
@@ -41,6 +46,8 @@ public class MainController implements Initializable {
         mapController.setMediator(mediator);
         progressBarController.setMediator(mediator);
         toolBarController.setMediator(mediator);
+        fitnessGraphController.setMediator(mediator);
+        objectiveValueDisplayController.setMediator(mediator);
     }
 
 }

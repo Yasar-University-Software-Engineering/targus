@@ -1,5 +1,6 @@
 package com.targus.ui;
 
+import com.targus.algorithm.ga.TerminalState;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.WSNPrototype;
@@ -10,16 +11,19 @@ import com.targus.ui.widgets.Target;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 
+import java.util.ArrayList;
+
 public class Mediator {
-    private MainController mainController;
     private InputsController inputsController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
     private MapController mapController;
     private ProgressBarController progressBarController;
     private AlgorithmSelectionController algorithmSelectionController;
+    private ObjectiveValueDisplayController objectiveValueDisplayController;
+    private FitnessGraphController fitnessGraphController;
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    public void setObjectiveValueDisplayController(ObjectiveValueDisplayController objectiveValueDisplayController) {
+        this.objectiveValueDisplayController = objectiveValueDisplayController;
     }
 
     public void setInputsController(InputsController inputsController) {
@@ -56,43 +60,8 @@ public class Mediator {
         display();
     }
 
-    public void addTarget(Target target) {
-        inputsController.addTarget(target);
-        display();
-    }
-
-    public void addSensor(Sensor sensor) {
-        inputsController.addSensor(sensor);
-        display();
-    }
-
-    public void removeSensor(Sensor sensor) {
-        inputsController.removeSensor(sensor);
-        display();
-    }
-
     public void removeChildren() {
         mapController.removeChildren();
-        display();
-    }
-
-    public void addPotentialPosition(PotentialPosition potentialPosition) {
-        inputsController.addPotentialPosition(potentialPosition);
-        display();
-    }
-
-    public void clearTargets() {
-        inputsController.clearTargets();
-        display();
-    }
-
-    public void clearPotentialPositions() {
-        inputsController.clearPotentialPositions();
-        display();
-    }
-
-    public void clearSensors() {
-        inputsController.clearSensors();
         display();
     }
 
@@ -108,28 +77,29 @@ public class Mediator {
         progressBarController.bindProgressBar(property);
     }
 
-    public Solution getSolution() {
-        return inputsController.getSolution();
-    }
-
     public OptimizationProblem getOptimizationProblem() {
         return inputsController.getWsnOptimizationProblem();
     }
 
     public void loadFromFile(ActionEvent event) {
-        inputsController.handleLoadFromFile(event);
+        inputsController.loadFromFile(event);
     }
 
     public void exportToFile(ActionEvent event) {
-        inputsController.handleExportToFile(event);
+        inputsController.exportToFile(event);
     }
 
     public void solve() {
-        inputsController.handleSolve();
+        inputsController.solve(
+                algorithmSelectionController.getAlgorithm(),
+                algorithmSelectionController.getMutation(),
+                algorithmSelectionController.getMutationRate(),
+                algorithmSelectionController.getTermination(),
+                algorithmSelectionController.getTerminationValue());
     }
 
     public void clean() {
-        inputsController.handleCleanSolution();
+        inputsController.cleanSolution();
     }
 
     public void simplifiedDisplay(double weightedSensorValue, double weightedMConnValue, double weightedKCovValue) {
@@ -144,29 +114,12 @@ public class Mediator {
         progressBarController.setProgressBarVisible(visible);
     }
 
-
     public void addTargetToPane(Target target) {
         mapController.addTargetToPane(target);
     }
 
     public void addPotentialPositionToPane(PotentialPosition potentialPosition) {
         mapController.addPotentialPositionToPane(potentialPosition);
-    }
-
-    public void addSensorToPane(Sensor sensor) {
-        mapController.addSensorToPane(sensor);
-    }
-
-    public void bringTargetsToFront() {
-        mapController.bringTargetsToFront();
-    }
-
-    public void bringPotentialPositionsToFront() {
-        mapController.bringPotentialPositionsToFront();
-    }
-
-    public void bringSensorDevicesToFront() {
-        mapController.bringSensorDevicesToFront();
     }
 
     public void displayNonApplicable() {
@@ -177,26 +130,35 @@ public class Mediator {
         simplifiedObjectiveValueDisplayController.simplifiedDisplayNonApplicable();
     }
 
-    public String getAlgorithm() {
-        return algorithmSelectionController.getAlgorithm();
+    public void displaySensors(ArrayList<Sensor> sensors) {
+        mapController.addSensorsToPane(sensors);
     }
 
-    public String getMutation() {
-        return algorithmSelectionController.getMutation();
+    public ObjectiveValueDisplayController getObjectiveValueDisplayController() {
+        return objectiveValueDisplayController;
     }
 
-    public Double getMutationRate() {
-        return algorithmSelectionController.getMutationRate();
+    public void updateGraph(double fitness) {
+        fitnessGraphController.updateFitness(fitness);
     }
 
-    public String getTermination() {
-        return algorithmSelectionController.getTermination();
+    public void setFitnessGraphController(FitnessGraphController fitnessGraphController) {
+        this.fitnessGraphController = fitnessGraphController;
     }
 
-    public int getTerminationValue() {
-        return algorithmSelectionController.getTerminationValue();
+    public void configureChart(TerminalState terminalState, String terminationType) {
+        fitnessGraphController.configureChart(terminalState, terminationType);
     }
 
-    public void setToolBarController(ToolBarController toolBarController) {
+    public void removeSensorsFromPane() {
+        mapController.removeSensors();
+    }
+
+    public void displaySolution(Solution oldSolution, Solution newSolution) {
+        inputsController.displaySolution(oldSolution, newSolution);
+    }
+
+    public void addOrRemoveSensor(Sensor sensor) {
+        mapController.addOrRemoveSensor(sensor);
     }
 }

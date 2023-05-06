@@ -146,6 +146,9 @@ public class WSNPrototype {
     public ArrayList<Point2D> getPotentialPositions() {
         return potentialPositions;
     }
+    public Point2D[] getPotentialPositionsAsArray() {
+        return potentialPositions.toArray(new Point2D[0]);
+    }
 
     public void setPotentialPositions(ArrayList<Point2D> potentialPositions) {
         this.potentialPositions = potentialPositions;

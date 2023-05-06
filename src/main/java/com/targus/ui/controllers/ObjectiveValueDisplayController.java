@@ -66,13 +66,8 @@ public class ObjectiveValueDisplayController {
         this.mediator = mediator;
     }
 
-    public void display() {
+    public void display(Solution solution) {
         WSNOptimizationProblem wsnOptimizationProblem = (WSNOptimizationProblem) mediator.getOptimizationProblem();
-        Solution solution = mediator.getSolution();
-
-        if (wsnOptimizationProblem == null || solution == null) {
-            return;
-        }
 
         WSN wsn = (WSN) wsnOptimizationProblem.model();
         WSNMinimumSensorObjective wsnMinimumSensorObjective = (WSNMinimumSensorObjective) wsnOptimizationProblem.getObjectiveFunction();
@@ -87,6 +82,7 @@ public class ObjectiveValueDisplayController {
         setText(lblTotalResult, totalResult);
 
         mediator.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
+        mediator.updateGraph(totalResult);
     }
 
     private double sensorValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, BitString bitString) {

@@ -21,6 +21,7 @@
                 <fx:include fx:id="map" source="map.fxml"/>
             </center>
             <bottom>
+                <fx:include fx:id="fitnessGraph" source="fitnessGraph.fxml"/>
             </bottom>
         </BorderPane>
     </center>

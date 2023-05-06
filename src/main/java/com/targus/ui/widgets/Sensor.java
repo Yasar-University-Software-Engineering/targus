@@ -1,21 +1,23 @@
 package com.targus.ui.widgets;
 
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 
-public class Sensor extends Group {
+public class Sensor extends Circle {
     private static double COMMUNICATION_RADIUS;
     private static double SENSING_RADIUS;
     private static boolean STATIC_VARIABLES_INITIALIZED = false;
     private static boolean communicationRangeVisible = true;
     private static boolean sensingRangeVisible = true;
     private static final ArrayList<Sensor> allSensors = new ArrayList<>();
-    private final Circle sensorDevice;
     private final Circle communicationRange;
     private final Circle sensingRange;
 
@@ -25,13 +27,16 @@ public class Sensor extends Group {
         }
         allSensors.add(this);
 
-        sensorDevice = new Circle(centerX, centerY, 4);
-        sensorDevice.setFill(Color.GREEN);
+        setCenterX(centerX);
+        setCenterY(centerY);
+        setRadius(4.0);
+        setFill(Color.GREEN);
 
         communicationRange = initializeCommunicationRange(centerX, centerY);
         sensingRange = initializeSensingRange(centerX, centerY);
 
-        getChildren().addAll(sensorDevice, sensingRange, communicationRange);
+        parentProperty().addListener(this::changed);
+
     }
 
     public static void initializeRadii(double communicationRadius, double sensingRadius) {
@@ -81,14 +86,6 @@ public class Sensor extends Group {
         return sensingRange;
     }
 
-    public double getCenterX() {
-        return sensorDevice.getCenterX();
-    }
-
-    public double getCenterY() {
-        return sensorDevice.getCenterY();
-    }
-
     public double getCommunicationRadius() {
         return COMMUNICATION_RADIUS;
     }
@@ -113,7 +110,20 @@ public class Sensor extends Group {
         return sensingRange;
     }
 
-    public Circle getSensorDevice() {
-        return sensorDevice;
+    public static ArrayList<Sensor> getAllSensors() {
+        return allSensors;
+    }
+
+    private void changed(ObservableValue<? extends Parent> observable, Parent oldParent, Parent newParent) {
+        if (newParent != null) {
+            Pane pane = (Pane) newParent;
+            pane.getChildren().add(communicationRange);
+            pane.getChildren().add(sensingRange);
+        }
+    }
+
+    public void removeRangesFromPane(Pane pane) {
+        pane.getChildren().remove(communicationRange);
+        pane.getChildren().remove(sensingRange);
     }
 }

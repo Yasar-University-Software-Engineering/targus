@@ -25,7 +25,6 @@ public class ToolBarController implements Initializable {
     @FXML
     private CheckBox communicationRangeVisibility;
     private CreateProblemInstanceController createProblemInstanceController;
-    private ObjectiveValueDisplayController objectiveValueDisplayController;
     private Mediator mediator;
 
     @Override
@@ -34,12 +33,8 @@ public class ToolBarController implements Initializable {
         sensingRangeVisibility.setOnAction(event -> Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected()));
 
         createProblemInstanceController = new CreateProblemInstanceController();
-        objectiveValueDisplayController = new ObjectiveValueDisplayController();
 
-        Platform.runLater(() -> {
-            createProblemInstanceController.setMediator(mediator);
-            objectiveValueDisplayController.setMediator(mediator);
-        });
+        Platform.runLater(() -> createProblemInstanceController.setMediator(mediator));
     }
 
     public void setMediator(Mediator mediator) {
@@ -82,15 +77,21 @@ public class ToolBarController implements Initializable {
     }
 
     public void handleObjectiveValueDisplay(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        Scene scene = button.getScene();
-        Stage stage = (Stage) scene.getWindow();
+        Platform.runLater(() -> {
+            Button button = (Button) event.getSource();
+            Scene scene = button.getScene();
+            Stage stage = (Stage) scene.getWindow();
 
-        if (objectiveValueDisplayController.getStage().isShowing()) {
-            objectiveValueDisplayController.hide();
-        } else {
-            objectiveValueDisplayController.show(stage);
-        }
+            ObjectiveValueDisplayController objectiveValueDisplayController = mediator.getObjectiveValueDisplayController();
+
+            if (objectiveValueDisplayController.getStage().isShowing()) {
+                objectiveValueDisplayController.hide();
+            } else {
+                objectiveValueDisplayController.show(stage);
+            }
+                }
+
+        );
     }
 
     public void handleResetRegion() {

@@ -38,5 +38,9 @@ public class Constants {
     public static final String IMPROVED_GA = "Improved GA";
     public static final String SIMULATED_ANNEALING = "Simulated Annealing";
     public static final String GREEDY_ALGORITHM = "Greedy Algorithm";
+    public static final String TIME_BASED = "Time Based";
+    public static final String ITERATION_BASED = "Iteration Based";
+    public static final String ONE_BIT_MUTATION = "OneBitMutation";
+    public static final String K_BIT_MUTATION = "KBitMutation";
 
 }
