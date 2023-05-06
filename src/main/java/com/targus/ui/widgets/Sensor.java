@@ -66,6 +66,7 @@ public class Sensor extends Group {
         communicationRange.setBlendMode(BlendMode.SRC_OVER);
         communicationRange.setMouseTransparent(true);
         communicationRange.setVisible(communicationRangeVisible);
+        communicationRange.setViewOrder(3);
         return communicationRange;
     }
 
@@ -76,6 +77,7 @@ public class Sensor extends Group {
         sensingRange.setBlendMode(BlendMode.SRC_OVER);
         sensingRange.setMouseTransparent(true);
         sensingRange.setVisible(sensingRangeVisible);
+        sensingRange.setViewOrder(3);
         return sensingRange;
     }
 

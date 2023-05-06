@@ -9,5 +9,6 @@ public class Target extends Circle {
         setCenterY(centerY);
         setRadius(2.0);
         setFill(Color.RED);
+        setViewOrder(1);
     }
 }

@@ -12,5 +12,6 @@ public class PotentialPosition extends Circle {
         setFill(Color.WHITE);
         setStroke(Color.RED);
         setStrokeType(StrokeType.INSIDE);
+        setViewOrder(2);
     }
 }
