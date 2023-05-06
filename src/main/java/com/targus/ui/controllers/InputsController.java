@@ -13,6 +13,7 @@ import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import com.targus.utils.Constants;
 import com.targus.utils.ProgressTask;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -36,7 +37,9 @@ import java.util.*;
 
 public class InputsController implements Initializable {
     private WSNPrototype wsnPrototype = new WSNPrototype();
-    private final ArrayList<Sensor> sensors = new ArrayList<>();
+    private WSNOptimizationProblem wsnOptimizationProblem;
+    private final SolutionController solutionController = new SolutionController();
+
     @FXML
     private TextField txtM;
     @FXML
@@ -45,8 +48,7 @@ public class InputsController implements Initializable {
     private TextField txtCommunicationRange;
     @FXML
     private TextField txtSensingRange;
-    private OptimizationProblem wsnOptimizationProblem;
-    private Solution solution;
+
     private Mediator mediator;
 
     @Override
@@ -55,21 +57,43 @@ public class InputsController implements Initializable {
         txtK.textProperty().bindBidirectional(wsnPrototype.getKProperty(), new NumberStringConverter());
         txtCommunicationRange.textProperty().bindBidirectional(wsnPrototype.getCommunicationRangeProperty(), new NumberStringConverter());
         txtSensingRange.textProperty().bindBidirectional(wsnPrototype.getSensingRangeProperty(), new NumberStringConverter());
+
+        Platform.runLater(() -> solutionController.setMediator(mediator));
+    }
+
+    public WSNOptimizationProblem getWsnOptimizationProblem() {
+        return wsnOptimizationProblem;
     }
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
     }
 
-    public OptimizationProblem getWsnOptimizationProblem() {
-        return wsnOptimizationProblem;
+    public void solve(String algorithmType,
+                      String mutationType,
+                      double mutationRate,
+                      String terminationType,
+                      int terminationValue) {
+
+        initProblemInstance();
+
+        new Thread(() -> {
+            solutionController.solve(
+                    wsnOptimizationProblem,
+                    algorithmType,
+                    mutationType,
+                    mutationRate,
+                    terminationType,
+                    terminationValue);
+        }).start();
+
     }
 
-    public Solution getSolution() {
-        return solution;
+    public void displaySolution(Solution oldSolution, Solution newSolution) {
+        solutionController.displaySolution(oldSolution, newSolution, wsnPrototype.getPotentialPositionsAsArray());
     }
 
-    public void handleLoadFromFile(ActionEvent event) {
+    public void loadFromFile(ActionEvent event) {
 
         FileChooser fc = new FileChooser();
         fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
@@ -127,16 +151,16 @@ public class InputsController implements Initializable {
         wsnPrototype.setPaneHeight((int) dimensions.getY());
 
         for (Point2D point2D : targetArray) {
-            addTarget(new Target(point2D.getX(), point2D.getY()));
+            wsnPrototype.addTarget(new Target(point2D.getX(), point2D.getY()));
         }
 
         for (Point2D point2D : potentialPositionArray) {
-            addPotentialPosition(new PotentialPosition(point2D.getX(), point2D.getY()));
+            wsnPrototype.addPotentialPosition(new PotentialPosition(point2D.getX(), point2D.getY()));
         }
         initProblemInstance();
     }
 
-    public void handleExportToFile(ActionEvent event) {
+    public void exportToFile(ActionEvent event) {
         try {
             FileChooser fc = new FileChooser();
             fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
@@ -197,7 +221,7 @@ public class InputsController implements Initializable {
 
         for (double i = distance; i < wsnPrototype.getPaneHeight(); i += distance) {
             for (double j = distance; j < wsnPrototype.getPaneWidth(); j += distance) {
-                addPotentialPosition(new PotentialPosition(j, i));
+                wsnPrototype.addPotentialPosition(new PotentialPosition(j, i));
             }
         }
     }
@@ -210,177 +234,13 @@ public class InputsController implements Initializable {
         for (int i = 0; i < numberNodes; i++) {
             double x = Math.random() * wsnPrototype.getPaneWidth();
             double y = Math.random() * wsnPrototype.getPaneHeight();
-            addTarget(new Target(x, y));
+            wsnPrototype.addTarget(new Target(x, y));
         }
     }
 
-    @FXML
-    public void handleCleanSolution() {
-        for (Sensor sensor : sensors) {
-            mediator.removeChild(sensor);
-        }
-        sensors.clear();
-
-        if (solution == null) {
-            return;
-        }
-        BitString bitString = (BitString) solution.getRepresentation();
-        bitString.getBitSet().clear();
-        mediator.display();
-    }
-
-    public TerminalState buildTerminalState() {
-        TerminalState terminalState;
-        int terminationValue = mediator.getTerminationValue();
-
-        if (mediator.getTermination().equals("Time Based")) {
-            terminalState = new TimeBasedTerminal(terminationValue);
-        } else if (mediator.getTermination().equals("Iteration Based")) {
-            terminalState = new IterationBasedTerminal(terminationValue);
-        } else {
-            terminalState = null;
-        }
-
-        return terminalState;
-    }
-
-    public MutationOperator buildMutationOperator() {
-        MutationOperator mutationOperator;
-        Double mutationRate = mediator.getMutationRate();
-
-        if (mediator.getMutation().equals("OneBitMutation")) {
-            mutationOperator = new OneBitMutation(mutationRate);
-        } else if (mediator.getMutation().equals("KBitMutation")) {
-            mutationOperator = new KBitMutation(mutationRate);
-        } else {
-            mutationOperator = null;
-        }
-
-        return mutationOperator;
-    }
-
-    public GA buildStandardGA() {
-        MutationOperator mutationOperator = buildMutationOperator();
-        TerminalState terminalState = buildTerminalState();
-
-        return StandardGA
-                .builder(wsnOptimizationProblem)
-                .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(mutationOperator)
-                .setTerminalState(terminalState)
-                .build();
-    }
-
-    // TODO: replace wsn.getGenerationCount() with time
-    public GA buildImprovedGA(WSN wsn) {
-        MutationOperator mutationOperator = buildMutationOperator();
-        TerminalState terminalState = buildTerminalState();
-
-        return ImprovedGA
-                .builder(wsnOptimizationProblem)
-                .setSolutionImprover(new WSNSolutionImprover(wsn, Constants.DEFAULT_IMPROVE_PROBABILITY))
-                .setTerminalState(terminalState)
-                .setCrossOverOperator(new OnePointCrossOver())
-                .setMutationOperator(mutationOperator)
-                .build();
-    }
-
-    @FXML
-    public void handleSolve() {
-        disableTextField(true);
-
-        handleCleanSolution();
-        initProblemInstance();
-
-        WSN wsn = (WSN) wsnOptimizationProblem.model();
-
-        String algorithmType = mediator.getAlgorithm();
-
-        // TODO: we should replace this line with -> SingleObjectiveOA algorithm
-        // I was going to do that but the progress bar fails. Since it takes time
-        // to refactor this, I will leave it for later
-        GA ga;
-
-        switch (algorithmType) {
-            case Constants.STANDARD_GA -> ga = buildStandardGA();
-            case Constants.IMPROVED_GA -> ga = buildImprovedGA(wsn);
-            case Constants.SIMULATED_ANNEALING -> ga = buildSimulatedAnnealing(wsn);
-            case Constants.GREEDY_ALGORITHM -> ga = buildGreedyAlgorithm(wsn);
-            default -> {
-                try {
-                    throw new Exception("No such algorithm available");
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
-        // progressTask.valueProperty().addListener((observable, oldValue, newValue) -> mediator.setProgressLabelText(String.valueOf(newValue)));
-        mediator.bindProgressBar(progressTask.progressProperty());
-
-        Thread thread = new Thread(progressTask);
-        thread.setDaemon(true);
-        thread.start();
-
-        GA finalGa = ga;
-        Task<Solution> gaTask = new Task<>() {
-            @Override
-            protected Solution call() {
-                mediator.setProgressBarVisible(true);
-                return finalGa.perform();
-            }
-        };
-
-        gaTask.setOnSucceeded(e -> {
-            mediator.setProgressBarVisible(false);
-            solution = gaTask.getValue();
-            BitString bitString = (BitString) solution.getRepresentation();
-            HashSet<Integer> indexes = bitString.ones();
-
-            Point2D[] potentialPositionArray = wsn.getPotentialPositions();
-
-            Sensor.initializeRadii(
-                    wsnPrototype.getCommunicationRange(),
-                    wsnPrototype.getSensingRange());
-
-            for (Integer index : indexes) {
-                Point2D potentialPosition = potentialPositionArray[index];
-                Sensor sensor = null;
-
-                try {
-                    sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY());
-                } catch (IllegalStateException illegalStateException) {
-                    throw new IllegalStateException(illegalStateException.getMessage());
-                }
-
-                mediator.addSensorToPane(sensor);
-                addSensor(sensor);
-            }
-
-            mediator.bringTargetsToFront();
-            mediator.bringPotentialPositionsToFront();
-            mediator.bringSensorDevicesToFront();
-
-            mediator.display();
-            disableTextField(false);
-        });
-        new Thread(gaTask).start();
-    }
-
-    private GA buildGreedyAlgorithm(WSN wsn) {
-        return null;
-    }
-
-    private GA buildSimulatedAnnealing(WSN wsn) {
-        return null;
-    }
-
-    private void disableTextField(boolean bool) {
-        txtM.setDisable(bool);
-        txtK.setDisable(bool);
-        txtCommunicationRange.setDisable(bool);
-        txtSensingRange.setDisable(bool);
+    public void cleanSolution() {
+        mediator.removeSensorsFromPane();
+        solutionController.cleanSolution();
     }
 
     private void initProblemInstance() {
@@ -421,60 +281,6 @@ public class InputsController implements Initializable {
         wsnOptimizationProblem = new WSNOptimizationProblem(wsn, new WSNMinimumSensorObjective());
     }
 
-    public void addTarget(Target target) {
-        wsnPrototype.addTarget(target);
-    }
-
-    public void addPotentialPosition(PotentialPosition potentialPosition) {
-        wsnPrototype.addPotentialPosition(potentialPosition);
-    }
-
-    public void addSensor(Sensor sensor) {
-        double x = sensor.getCenterX();
-        double y = sensor.getCenterY();
-
-        DecimalFormat df = new DecimalFormat("#.##");
-
-        for (int i = 0; i < wsnPrototype.getPotentialPositions().size(); i++) {
-            if (df.format(wsnPrototype.getPotentialPositionByIndex(i).getX()).equals(df.format(x))
-                    && df.format(wsnPrototype.getPotentialPositionByIndex(i).getY()).equals(df.format(y))) {
-                BitString bitString = (BitString) solution.getRepresentation();
-                bitString.set(i, true);
-            }
-        }
-
-        sensors.add(sensor);
-    }
-
-    public void removeSensor(Sensor sensor) {
-        double x = sensor.getCenterX();
-        double y = sensor.getCenterY();
-
-        DecimalFormat df = new DecimalFormat("#.##");
-
-        for (int i = 0; i < wsnPrototype.getPotentialPositions().size(); i++) {
-            if (df.format(wsnPrototype.getPotentialPositionByIndex(i).getX()).equals(df.format(x))
-                    && df.format(wsnPrototype.getPotentialPositionByIndex(i).getY()).equals(df.format(y))) {
-                BitString bitString = (BitString) solution.getRepresentation();
-                bitString.set(i, false);
-            }
-        }
-
-        sensors.remove(sensor);
-    }
-
-    public void clearTargets() {
-        wsnPrototype.clearTargets();
-    }
-
-    public void clearPotentialPositions() {
-        wsnPrototype.clearPotentialPositions();
-    }
-
-    public void clearSensors() {
-        handleCleanSolution();
-    }
-
     public void createProblemInstance(WSNPrototype wsnPrototype, int distance, int numberNodes) {
         this.wsnPrototype = wsnPrototype;
 
@@ -482,5 +288,12 @@ public class InputsController implements Initializable {
         handleGenerateRandomTarget(numberNodes);
 
         initProblemInstance();
+    }
+
+    private void disableTextField(boolean bool) {
+        txtM.setDisable(bool);
+        txtK.setDisable(bool);
+        txtCommunicationRange.setDisable(bool);
+        txtSensingRange.setDisable(bool);
     }
 }
