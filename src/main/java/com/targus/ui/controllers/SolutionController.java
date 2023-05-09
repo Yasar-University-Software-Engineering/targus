@@ -77,14 +77,8 @@ public class SolutionController {
             Point2D potentialPosition = potentialPositionArray[index];
             Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY(), index);
             sensors.add(sensor);
-            Platform.runLater(() -> {
-                mediator.addOrRemoveSensor(sensor);
-            });
+            Platform.runLater(() -> mediator.addOrRemoveSensor(sensor));
         }
-
-        Platform.runLater(() -> {
-            mediator.displaySensors(sensors);
-        });
     }
 
     public void cleanSolution() {

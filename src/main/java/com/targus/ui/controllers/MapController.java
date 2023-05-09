@@ -4,19 +4,11 @@ import com.targus.ui.Mediator;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MapController {
     @FXML
@@ -129,33 +121,16 @@ public class MapController {
         mainPane.getChildren().add(potentialPosition);
     }
 
-    public void addSensorToPane(Sensor sensor) {
-        mainPane.getChildren().add(sensor);
-    }
-
-    public void addSensorsToPane(ArrayList<Sensor> sensors) {
-        for (Sensor sensor : sensors) {
-            addSensorToPane(sensor);
-        }
-    }
-
-    public void addOrRemoveSensor(Sensor sensor) {
-        if (sensorExistsInPane(sensor)) {
-            sensor.removeRangesFromPane(mainPane);
-            mainPane.getChildren().remove(sensor);
+    public void addOrRemoveSensorFromPane(Sensor sensor) {
+        Sensor sensorInPane = Sensor.retrieveSensorByIndex(sensor.getRespectivePotentialPositionIndex());
+        if (mainPane.getChildren().contains(sensorInPane)) {
+            sensorInPane.removeRangesFromPane(mainPane);
+            mainPane.getChildren().remove(sensorInPane);
+            Sensor.removeSensorFromAllSensorsList(sensor);
+            Sensor.removeSensorFromSensorHashSet(sensor);
         } else {
-            addSensorToPane(sensor);
+            mainPane.getChildren().add(sensorInPane);
         }
-    }
-
-    public boolean sensorExistsInPane(Sensor sensor) {
-        for (Node node : mainPane.getChildren()) {
-            if (node instanceof Sensor) {
-                return sensor.getCenterX() == ((Sensor) node).getCenterX()
-                        && sensor.getCenterY() == ((Sensor) node).getCenterY();
-            }
-        }
-        return false;
     }
 }
 

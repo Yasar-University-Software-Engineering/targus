@@ -11,8 +11,6 @@ import com.targus.ui.widgets.Target;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 
-import java.util.ArrayList;
-
 public class Mediator {
     private InputsController inputsController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
@@ -130,10 +128,6 @@ public class Mediator {
         simplifiedObjectiveValueDisplayController.simplifiedDisplayNonApplicable();
     }
 
-    public void displaySensors(ArrayList<Sensor> sensors) {
-        mapController.addSensorsToPane(sensors);
-    }
-
     public ObjectiveValueDisplayController getObjectiveValueDisplayController() {
         return objectiveValueDisplayController;
     }
@@ -159,6 +153,6 @@ public class Mediator {
     }
 
     public void addOrRemoveSensor(Sensor sensor) {
-        mapController.addOrRemoveSensor(sensor);
+        mapController.addOrRemoveSensorFromPane(sensor);
     }
 }
