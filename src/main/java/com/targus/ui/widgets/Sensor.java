@@ -10,22 +10,25 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Sensor extends Circle {
+    private int respectivePotentialPositionIndex;
     private static double COMMUNICATION_RADIUS;
     private static double SENSING_RADIUS;
     private static boolean STATIC_VARIABLES_INITIALIZED = false;
     private static boolean communicationRangeVisible = true;
     private static boolean sensingRangeVisible = true;
     private static final ArrayList<Sensor> allSensors = new ArrayList<>();
+    private static final HashMap<Integer, Sensor> sensorHashMap = new HashMap<>();
     private final Circle communicationRange;
     private final Circle sensingRange;
 
-    public Sensor(double centerX, double centerY) {
+    public Sensor(double centerX, double centerY, int respectivePotentialPositionIndex) {
         if (!staticVariablesInitialized()) {
             throw new IllegalStateException("Radii are not initialized.");
         }
-        allSensors.add(this);
+        this.respectivePotentialPositionIndex = respectivePotentialPositionIndex;
 
         setCenterX(centerX);
         setCenterY(centerY);
@@ -37,6 +40,10 @@ public class Sensor extends Circle {
 
         parentProperty().addListener(this::changed);
 
+        allSensors.add(this);
+        if (!sensorHashMap.containsKey(respectivePotentialPositionIndex)) {
+            sensorHashMap.put(respectivePotentialPositionIndex, this);
+        }
     }
 
     public static void initializeRadii(double communicationRadius, double sensingRadius) {
@@ -125,5 +132,21 @@ public class Sensor extends Circle {
     public void removeRangesFromPane(Pane pane) {
         pane.getChildren().remove(communicationRange);
         pane.getChildren().remove(sensingRange);
+    }
+
+    public static void removeSensorFromAllSensorsList(Sensor sensor) {
+        allSensors.remove(sensor);
+    }
+
+    public static Sensor retrieveSensorByIndex(int respectivePotentialPositionIndex) {
+        return sensorHashMap.get(respectivePotentialPositionIndex);
+    }
+
+    public static void removeSensorFromSensorHashSet(Sensor sensor) {
+        sensorHashMap.remove(sensor.respectivePotentialPositionIndex);
+    }
+
+    public int getRespectivePotentialPositionIndex() {
+        return respectivePotentialPositionIndex;
     }
 }
