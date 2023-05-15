@@ -1,6 +1,5 @@
 package com.targus.ui.controllers;
 
-import com.targus.BestSolutionUpdater;
 import com.targus.ui.Mediator;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,8 +28,6 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         Mediator mediator = new Mediator();
         ObjectiveValueDisplayController objectiveValueDisplayController = new ObjectiveValueDisplayController();
-        BestSolutionUpdater.setObjectiveValueDisplayController(objectiveValueDisplayController);
-        BestSolutionUpdater.setMediator(mediator);
 
         mediator.setObjectiveValueDisplayController(objectiveValueDisplayController);
         mediator.setInputsController(inputsController);
