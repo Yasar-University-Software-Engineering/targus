@@ -2,19 +2,16 @@ package com.targus.ui.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.targus.algorithm.ga.*;
-import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
-import com.targus.problem.wsn.*;
-import com.targus.represent.BitString;
+import com.targus.problem.wsn.WSN;
+import com.targus.problem.wsn.WSNMinimumSensorObjective;
+import com.targus.problem.wsn.WSNOptimizationProblem;
+import com.targus.problem.wsn.WSNPrototype;
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.PotentialPosition;
-import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import com.targus.utils.Constants;
-import com.targus.utils.ProgressTask;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,7 +29,6 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class InputsController implements Initializable {
@@ -76,21 +72,17 @@ public class InputsController implements Initializable {
                       int terminationValue) {
 
         initProblemInstance();
-
-        new Thread(() -> {
-            solutionController.solve(
-                    wsnOptimizationProblem,
-                    algorithmType,
-                    mutationType,
-                    mutationRate,
-                    terminationType,
-                    terminationValue);
-        }).start();
-
+        solutionController.solve(
+                wsnOptimizationProblem,
+                algorithmType,
+                mutationType,
+                mutationRate,
+                terminationType,
+                terminationValue);
     }
 
-    public void displaySolution(Solution oldSolution, Solution newSolution) {
-        solutionController.displaySolution(oldSolution, newSolution, wsnPrototype.getPotentialPositionsAsArray());
+    public void displaySolution(Solution solution) {
+        solutionController.displaySolution(solution);
     }
 
     public void loadFromFile(ActionEvent event) {
@@ -240,10 +232,10 @@ public class InputsController implements Initializable {
 
     public void cleanSolution() {
         mediator.removeSensorsFromPane();
-        solutionController.cleanSolution();
     }
 
     private void initProblemInstance() {
+        mediator.resetRegion();
         mediator.resizeMapPane(wsnPrototype.getPaneWidthProperty().get(), wsnPrototype.getPaneHeightProperty().get());
 
         // TODO: In MapController, add options to add targets

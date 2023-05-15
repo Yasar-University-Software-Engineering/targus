@@ -11,6 +11,8 @@ import com.targus.ui.widgets.Target;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 
+import java.util.Collection;
+
 public class Mediator {
     private InputsController inputsController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
@@ -51,11 +53,6 @@ public class Mediator {
 
     public void display() {
 //        objectiveValueDisplayController.display();
-    }
-
-    public void removeChild(Object child) {
-        mapController.removeChild(child);
-        display();
     }
 
     public void removeChildren() {
@@ -132,10 +129,6 @@ public class Mediator {
         return objectiveValueDisplayController;
     }
 
-    public void updateGraph(double fitness) {
-        fitnessGraphController.updateFitness(fitness);
-    }
-
     public void setFitnessGraphController(FitnessGraphController fitnessGraphController) {
         this.fitnessGraphController = fitnessGraphController;
     }
@@ -145,14 +138,22 @@ public class Mediator {
     }
 
     public void removeSensorsFromPane() {
-        mapController.removeSensors();
+        mapController.removeSensorsFromPane();
     }
 
-    public void displaySolution(Solution oldSolution, Solution newSolution) {
-        inputsController.displaySolution(oldSolution, newSolution);
+    public void displaySolution(Solution solution) {
+        inputsController.displaySolution(solution);
     }
 
-    public void addOrRemoveSensor(Sensor sensor) {
-        mapController.addOrRemoveSensorFromPane(sensor);
+    public FitnessGraphController getFitnessGraphController() {
+        return fitnessGraphController;
+    }
+
+    public void addSensorsToPane(Collection<Sensor> sensors) {
+        mapController.addSensorsToPane(sensors);
+    }
+
+    public void updateGraph(double totalResult) {
+        // TODO: Fill this definition
     }
 }
