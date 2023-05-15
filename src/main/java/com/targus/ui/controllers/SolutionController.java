@@ -77,10 +77,8 @@ public class SolutionController {
         HashSet<Integer> indexes = xoredBitString.ones();
 
         for (Integer index : indexes) {
-            Point2D potentialPosition = potentialPositionArray[index];
-            Sensor sensor = new Sensor(potentialPosition.getX(), potentialPosition.getY(), index);
-            sensors.add(sensor);
-            Platform.runLater(() -> mediator.addOrRemoveSensor(sensor));
+            Sensor sensor = Sensor.retrieveSensorFromHashMapByIndex(index);
+            sensor.turnOn();
         }
     }
 

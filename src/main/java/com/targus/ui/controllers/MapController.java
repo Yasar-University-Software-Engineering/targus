@@ -4,11 +4,16 @@ import com.targus.ui.Mediator;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MapController {
     @FXML
@@ -83,20 +88,14 @@ public class MapController {
     }
 
     public void removeChildren() {
-//        mainPane.getChildren().removeAll(mainPane.getChildren());
-//        mediator.clearTargets();
-//        mediator.clearPotentialPositions();
-//        mediator.clearSensors();
+        mainPane.getChildren().clear();
     }
 
-    public void removeChild(Object child) {
-        mainPane.getChildren().remove(child);
-    }
-
-    public void removeSensors() {
-        for (Sensor sensor : Sensor.getAllSensors()) {
-            sensor.removeRangesFromPane(mainPane);
-            mainPane.getChildren().remove(sensor);
+    public void removeSensorsFromPane() {
+        ConcurrentHashMap<Integer, Sensor> map = Sensor.getSensorHashMap();
+        Collection<Sensor> sensorsToRemove = new ConcurrentLinkedQueue<>(map.values());
+        for (Sensor sensor : sensorsToRemove) {
+            sensor.turnOff();
         }
     }
 
@@ -114,23 +113,15 @@ public class MapController {
     }
 
     public void addTargetToPane(Target target) {
-        mainPane.getChildren().add(target);
+        Platform.runLater(() -> mainPane.getChildren().add(target));
     }
 
     public void addPotentialPositionToPane(PotentialPosition potentialPosition) {
-        mainPane.getChildren().add(potentialPosition);
+        Platform.runLater(() -> mainPane.getChildren().add(potentialPosition));
     }
 
-    public void addOrRemoveSensorFromPane(Sensor sensor) {
-        Sensor sensorInPane = Sensor.retrieveSensorByIndex(sensor.getRespectivePotentialPositionIndex());
-        if (mainPane.getChildren().contains(sensorInPane)) {
-            sensorInPane.removeRangesFromPane(mainPane);
-            mainPane.getChildren().remove(sensorInPane);
-            Sensor.removeSensorFromAllSensorsList(sensor);
-            Sensor.removeSensorFromSensorHashSet(sensor);
-        } else {
-            mainPane.getChildren().add(sensorInPane);
-        }
+    public void addSensorsToPane(Collection<Sensor> sensors) {
+        mainPane.getChildren().addAll(sensors);
     }
 }
 
