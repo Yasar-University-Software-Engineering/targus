@@ -4,15 +4,10 @@ import com.targus.algorithm.ga.TerminalState;
 import com.targus.ui.Mediator;
 import com.targus.utils.Constants;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.chart.Axis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-
-import java.lang.constant.Constable;
 
 public class FitnessGraphController {
     @FXML
@@ -22,18 +17,8 @@ public class FitnessGraphController {
 
     private Mediator mediator;
 
-//    public void initialize() {
-//        // Create the chart and add a series to it
-//        series = new XYChart.Series<>();
-//        chart.getData().add(series);
-//    }
-
-    public void updateFitness(double fitnessValue) {
-        // Add the new data point to the series
-        series.getData().add(new XYChart.Data<>(terminalState.getCurrentState(), fitnessValue));
-
-        // Update the chart with the new data
-        chart.setData(FXCollections.singletonObservableList(series));
+    public void updateFitness(long currentState, double fitnessValue) {
+        Platform.runLater(() -> series.getData().add(new XYChart.Data<>(currentState, fitnessValue)));
     }
 
     public void setMediator(Mediator mediator) {
@@ -54,7 +39,7 @@ public class FitnessGraphController {
             xAxis.setTickUnit((double) terminalState.getFinishState() / 10);
         } else if (terminationType.equals(Constants.TIME_BASED)) {
             xAxis.setLabel("Time (ms)");
-            xAxis.setTickUnit(1000);
+            xAxis.setTickUnit(10000);
         }
     }
 }

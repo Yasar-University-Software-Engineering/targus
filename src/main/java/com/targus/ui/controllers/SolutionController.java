@@ -2,32 +2,21 @@ package com.targus.ui.controllers;
 
 import com.targus.algorithm.ga.GA;
 import com.targus.base.Solution;
-import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.represent.BitString;
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.Sensor;
 import com.targus.utils.AlgorithmGenerator;
-import javafx.application.Platform;
-import javafx.geometry.Point2D;
+import com.targus.utils.ChartTask;
+import com.targus.utils.DisplaySolutionTask;
+import com.targus.utils.ProgressTask;
+import javafx.concurrent.Task;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class SolutionController {
-    private boolean initialSolutionApplied = false;
-    private final ArrayList<Sensor> sensors = new ArrayList<>();
-    private Solution solution;
     private Mediator mediator;
-
-    public ArrayList<Sensor> getSensors() {
-        return sensors;
-    }
-
-    public Solution getSolution() {
-        return solution;
-    }
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
@@ -49,41 +38,58 @@ public class SolutionController {
                 terminationValue);
 
         WSN wsn = (WSN) wsnOptimizationProblem.model();
-        Point2D[] potentialPositionArray = wsn.getPotentialPositions();
 
         Sensor.initializeRadii(
                 wsn.getCommRange(),
                 wsn.getSensRange());
 
-        mediator.configureChart(ga.getTerminalState(), terminationType);
-        solution = ga.perform();
+        mediator.addSensorsToPane(Sensor.fillPotentialPositions(wsn.getPotentialPositions()));
 
-//        displaySolution(solution, potentialPositionArray);
+        mediator.configureChart(ga.getTerminalState(), terminationType);
+
+        ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
+        mediator.bindProgressBar(progressTask.progressProperty());
+        Thread progressThread = new Thread(progressTask);
+        progressThread.setDaemon(true);
+        progressThread.start();
+
+        DisplaySolutionTask displaySolutionTask = new DisplaySolutionTask(ga, mediator, ga.getTerminalState());
+        Thread displaySolutionThread = new Thread(displaySolutionTask);
+        displaySolutionThread.setDaemon(true);
+        displaySolutionThread.start();
+
+        ChartTask chartTask = new ChartTask(ga, mediator);
+        Thread chartThread = new Thread(chartTask);
+        chartThread.setDaemon(true);
+        chartThread.start();
+
+        Thread gaPerformThread = new Thread(new Task<Void>() {
+            @Override
+            protected Void call() {
+                mediator.setProgressBarVisible(true);
+                ga.perform();
+                mediator.setProgressBarVisible(false);
+                return null;
+            }
+        });
+        gaPerformThread.setDaemon(true);
+        gaPerformThread.start();
     }
 
-    public void displaySolution(Solution oldSolution, Solution newSolution, Point2D[] potentialPositionArray) {
-        BitString oldSolutionBitString = (BitString) oldSolution.getRepresentation();
-        BitString newSolutionBitString = (BitString) newSolution.getRepresentation();
-        BitString xoredBitString = oldSolutionBitString.xor(newSolutionBitString);
-
-        if (!initialSolutionApplied) {
-            initialSolutionApplied = true;
-            BitString zeroBitString = new BitString(oldSolutionBitString.length());
-            Solution zeroSolution = new BitStringSolution(zeroBitString, 0);
-            displaySolution(oldSolution, zeroSolution, potentialPositionArray);
+    public void displaySolution(Solution solution) {
+        if (solution == null) {
             return;
         }
+        BitString solutionBitString = (BitString) solution.getRepresentation();
+        mediator.removeSensorsFromPane();
+        HashSet<Integer> indexes = solutionBitString.ones();
+        applyIndexesToPane(indexes);
+    }
 
-        HashSet<Integer> indexes = xoredBitString.ones();
-
+    public void applyIndexesToPane(HashSet<Integer> indexes) {
         for (Integer index : indexes) {
             Sensor sensor = Sensor.retrieveSensorFromHashMapByIndex(index);
             sensor.turnOn();
         }
-    }
-
-    public void cleanSolution() {
-        sensors.clear();
-        solution = null;
     }
 }
