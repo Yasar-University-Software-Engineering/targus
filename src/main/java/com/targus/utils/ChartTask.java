@@ -4,7 +4,6 @@ import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.TerminalState;
 import com.targus.ui.Mediator;
 import com.targus.ui.controllers.FitnessGraphController;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 public class ChartTask extends Task {
@@ -26,7 +25,7 @@ public class ChartTask extends Task {
         while (start < end) {
             if (ga.getBestSolution() != null) {
                 long finalStart = start;
-                Platform.runLater(() -> fitnessGraphController.updateFitness(finalStart, ga.getBestSolution().objectiveValue()));
+                fitnessGraphController.updateFitness(finalStart, ga.getBestSolution().objectiveValue());
             }
             start = terminalState.getCurrentState();
         }

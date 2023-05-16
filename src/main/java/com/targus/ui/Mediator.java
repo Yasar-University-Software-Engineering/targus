@@ -153,11 +153,15 @@ public class Mediator {
         mapController.addSensorsToPane(sensors);
     }
 
-    public void updateGraph(double totalResult) {
-        // TODO: Fill this definition
+    public void updateGraph(long currentState, double totalResult) {
+        fitnessGraphController.updateFitness(currentState, totalResult);
     }
 
     public void disableTextField(boolean bool) {
         inputsController.disableTextField(bool);
+    }
+
+    public void removeSensorsFromPane() {
+        mapController.removeSensorsFromPane();
     }
 }

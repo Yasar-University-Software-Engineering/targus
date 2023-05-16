@@ -18,9 +18,7 @@
     <center>
         <BorderPane>
             <center>
-                <HBox fx:id="paneArea" alignment="TOP_CENTER">
-                    <fx:include fx:id="map" source="map.fxml" styleClass="pane"/>
-                </HBox>
+                <fx:include fx:id="map" source="map.fxml" styleClass="pane"/>
             </center>
             <bottom>
                 <HBox fx:id="graphPortion">
@@ -32,11 +30,10 @@
     <bottom>
         <VBox>
             <Separator/>
-            <HBox spacing="5">
-                <fx:include source="legend.fxml"/>
-                <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+            <HBox>
                 <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml"
                             HBox.hgrow="ALWAYS"/>
+                <fx:include source="legend.fxml"/>
             </HBox>
         </VBox>
     </bottom>

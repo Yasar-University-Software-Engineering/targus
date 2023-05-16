@@ -10,26 +10,22 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.HashSet;
 
 public class Sensor extends Circle {
-    private final int respectivePotentialPositionIndex;
     private static double COMMUNICATION_RADIUS;
     private static double SENSING_RADIUS;
-    private boolean sensorVisible = false;
-    private boolean communicationRangeVisible = false;
-    private boolean sensingRangeVisible = false;
-    private static final ConcurrentHashMap<Integer, Sensor> sensorHashMap = new ConcurrentHashMap<>();
-    private Circle communicationRange;
-    private Circle sensingRange;
+    private static final ArrayList<Sensor> sensorArrayList = new ArrayList<>();
+    private final Circle communicationRange;
+    private final Circle sensingRange;
+    private static HashSet<Integer> turnedOnSensors;
 
-    public Sensor(double centerX, double centerY, int respectivePotentialPositionIndex) {
+    public Sensor(double centerX, double centerY) {
         if (!staticVariablesInitialized()) {
             throw new IllegalStateException("Radii are not initialized.");
         }
-        this.respectivePotentialPositionIndex = respectivePotentialPositionIndex;
 
         setCenterX(centerX);
         setCenterY(centerY);
@@ -39,21 +35,19 @@ public class Sensor extends Circle {
         communicationRange = initializeCommunicationRange(centerX, centerY);
         sensingRange = initializeSensingRange(centerX, centerY);
 
-        setVisible(sensorVisible);
-        communicationRange.setVisible(communicationRangeVisible);
-        sensingRange.setVisible(sensingRangeVisible);
+        setVisible(false);
+        communicationRange.setVisible(false);
+        sensingRange.setVisible(false);
 
         parentProperty().addListener(this::changed);
     }
 
     public static Collection<Sensor> fillPotentialPositions(Point2D[] potentialPositionArray) {
         for (int i = 0; i < potentialPositionArray.length; i++) {
-            if (!sensorHashMap.containsKey(i)) {
-                Point2D point2D = potentialPositionArray[i];
-                sensorHashMap.put(i, new Sensor(point2D.getX(), point2D.getY(), i));
-            }
+            Point2D point2D = potentialPositionArray[i];
+            sensorArrayList.add(new Sensor(point2D.getX(), point2D.getY()));
         }
-        return sensorHashMap.values();
+        return sensorArrayList;
     }
 
     public static void initializeRadii(double communicationRadius, double sensingRadius) {
@@ -66,19 +60,15 @@ public class Sensor extends Circle {
                 && SENSING_RADIUS != 0.0;
     }
 
-    public void setCommunicationRangeVisibility(boolean visible) {
-        communicationRangeVisible = visible;
-        Collection<Sensor> sensors = new ConcurrentLinkedQueue<>(sensorHashMap.values());
-        for (Sensor sensor : sensors) {
-            sensor.getCommunicationRange().setVisible(visible);
+    public static void setCommunicationRangeVisibility(boolean visible) {
+        for (Integer index : turnedOnSensors) {
+            Platform.runLater(() -> sensorArrayList.get(index).communicationRange.setVisible(visible));
         }
     }
 
-    public void setSensingRangeVisibility(boolean visible) {
-        sensingRangeVisible = visible;
-        Collection<Sensor> sensors = new ConcurrentLinkedQueue<>(sensorHashMap.values());
-        for (Sensor sensor : sensors) {
-            sensor.getSensingRange().setVisible(visible);
+    public static void setSensingRangeVisibility(boolean visible) {
+        for (Integer index : turnedOnSensors) {
+            Platform.runLater(() -> sensorArrayList.get(index).sensingRange.setVisible(visible));
         }
     }
 
@@ -118,6 +108,10 @@ public class Sensor extends Circle {
         SENSING_RADIUS = sensingRadius;
     }
 
+    public static void setTurnedOnSensors(HashSet<Integer> turnedOnSensors) {
+        Sensor.turnedOnSensors = turnedOnSensors;
+    }
+
     public Circle getCommunicationRange() {
         return communicationRange;
     }
@@ -126,8 +120,8 @@ public class Sensor extends Circle {
         return sensingRange;
     }
 
-    public static ConcurrentHashMap<Integer, Sensor> getSensorHashMap() {
-        return sensorHashMap;
+    public static ArrayList<Sensor> getSensorArrayList() {
+        return sensorArrayList;
     }
 
     private void changed(ObservableValue<? extends Parent> observable, Parent oldParent, Parent newParent) {
@@ -139,7 +133,7 @@ public class Sensor extends Circle {
     }
 
     public static Sensor retrieveSensorFromHashMapByIndex(int respectivePotentialPositionIndex) {
-        return sensorHashMap.get(respectivePotentialPositionIndex);
+        return sensorArrayList.get(respectivePotentialPositionIndex);
     }
 
     public void turnOn() {
@@ -159,6 +153,11 @@ public class Sensor extends Circle {
     }
 
     public static void clearHashMap() {
-        sensorHashMap.clear();
+        sensorArrayList.clear();
+    }
+
+    public void removeRangesFromPane(Pane pane) {
+        pane.getChildren().remove(communicationRange);
+        pane.getChildren().remove(sensingRange);
     }
 }

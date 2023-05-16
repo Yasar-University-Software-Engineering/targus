@@ -8,9 +8,6 @@ import com.targus.represent.BitString;
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.Sensor;
 import com.targus.utils.AlgorithmGenerator;
-import com.targus.utils.ChartTask;
-import com.targus.utils.DisplaySolutionTask;
-import com.targus.utils.ProgressTask;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 
@@ -18,6 +15,7 @@ import java.util.HashSet;
 
 public class SolutionController {
     private Mediator mediator;
+    private static Solution solution;
 
     public void setMediator(Mediator mediator) {
         this.mediator = mediator;
@@ -62,36 +60,21 @@ public class SolutionController {
 
         mediator.configureChart(ga.getTerminalState(), terminationType);
 
-        ProgressTask progressTask = new ProgressTask(ga.getTerminalState());
-        mediator.bindProgressBar(progressTask.progressProperty());
-        Thread progressThread = new Thread(progressTask);
-        progressThread.setDaemon(true);
-        progressThread.start();
-
-        DisplaySolutionTask displaySolutionTask = new DisplaySolutionTask(ga, mediator, ga.getTerminalState());
-        Thread displaySolutionThread = new Thread(displaySolutionTask);
-        displaySolutionThread.setDaemon(true);
-        displaySolutionThread.start();
-
-        ChartTask chartTask = new ChartTask(ga, mediator);
-        Thread chartThread = new Thread(chartTask);
-        chartThread.setDaemon(true);
-        chartThread.start();
-
         GA finalGa = ga;
-        Thread gaPerformThread = new Thread(new Task<Void>() {
+
+        Task<Solution> gaTask = new Task<>() {
             @Override
-            protected Void call() {
-                mediator.setProgressBarVisible(true);
+            protected Solution call() {
                 mediator.disableTextField(true);
-
-                finalGa.perform();
-
-                mediator.setProgressBarVisible(false);
+                Solution lastSolution = finalGa.perform();
                 mediator.disableTextField(false);
-                return null;
+                return lastSolution;
             }
-        });
+        };
+
+        gaTask.setOnSucceeded(event -> solution = gaTask.getValue());
+
+        Thread gaPerformThread = new Thread(gaTask);
         gaPerformThread.setDaemon(true);
         gaPerformThread.start();
     }
@@ -107,6 +90,7 @@ public class SolutionController {
     }
 
     public void applyIndexesToPane(HashSet<Integer> indexes) {
+        Sensor.setTurnedOnSensors(indexes);
         for (Integer index : indexes) {
             Sensor sensor = Sensor.retrieveSensorFromHashMapByIndex(index);
             sensor.turnOn();

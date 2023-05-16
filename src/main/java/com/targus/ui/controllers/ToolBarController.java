@@ -1,6 +1,7 @@
 package com.targus.ui.controllers;
 
 import com.targus.ui.Mediator;
+import com.targus.ui.widgets.Sensor;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,8 +29,8 @@ public class ToolBarController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        communicationRangeVisibility.setOnAction(event -> Sensor.setCommunicationRangeVisibility(communicationRangeVisibility.isSelected()));
-//        sensingRangeVisibility.setOnAction(event -> Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected()));
+        communicationRangeVisibility.setOnAction(event -> Sensor.setCommunicationRangeVisibility(communicationRangeVisibility.isSelected()));
+        sensingRangeVisibility.setOnAction(event -> Sensor.setSensingRangeVisibility(sensingRangeVisibility.isSelected()));
 
         createProblemInstanceController = new CreateProblemInstanceController();
         Platform.runLater(() -> createProblemInstanceController.setMediator(mediator));

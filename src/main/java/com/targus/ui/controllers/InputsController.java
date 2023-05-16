@@ -72,6 +72,7 @@ public class InputsController implements Initializable {
                       String terminationType,
                       int terminationValue) {
 
+        cleanSolution();
         initProblemInstance();
         solutionController.solve(
                 wsnOptimizationProblem,
@@ -232,6 +233,7 @@ public class InputsController implements Initializable {
     }
 
     public void cleanSolution() {
+        mediator.removeSensorsFromPane();
         Sensor.clearHashMap();
     }
 

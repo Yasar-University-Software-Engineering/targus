@@ -3,6 +3,7 @@ package com.targus.algorithm.ga;
 import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
+import com.targus.utils.BestSolutionUpdater;
 import com.targus.utils.Constants;
 
 import java.lang.reflect.Field;
@@ -97,6 +98,9 @@ public abstract class GA implements SingleObjectiveOA {
     }
 
     protected boolean updateBestSolution(OptimizationProblem problem, Solution solution) {
+        if (getTerminalState().getCurrentState() % 20 == 0) {
+        }
+        BestSolutionUpdater.update(getTerminalState().getCurrentState(), solution);
         if (bestSolution == null || problem.objectiveType().betterThan(solution.objectiveValue(), bestSolution.objectiveValue())) {
             bestSolution = solution;
             return true;

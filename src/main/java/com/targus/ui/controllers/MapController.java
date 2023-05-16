@@ -7,11 +7,12 @@ import com.targus.ui.widgets.Target;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MapController {
     @FXML
@@ -23,19 +24,18 @@ public class MapController {
     private Mediator mediator;
 
     public void initialize() {
-//        Rectangle clip = new Rectangle();
-//
-//        clip.widthProperty().bind(mainPane.widthProperty());
-//        clip.heightProperty().bind(mainPane.heightProperty());
-//        mainPane.setClip(clip);
-//
-//        BorderStroke borderStroke = new BorderStroke(
-//                Color.web("#d3d3d3"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
-//        Border border = new Border(borderStroke);
-//
-//        // Set the border on the pane
-//        mainPane.setBorder(border);
-        mainPane.setStyle("-fx-background-color: #e0e0e0;");
+        Rectangle clip = new Rectangle();
+
+        clip.widthProperty().bind(mainPane.widthProperty());
+        clip.heightProperty().bind(mainPane.heightProperty());
+        mainPane.setClip(clip);
+
+        BorderStroke borderStroke = new BorderStroke(
+                Color.web("#d3d3d3"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
+        Border border = new Border(borderStroke);
+
+        // Set the border on the pane
+        mainPane.setBorder(border);
     }
 
     @FXML
@@ -91,10 +91,17 @@ public class MapController {
     }
 
     public void turnOffAllSensors() {
-        ConcurrentHashMap<Integer, Sensor> map = Sensor.getSensorHashMap();
-        Collection<Sensor> sensorsToRemove = new ConcurrentLinkedQueue<>(map.values());
-        for (Sensor sensor : sensorsToRemove) {
+        ArrayList<Sensor> sensorsToTurnOff = Sensor.getSensorArrayList();
+        for (Sensor sensor : sensorsToTurnOff) {
             sensor.turnOff();
+        }
+    }
+
+    public void removeSensorsFromPane() {
+        ArrayList<Sensor> sensorsToRemove = Sensor.getSensorArrayList();
+        for (Sensor sensor : sensorsToRemove) {
+            sensor.removeRangesFromPane(mainPane);
+            mainPane.getChildren().remove(sensor);
         }
     }
 
@@ -106,6 +113,8 @@ public class MapController {
 
     public void resizePane(double width, double height) {
         mainPane.setPrefSize(width, height);
+        mainPane.setMaxSize(1000, 1000);
+        mainPane.setStyle("-fx-background-color: #e0e0e0;");
     }
 
     public void addTargetToPane(Target target) {

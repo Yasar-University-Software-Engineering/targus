@@ -8,6 +8,7 @@ import com.targus.represent.BitString;
 import com.targus.ui.Main;
 import com.targus.ui.Mediator;
 import com.targus.utils.Constants;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -45,6 +46,9 @@ public class ObjectiveValueDisplayController {
     private Parent root;
     private Stage stage;
 
+    private long currentState;
+    private Solution solution;
+
     public ObjectiveValueDisplayController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/objectiveValueDisplay.fxml"));
         loader.setController(this);
@@ -66,7 +70,7 @@ public class ObjectiveValueDisplayController {
         this.mediator = mediator;
     }
 
-    public void display(Solution solution) {
+    public void display() {
         WSNOptimizationProblem wsnOptimizationProblem = (WSNOptimizationProblem) mediator.getOptimizationProblem();
 
         WSN wsn = (WSN) wsnOptimizationProblem.model();
@@ -79,36 +83,46 @@ public class ObjectiveValueDisplayController {
         double weightedKCovValue = kCoverageValue(wsnMinimumSensorObjective, wsn, indexes);
 
         double totalResult = weightedSensorValue + weightedMConnValue + weightedKCovValue;
-        setText(lblTotalResult, totalResult);
 
+        Platform.runLater(() -> setText(lblTotalResult, totalResult));
+
+        mediator.displaySolution(solution);
         mediator.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
-        mediator.updateGraph(totalResult);
+        if (currentState != -1) {
+            mediator.updateGraph(currentState, totalResult);
+        }
     }
 
     private double sensorValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, BitString bitString) {
         double sensorValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
         double weightedSensorValue = sensorValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR;
-        setText(lblSensorObjective, sensorValueScaled);
-        setText(lblWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
-        setText(lblWeightSensorObjectiveResult, weightedSensorValue);
+        Platform.runLater(() -> {
+            setText(lblSensorObjective, sensorValueScaled);
+            setText(lblWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
+            setText(lblWeightSensorObjectiveResult, weightedSensorValue);
+        });
         return weightedSensorValue;
     }
 
     private double mConnectivityValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
         double mConnectivityValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
         double weightedMConnectivityValue = mConnectivityValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM;
-        setText(lblConnectivityObjective, mConnectivityValueScaled);
-        setText(lblWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
-        setText(lblWeightConnectivityObjectiveResult, weightedMConnectivityValue);
+        Platform.runLater(() -> {
+            setText(lblConnectivityObjective, mConnectivityValueScaled);
+            setText(lblWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
+            setText(lblWeightConnectivityObjectiveResult, weightedMConnectivityValue);
+        });
         return weightedMConnectivityValue;
     }
 
     private double kCoverageValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
         double kCoverageValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
         double weightedKCoverageValue = kCoverageValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV;
-        setText(lblCoverageObjective, kCoverageValueScaled);
-        setText(lblWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
-        setText(lblWeightCoverageObjectiveResult, weightedKCoverageValue);
+        Platform.runLater(() -> {
+            setText(lblCoverageObjective, kCoverageValueScaled);
+            setText(lblWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
+            setText(lblWeightCoverageObjectiveResult, weightedKCoverageValue);
+        });
         return weightedKCoverageValue;
     }
 
@@ -163,5 +177,11 @@ public class ObjectiveValueDisplayController {
         setText(lblTotalResult, Constants.NON_APPLICABLE);
 
         mediator.simplifiedDisplayNonApplicable();
+    }
+
+    public void updateCurrentSolution(long currentState, Solution solution) {
+        this.currentState = currentState;
+        this.solution = solution;
+        display();
     }
 }

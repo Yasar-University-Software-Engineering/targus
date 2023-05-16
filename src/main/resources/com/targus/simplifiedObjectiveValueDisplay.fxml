@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <HBox xmlns:fx="http://javafx.com/fxml"
       xmlns="http://javafx.com/javafx"
-      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController" spacing="20"
-      alignment="CENTER_RIGHT">
+      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController">
 
-    <Label styleClass="objective-label" text="Sensor Objective: "/>
-    <Label fx:id="sensorObjective" styleClass="objective-value" text="N/A"/>
+    <!--    <Label styleClass="objective-label" text="Sensor Objective: "/>-->
+    <!--    <Label fx:id="sensorObjective" styleClass="objective-value" text="N/A"/>-->
 
-    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+    <!--    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>-->
 
-    <Label styleClass="objective-label" text="Connectivity Objective: "/>
-    <Label fx:id="connectivityObjective" styleClass="objective-value" text="N/A"/>
+    <!--    <Label styleClass="objective-label" text="Connectivity Objective: "/>-->
+    <!--    <Label fx:id="connectivityObjective" styleClass="objective-value" text="N/A"/>-->
 
-    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+    <!--    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>-->
 
-    <Label styleClass="objective-label" text="Coverage Objective: "/>
-    <Label fx:id="coverageObjective" styleClass="objective-value" text="N/A"/>
+    <!--    <Label styleClass="objective-label" text="Coverage Objective: "/>-->
+    <!--    <Label fx:id="coverageObjective" styleClass="objective-value" text="N/A"/>-->
 
-    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>
+    <!--    <Separator orientation="VERTICAL" styleClass="separator-vertical"/>-->
 
     <Label styleClass="fitness-label" text="Fitness Value: "/>
     <Label fx:id="fitnessValue" styleClass="fitness-value" text="N/A"/>
