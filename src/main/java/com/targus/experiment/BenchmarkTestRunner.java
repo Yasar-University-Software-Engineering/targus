@@ -13,7 +13,7 @@ import java.util.*;
 public class BenchmarkTestRunner {
 
     private SA buildSA(OptimizationProblem problem) {
-        return new SA(problem, new RandomSolutionGenerator(), new LinearCooling(100, 0, 0.1), new SimpleNF(), new BoltzmanAF(), 100);
+        return new SA(problem, new RandomSolutionGenerator(), new LinearCooling(100, 0, 0.1), new SimpleNF(), new BoltzmanAF(), 100, new TimeBasedTerminal(15));
     }
 
     private void runSA(int repeat) {

@@ -1,6 +1,11 @@
 package com.targus.utils;
 
+import com.targus.algorithm.GreedySelectionAlgorithm;
+import com.targus.algorithm.base.OptimizationAlgorithm;
+import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.algorithm.ga.*;
+import com.targus.algorithm.sa.*;
+import com.targus.base.OptimizationProblem;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.problem.wsn.WSNSolutionImprover;
@@ -14,30 +19,27 @@ public class AlgorithmGenerator {
         wsn = (WSN) wsnOptimizationProblem.model();
     }
 
-    public GA generateAlgorithm(String algorithmType,
+    public SingleObjectiveOA generateAlgorithm(String algorithmType,
                                 String mutationType,
                                 double mutationRate,
                                 String terminationType,
                                 int terminationValue) throws Exception {
 
-        // TODO: we should replace this line with -> SingleObjectiveOA algorithm
-        //  I was going to do that but the progress bar fails. Since it takes time
-        //  to refactor this, I will leave it for later
-        GA ga;
+        SingleObjectiveOA algorithm;
 
         switch (algorithmType) {
             case Constants.STANDARD_GA ->
-                    ga = buildStandardGA(mutationType, mutationRate, terminationType, terminationValue);
+                    algorithm = buildStandardGA(mutationType, mutationRate, terminationType, terminationValue);
             case Constants.IMPROVED_GA ->
-                    ga = buildImprovedGA(mutationType, mutationRate, terminationType, terminationValue);
-            case Constants.SIMULATED_ANNEALING -> ga = buildSimulatedAnnealing();
-            case Constants.GREEDY_ALGORITHM -> ga = buildGreedyAlgorithm();
+                    algorithm = buildImprovedGA(mutationType, mutationRate, terminationType, terminationValue);
+            case Constants.SIMULATED_ANNEALING -> algorithm = buildSimulatedAnnealing(wsnOptimizationProblem);
+            case Constants.GREEDY_ALGORITHM -> algorithm = buildGreedyAlgorithm(wsnOptimizationProblem);
             default -> {
                 throw new Exception("No such algorithm available");
             }
         }
 
-        return ga;
+        return algorithm;
     }
 
     private GA buildStandardGA(String mutationType, double mutationRate, String terminationType, int terminationValue) {
@@ -66,12 +68,14 @@ public class AlgorithmGenerator {
                 .build();
     }
 
-    private GA buildGreedyAlgorithm() {
-        return null;
+    // TODO: change the terminal state according to the user input
+    private SingleObjectiveOA buildGreedyAlgorithm(OptimizationProblem problem) {
+        return new GreedySelectionAlgorithm(problem, new TimeBasedTerminal(10));
     }
 
-    private GA buildSimulatedAnnealing() {
-        return null;
+    // TODO: change the terminalstate according to the user input
+    private SingleObjectiveOA buildSimulatedAnnealing(OptimizationProblem problem) {
+        return new SA(problem, new RandomSolutionGenerator(), new LinearCooling(100, 0, 0.1), new SimpleNF(), new BoltzmanAF(), 100, new IterationBasedTerminal(1000));
     }
 
     private static TerminalState buildTerminalState(String terminationType, int terminationValue) {

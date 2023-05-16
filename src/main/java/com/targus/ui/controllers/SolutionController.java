@@ -1,6 +1,11 @@
 package com.targus.ui.controllers;
 
+import com.targus.algorithm.GreedySelectionAlgorithm;
+import com.targus.algorithm.base.SingleObjectiveOA;
 import com.targus.algorithm.ga.GA;
+import com.targus.algorithm.ga.ImprovedGA;
+import com.targus.algorithm.ga.StandardGA;
+import com.targus.algorithm.sa.SA;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNOptimizationProblem;
@@ -8,6 +13,7 @@ import com.targus.represent.BitString;
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.Sensor;
 import com.targus.utils.AlgorithmGenerator;
+import com.targus.utils.Constants;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 
@@ -29,15 +35,15 @@ public class SolutionController {
                       int terminationValue) {
 
         AlgorithmGenerator algorithmGenerator = new AlgorithmGenerator(wsnOptimizationProblem);
-        GA ga = null;
+        SingleObjectiveOA algorithm = null;
         try {
-            ga = algorithmGenerator.generateAlgorithm(
+            algorithm = algorithmGenerator.generateAlgorithm(
                     algorithmType,
                     mutationType,
                     mutationRate,
                     terminationType,
                     terminationValue);
-            if (ga == null) {
+            if (algorithm == null) {
                 throw new Exception();
             }
         } catch (Exception e) {
@@ -58,9 +64,27 @@ public class SolutionController {
         mediator.cleanSolution();
         mediator.addSensorsToPane(Sensor.fillPotentialPositions(wsn.getPotentialPositions()));
 
-        mediator.configureChart(ga.getTerminalState(), terminationType);
+        String algorithmName = algorithm.getName();
+        switch (algorithmName) {
+            case Constants.STANDARD_GA -> {
+                StandardGA stdGA = (StandardGA) algorithm;
+                mediator.configureChart(stdGA.getTerminalState(), terminationType);
+            }
+            case Constants.IMPROVED_GA -> {
+                ImprovedGA improvedGA = (ImprovedGA) algorithm;
+                mediator.configureChart(improvedGA.getTerminalState(), terminationType);
+            }
+            case Constants.SIMULATED_ANNEALING -> {
+                SA sa = (SA) algorithm;
+                mediator.configureChart(sa.getTerminalState(), terminationType);
+            }
+            case Constants.GREEDY_ALGORITHM -> {
+                GreedySelectionAlgorithm greedy = (GreedySelectionAlgorithm) algorithm;
+                mediator.configureChart(greedy.getTerminalState(), terminationType);
+            }
+        }
 
-        GA finalGa = ga;
+        SingleObjectiveOA finalGa = algorithm;
 
         Task<Solution> gaTask = new Task<>() {
             @Override

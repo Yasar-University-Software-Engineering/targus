@@ -39,7 +39,7 @@ public class FitnessGraphController {
             xAxis.setTickUnit((double) terminalState.getFinishState() / 10);
         } else if (terminationType.equals(Constants.TIME_BASED)) {
             xAxis.setLabel("Time (ms)");
-            xAxis.setTickUnit(1000);
+            xAxis.setTickUnit(10000);
         }
     }
 }

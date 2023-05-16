@@ -1,11 +1,14 @@
 package com.targus.algorithm;
 
 import com.targus.algorithm.base.SingleObjectiveOA;
+import com.targus.algorithm.ga.IterationBasedTerminal;
+import com.targus.algorithm.ga.TerminalState;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.BitStringSolution;
 import com.targus.problem.wsn.WSN;
 import com.targus.represent.BitString;
+import com.targus.utils.Constants;
 import javafx.geometry.Point2D;
 
 import java.util.*;
@@ -18,13 +21,19 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
     private final HashMap<Point2D, HashSet<Point2D>> sensorToCommunicationSensorMap;
     private final HashMap<Point2D, HashSet<Point2D>> sensorToSensingTargetMap;
     private final Point2D[] potentialPositions;
+    private TerminalState terminalState;
 
-    public GreedySelectionAlgorithm(OptimizationProblem problem) {
+    public GreedySelectionAlgorithm(OptimizationProblem problem, TerminalState terminalState) {
         this.problem = problem;
         wsn = (WSN) problem.model();
         sensorToCommunicationSensorMap = wsn.getPotentialPositionToPotentialPositionMap();
         sensorToSensingTargetMap = wsn.getPotentialPositionToTargetMap();
         potentialPositions = wsn.getPotentialPositions();
+        this.terminalState = terminalState;
+    }
+
+    public TerminalState getTerminalState() {
+        return terminalState;
     }
 
     @Override
@@ -33,7 +42,7 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
         LinkedHashMap<Integer, Integer> sortedIndexToPotentialPositionValueMap = sortMapByValue(indexToPotentialPositionValueMap);
 
         List<Integer> potentialPositionIndexes = new ArrayList<>();
-        while (isObjectiveSatisfied(wsn, potentialPositionIndexes)) {
+        while (isObjectiveSatisfied(wsn, potentialPositionIndexes) || !terminalState.isTerminal()) {
             try {
                 int key = sortedIndexToPotentialPositionValueMap.entrySet().iterator().next().getKey();
                 potentialPositionIndexes.add(key);
@@ -42,6 +51,7 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
             catch (NoSuchElementException e) {
                 break;
             }
+            terminalState.nextState();
         }
 
         return generateSolution(potentialPositionIndexes);
@@ -137,6 +147,6 @@ public class GreedySelectionAlgorithm implements SingleObjectiveOA {
 
     @Override
     public String getName() {
-        return "Greedy Selection Algorithm";
+        return Constants.GREEDY_ALGORITHM;
     }
 }
