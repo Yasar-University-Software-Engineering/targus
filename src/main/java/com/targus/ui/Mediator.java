@@ -93,7 +93,7 @@ public class Mediator {
                 algorithmSelectionController.getTerminationValue());
     }
 
-    public void clean() {
+    public void cleanSolution() {
         inputsController.cleanSolution();
     }
 
@@ -137,8 +137,8 @@ public class Mediator {
         fitnessGraphController.configureChart(terminalState, terminationType);
     }
 
-    public void removeSensorsFromPane() {
-        mapController.removeSensorsFromPane();
+    public void turnOffAllSensors() {
+        mapController.turnOffAllSensors();
     }
 
     public void displaySolution(Solution solution) {
@@ -155,5 +155,9 @@ public class Mediator {
 
     public void updateGraph(double totalResult) {
         // TODO: Fill this definition
+    }
+
+    public void disableTextField(boolean bool) {
+        inputsController.disableTextField(bool);
     }
 }

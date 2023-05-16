@@ -7,9 +7,7 @@ import com.targus.ui.widgets.Target;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.layout.Pane;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,18 +23,19 @@ public class MapController {
     private Mediator mediator;
 
     public void initialize() {
-        Rectangle clip = new Rectangle();
-
-        clip.widthProperty().bind(mainPane.widthProperty());
-        clip.heightProperty().bind(mainPane.heightProperty());
-        mainPane.setClip(clip);
-
-        BorderStroke borderStroke = new BorderStroke(
-                Color.web("#d3d3d3"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
-        Border border = new Border(borderStroke);
-
-        // Set the border on the pane
-        mainPane.setBorder(border);
+//        Rectangle clip = new Rectangle();
+//
+//        clip.widthProperty().bind(mainPane.widthProperty());
+//        clip.heightProperty().bind(mainPane.heightProperty());
+//        mainPane.setClip(clip);
+//
+//        BorderStroke borderStroke = new BorderStroke(
+//                Color.web("#d3d3d3"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
+//        Border border = new Border(borderStroke);
+//
+//        // Set the border on the pane
+//        mainPane.setBorder(border);
+        mainPane.setStyle("-fx-background-color: #e0e0e0;");
     }
 
     @FXML
@@ -91,7 +90,7 @@ public class MapController {
         mainPane.getChildren().clear();
     }
 
-    public void removeSensorsFromPane() {
+    public void turnOffAllSensors() {
         ConcurrentHashMap<Integer, Sensor> map = Sensor.getSensorHashMap();
         Collection<Sensor> sensorsToRemove = new ConcurrentLinkedQueue<>(map.values());
         for (Sensor sensor : sensorsToRemove) {
@@ -107,9 +106,6 @@ public class MapController {
 
     public void resizePane(double width, double height) {
         mainPane.setPrefSize(width, height);
-        mainPane.setStyle("-fx-background-color: #e0e0e0;");
-        mainPane.setMaxWidth(1000);
-        mainPane.setMaxHeight(1000);
     }
 
     public void addTargetToPane(Target target) {

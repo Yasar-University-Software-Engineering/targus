@@ -71,7 +71,7 @@ public class ToolBarController implements Initializable {
     }
 
     public void handleCleanSolution() {
-        mediator.clean();
+        mediator.cleanSolution();
     }
 
     public void handleObjectiveValueDisplay(ActionEvent event) {

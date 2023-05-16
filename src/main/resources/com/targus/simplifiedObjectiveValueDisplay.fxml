@@ -4,7 +4,8 @@
 <?import javafx.scene.layout.HBox?>
 <HBox xmlns:fx="http://javafx.com/fxml"
       xmlns="http://javafx.com/javafx"
-      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController" spacing="5">
+      fx:controller="com.targus.ui.controllers.SimplifiedObjectiveValueDisplayController" spacing="20"
+      alignment="CENTER_RIGHT">
 
     <Label styleClass="objective-label" text="Sensor Objective: "/>
     <Label fx:id="sensorObjective" styleClass="objective-value" text="N/A"/>

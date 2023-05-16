@@ -12,6 +12,7 @@ import com.targus.utils.ChartTask;
 import com.targus.utils.DisplaySolutionTask;
 import com.targus.utils.ProgressTask;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 
 import java.util.HashSet;
 
@@ -30,12 +31,25 @@ public class SolutionController {
                       int terminationValue) {
 
         AlgorithmGenerator algorithmGenerator = new AlgorithmGenerator(wsnOptimizationProblem);
-        GA ga = algorithmGenerator.generateAlgorithm(
-                algorithmType,
-                mutationType,
-                mutationRate,
-                terminationType,
-                terminationValue);
+        GA ga = null;
+        try {
+            ga = algorithmGenerator.generateAlgorithm(
+                    algorithmType,
+                    mutationType,
+                    mutationRate,
+                    terminationType,
+                    terminationValue);
+            if (ga == null) {
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Invalid Algorithm Selection");
+            alert.setContentText("Invalid algorithm or algorithm parameters were selected!");
+            alert.showAndWait();
+            return;
+        }
 
         WSN wsn = (WSN) wsnOptimizationProblem.model();
 
@@ -43,6 +57,7 @@ public class SolutionController {
                 wsn.getCommRange(),
                 wsn.getSensRange());
 
+        mediator.cleanSolution();
         mediator.addSensorsToPane(Sensor.fillPotentialPositions(wsn.getPotentialPositions()));
 
         mediator.configureChart(ga.getTerminalState(), terminationType);
@@ -63,12 +78,17 @@ public class SolutionController {
         chartThread.setDaemon(true);
         chartThread.start();
 
+        GA finalGa = ga;
         Thread gaPerformThread = new Thread(new Task<Void>() {
             @Override
             protected Void call() {
                 mediator.setProgressBarVisible(true);
-                ga.perform();
+                mediator.disableTextField(true);
+
+                finalGa.perform();
+
                 mediator.setProgressBarVisible(false);
+                mediator.disableTextField(false);
                 return null;
             }
         });
@@ -81,7 +101,7 @@ public class SolutionController {
             return;
         }
         BitString solutionBitString = (BitString) solution.getRepresentation();
-        mediator.removeSensorsFromPane();
+        mediator.turnOffAllSensors();
         HashSet<Integer> indexes = solutionBitString.ones();
         applyIndexesToPane(indexes);
     }

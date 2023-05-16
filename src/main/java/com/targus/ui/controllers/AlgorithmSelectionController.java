@@ -22,6 +22,10 @@ public class AlgorithmSelectionController {
     public ComboBox terminationComboBox;
     public TextField terminationTextField;
 
+    public void initialize() {
+        algorithmInputs.setVisible(false);
+    }
+
     public String getAlgorithm() {
         return algorithmComboBox.getValue().toString();
     }
@@ -66,6 +70,7 @@ public class AlgorithmSelectionController {
     private void handleAlgorithmSelection() {
         String selectedAlgorithm = (String) algorithmComboBox.getSelectionModel().getSelectedItem();
         if (selectedAlgorithm.equals(Constants.STANDARD_GA) || selectedAlgorithm.equals(Constants.IMPROVED_GA)) {
+            algorithmComboBox.setVisible(true);
             // Set the visibility of the algorithmInputs StackPane to true
             algorithmInputs.setVisible(true);
             // Create a timeline animation to animate the height of the standardGAInputs VBox

@@ -1,17 +1,9 @@
 package com.targus.utils;
 
 import com.targus.algorithm.ga.*;
-import com.targus.base.Solution;
 import com.targus.problem.wsn.WSN;
 import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.problem.wsn.WSNSolutionImprover;
-import com.targus.represent.BitString;
-import com.targus.ui.widgets.Sensor;
-import javafx.concurrent.Task;
-import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
-
-import java.util.HashSet;
 
 public class AlgorithmGenerator {
     private final WSNOptimizationProblem wsnOptimizationProblem;
@@ -26,7 +18,7 @@ public class AlgorithmGenerator {
                                 String mutationType,
                                 double mutationRate,
                                 String terminationType,
-                                int terminationValue) {
+                                int terminationValue) throws Exception {
 
         // TODO: we should replace this line with -> SingleObjectiveOA algorithm
         //  I was going to do that but the progress bar fails. Since it takes time
@@ -34,16 +26,14 @@ public class AlgorithmGenerator {
         GA ga;
 
         switch (algorithmType) {
-            case Constants.STANDARD_GA -> ga = buildStandardGA(mutationType, mutationRate, terminationType, terminationValue);
-            case Constants.IMPROVED_GA -> ga = buildImprovedGA(mutationType, mutationRate, terminationType, terminationValue);
+            case Constants.STANDARD_GA ->
+                    ga = buildStandardGA(mutationType, mutationRate, terminationType, terminationValue);
+            case Constants.IMPROVED_GA ->
+                    ga = buildImprovedGA(mutationType, mutationRate, terminationType, terminationValue);
             case Constants.SIMULATED_ANNEALING -> ga = buildSimulatedAnnealing();
             case Constants.GREEDY_ALGORITHM -> ga = buildGreedyAlgorithm();
             default -> {
-                try {
-                    throw new Exception("No such algorithm available");
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                throw new Exception("No such algorithm available");
             }
         }
 

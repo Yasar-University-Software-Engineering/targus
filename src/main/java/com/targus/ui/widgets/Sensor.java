@@ -36,11 +36,12 @@ public class Sensor extends Circle {
         setRadius(4.0);
         setFill(Color.GREEN);
 
-        setVisible(sensorVisible);
         communicationRange = initializeCommunicationRange(centerX, centerY);
         sensingRange = initializeSensingRange(centerX, centerY);
-        communicationRange.setVisible(false);
-        sensingRange.setVisible(false);
+
+        setVisible(sensorVisible);
+        communicationRange.setVisible(communicationRangeVisible);
+        sensingRange.setVisible(sensingRangeVisible);
 
         parentProperty().addListener(this::changed);
     }
@@ -155,5 +156,9 @@ public class Sensor extends Circle {
             communicationRange.setVisible(false);
             sensingRange.setVisible(false);
         });
+    }
+
+    public static void clearHashMap() {
+        sensorHashMap.clear();
     }
 }

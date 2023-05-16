@@ -9,6 +9,7 @@ import com.targus.problem.wsn.WSNOptimizationProblem;
 import com.targus.problem.wsn.WSNPrototype;
 import com.targus.ui.Mediator;
 import com.targus.ui.widgets.PotentialPosition;
+import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
 import com.targus.utils.Constants;
 import javafx.application.Platform;
@@ -231,7 +232,7 @@ public class InputsController implements Initializable {
     }
 
     public void cleanSolution() {
-        mediator.removeSensorsFromPane();
+        Sensor.clearHashMap();
     }
 
     private void initProblemInstance() {
@@ -282,7 +283,7 @@ public class InputsController implements Initializable {
         initProblemInstance();
     }
 
-    private void disableTextField(boolean bool) {
+    public void disableTextField(boolean bool) {
         txtM.setDisable(bool);
         txtK.setDisable(bool);
         txtCommunicationRange.setDisable(bool);
