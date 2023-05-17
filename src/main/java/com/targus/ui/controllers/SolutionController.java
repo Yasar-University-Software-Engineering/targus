@@ -2,7 +2,6 @@ package com.targus.ui.controllers;
 
 import com.targus.algorithm.GreedySelectionAlgorithm;
 import com.targus.algorithm.base.SingleObjectiveOA;
-import com.targus.algorithm.ga.GA;
 import com.targus.algorithm.ga.ImprovedGA;
 import com.targus.algorithm.ga.StandardGA;
 import com.targus.algorithm.sa.SA;

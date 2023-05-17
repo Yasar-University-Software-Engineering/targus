@@ -14,11 +14,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class ObjectiveValueDisplayController {
     @FXML
@@ -52,6 +54,7 @@ public class ObjectiveValueDisplayController {
     public ObjectiveValueDisplayController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/objectiveValueDisplay.fxml"));
         loader.setController(this);
+        Image logoImage = new Image(Objects.requireNonNull(getClass().getResource("/icons/logo.png")).toExternalForm());
 
         try {
             root = loader.load();
@@ -61,6 +64,10 @@ public class ObjectiveValueDisplayController {
             Scene scene = new Scene(root);
             scene.getStylesheets().add("/css/fitness-window.css");
             stage.setScene(scene);
+            stage.setResizable(false);
+            stage.setTitle("targus");
+            stage.getIcons().add(logoImage);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -142,6 +149,7 @@ public class ObjectiveValueDisplayController {
             try {
                 root = loader.load();
                 stage = new Stage();
+
                 stage.initModality(Modality.NONE);
                 stage.initOwner(owner);
                 stage.setScene(new Scene(root));

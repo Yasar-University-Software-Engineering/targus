@@ -87,6 +87,9 @@ public class MapController {
     }
 
     public void removeChildren() {
+        mediator.clearTargetsFromPrototype();
+        mediator.clearPotentialPositionsFromPrototype();
+        Sensor.clearSensorArrayList();
         mainPane.getChildren().clear();
     }
 
@@ -103,12 +106,14 @@ public class MapController {
             sensor.removeRangesFromPane(mainPane);
             mainPane.getChildren().remove(sensor);
         }
+        Sensor.clearSensorArrayList();
     }
 
     public void resetRegion() {
         removeChildren();
         mainPane.setMaxSize(0, 0);
         mediator.displayNonApplicable();
+        mediator.clearChart();
     }
 
     public void resizePane(double width, double height) {

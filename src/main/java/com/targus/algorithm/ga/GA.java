@@ -98,8 +98,6 @@ public abstract class GA implements SingleObjectiveOA {
     }
 
     protected boolean updateBestSolution(OptimizationProblem problem, Solution solution) {
-        if (getTerminalState().getCurrentState() % 20 == 0) {
-        }
         BestSolutionUpdater.update(getTerminalState().getCurrentState(), solution);
         if (bestSolution == null || problem.objectiveType().betterThan(solution.objectiveValue(), bestSolution.objectiveValue())) {
             bestSolution = solution;

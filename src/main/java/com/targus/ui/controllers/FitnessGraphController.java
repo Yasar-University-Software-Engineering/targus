@@ -28,8 +28,7 @@ public class FitnessGraphController {
     public void configureChart(TerminalState terminalState, String terminationType) {
         this.terminalState = terminalState;
 
-        chart.getData().clear();
-        series = new XYChart.Series<>();
+        clearChart();
         NumberAxis xAxis = (NumberAxis) chart.getXAxis();
         chart.getData().add(series);
         xAxis.setUpperBound(terminalState.getFinishState());
@@ -41,5 +40,10 @@ public class FitnessGraphController {
             xAxis.setLabel("Time (ms)");
             xAxis.setTickUnit(10000);
         }
+    }
+
+    public void clearChart() {
+        chart.getData().clear();
+        series = new XYChart.Series<>();
     }
 }

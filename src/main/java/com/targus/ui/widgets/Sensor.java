@@ -20,7 +20,7 @@ public class Sensor extends Circle {
     private static final ArrayList<Sensor> sensorArrayList = new ArrayList<>();
     private final Circle communicationRange;
     private final Circle sensingRange;
-    private static HashSet<Integer> turnedOnSensors;
+    private static HashSet<Integer> turnedOnSensors = new HashSet<>();
 
     public Sensor(double centerX, double centerY) {
         if (!staticVariablesInitialized()) {
@@ -43,8 +43,8 @@ public class Sensor extends Circle {
     }
 
     public static Collection<Sensor> fillPotentialPositions(Point2D[] potentialPositionArray) {
-        for (int i = 0; i < potentialPositionArray.length; i++) {
-            Point2D point2D = potentialPositionArray[i];
+        clearSensorArrayList();
+        for (Point2D point2D : potentialPositionArray) {
             sensorArrayList.add(new Sensor(point2D.getX(), point2D.getY()));
         }
         return sensorArrayList;
@@ -112,14 +112,6 @@ public class Sensor extends Circle {
         Sensor.turnedOnSensors = turnedOnSensors;
     }
 
-    public Circle getCommunicationRange() {
-        return communicationRange;
-    }
-
-    public Circle getSensingRange() {
-        return sensingRange;
-    }
-
     public static ArrayList<Sensor> getSensorArrayList() {
         return sensorArrayList;
     }
@@ -152,8 +144,9 @@ public class Sensor extends Circle {
         });
     }
 
-    public static void clearHashMap() {
+    public static void clearSensorArrayList() {
         sensorArrayList.clear();
+        turnedOnSensors.clear();
     }
 
     public void removeRangesFromPane(Pane pane) {

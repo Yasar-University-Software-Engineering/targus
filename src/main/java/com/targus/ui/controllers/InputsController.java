@@ -108,8 +108,8 @@ public class InputsController implements Initializable {
         Point2D[] targetArray;
         Point2D[] potentialPositionArray;
 
-        try {
-            Reader reader = Files.newBufferedReader(Paths.get(src));
+        try (Reader reader = Files.newBufferedReader(Paths.get(src))) {
+//            Reader reader = Files.newBufferedReader(Paths.get(src));
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode parser = objectMapper.readTree(reader);
 
@@ -155,22 +155,22 @@ public class InputsController implements Initializable {
     }
 
     public void exportToFile(ActionEvent event) {
-        try {
+
             FileChooser fc = new FileChooser();
             fc.setInitialDirectory(new File(Constants.DEFAULT_BASE_PATH_FOR_JSON_FILES));
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON Files", "*.json"));
 
-            Button button = (Button) event.getSource();
-            Stage stage = (Stage) button.getScene().getWindow();
-            File f = fc.showSaveDialog(stage);
+        Button button = (Button) event.getSource();
+        Stage stage = (Stage) button.getScene().getWindow();
+        File f = fc.showSaveDialog(stage);
 
-            if (f == null) {
-                return;
-            }
+        if (f == null) {
+            return;
+        }
 
-            String src = f.getAbsolutePath();
-
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get(src));
+        String src = f.getAbsolutePath();
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(src))) {
+//            BufferedWriter writer = Files.newBufferedWriter(Paths.get(src));
             ObjectMapper objectMapper = new ObjectMapper();
 
             Map<String, Object> problemInfo = new HashMap<>();
@@ -202,7 +202,6 @@ public class InputsController implements Initializable {
             problemInfo.put(Constants.K, wsnPrototype.getK());
 
             writer.write(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(problemInfo));
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -233,12 +232,13 @@ public class InputsController implements Initializable {
     }
 
     public void cleanSolution() {
+        mediator.clearChart();
         mediator.removeSensorsFromPane();
-        Sensor.clearHashMap();
+        mediator.displayNonApplicable();
+        Sensor.clearSensorArrayList();
     }
 
-    private void initProblemInstance() {
-        mediator.resetRegion();
+    public void initProblemInstance() {
         mediator.resizeMapPane(wsnPrototype.getPaneWidthProperty().get(), wsnPrototype.getPaneHeightProperty().get());
 
         // TODO: In MapController, add options to add targets
@@ -277,7 +277,12 @@ public class InputsController implements Initializable {
     }
 
     public void createProblemInstance(WSNPrototype wsnPrototype, int distance, int numberNodes) {
-        this.wsnPrototype = wsnPrototype;
+        this.wsnPrototype.setPaneWidth(wsnPrototype.getPaneWidth());
+        this.wsnPrototype.setPaneHeight(wsnPrototype.getPaneHeight());
+        this.wsnPrototype.setM(wsnPrototype.getM());
+        this.wsnPrototype.setK(wsnPrototype.getK());
+        this.wsnPrototype.setCommunicationRange(wsnPrototype.getCommunicationRange());
+        this.wsnPrototype.setSensingRange(wsnPrototype.getSensingRange());
 
         handleGenerateGrid(distance);
         handleGenerateRandomTarget(numberNodes);
@@ -290,5 +295,21 @@ public class InputsController implements Initializable {
         txtK.setDisable(bool);
         txtCommunicationRange.setDisable(bool);
         txtSensingRange.setDisable(bool);
+    }
+
+    public void addTargetToWSNPrototype(Target target) {
+        wsnPrototype.addTarget(target);
+    }
+
+    public void addPotentialPositionToWSNPrototype(PotentialPosition potentialPosition) {
+        wsnPrototype.addPotentialPosition(potentialPosition);
+    }
+
+    public void clearTargetsFromPrototype() {
+        wsnPrototype.clearTargets();
+    }
+
+    public void clearPotentialPositionsFromPrototype() {
+        wsnPrototype.clearPotentialPositions();
     }
 }

@@ -118,7 +118,7 @@ public class Mediator {
     }
 
     public void displayNonApplicable() {
-//        objectiveValueDisplayController.displayNonApplicable();
+        objectiveValueDisplayController.displayNonApplicable();
     }
 
     public void simplifiedDisplayNonApplicable() {
@@ -163,5 +163,17 @@ public class Mediator {
 
     public void removeSensorsFromPane() {
         mapController.removeSensorsFromPane();
+    }
+
+    public void clearChart() {
+        fitnessGraphController.clearChart();
+    }
+
+    public void clearTargetsFromPrototype() {
+        inputsController.clearTargetsFromPrototype();
+    }
+
+    public void clearPotentialPositionsFromPrototype() {
+        inputsController.clearPotentialPositionsFromPrototype();
     }
 }
