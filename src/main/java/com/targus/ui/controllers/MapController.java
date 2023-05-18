@@ -111,6 +111,7 @@ public class MapController {
 
     public void resetRegion() {
         removeChildren();
+        mainPane.setPrefSize(0, 0);
         mainPane.setMaxSize(0, 0);
         mediator.displayNonApplicable();
         mediator.clearChart();
@@ -118,7 +119,7 @@ public class MapController {
 
     public void resizePane(double width, double height) {
         mainPane.setPrefSize(width, height);
-        mainPane.setMaxSize(1000, 1000);
+        mainPane.setMaxSize(width, height);
         mainPane.setStyle("-fx-background-color: #e0e0e0;");
     }
 
