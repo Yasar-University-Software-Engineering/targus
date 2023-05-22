@@ -72,4 +72,10 @@ public class BitString implements Representation {
     public Representation clone() {
         return new BitString((BitSet) bitSet.clone(), len);
     }
+
+    public BitString xor(BitString newSolutionBitString) {
+        BitString clonedBitString = (BitString) clone();
+        clonedBitString.bitSet.xor(newSolutionBitString.getBitSet());
+        return clonedBitString;
+    }
 }

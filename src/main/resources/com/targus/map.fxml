@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx/19"
-            fx:controller="com.targus.ui.controllers.MapController">
-    <Pane fx:id="mainPane" onMouseClicked="#paneClicked"/>
-</AnchorPane>
+<Pane fx:id="mainPane" onMouseClicked="#paneClicked" xmlns:fx="http://javafx.com/fxml"
+      xmlns="http://javafx.com/javafx/19"
+      fx:controller="com.targus.ui.controllers.MapController">
+</Pane>

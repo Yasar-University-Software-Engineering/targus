@@ -16,11 +16,14 @@
         </VBox>
     </left>
     <center>
-        <BorderPane fx:id="pane">
+        <BorderPane>
             <center>
-                <fx:include fx:id="map" source="map.fxml"/>
+                <fx:include fx:id="map" source="map.fxml" styleClass="pane"/>
             </center>
             <bottom>
+                <HBox fx:id="graphPortion">
+                    <fx:include fx:id="fitnessGraph" source="fitnessGraph.fxml" HBox.hgrow="ALWAYS"/>
+                </HBox>
             </bottom>
         </BorderPane>
     </center>
@@ -28,8 +31,9 @@
         <VBox>
             <Separator/>
             <HBox>
-                <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml"/>
-                <fx:include source="legend.fxml" HBox.hgrow="ALWAYS"/>
+                <fx:include fx:id="simplifiedObjectiveValueDisplay" source="simplifiedObjectiveValueDisplay.fxml"
+                            HBox.hgrow="ALWAYS"/>
+                <fx:include source="legend.fxml"/>
             </HBox>
         </VBox>
     </bottom>

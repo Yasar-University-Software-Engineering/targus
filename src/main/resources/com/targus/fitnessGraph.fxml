@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<LineChart xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.targus.ui.controllers.FitnessGraphController"
+            fx:id="chart" createSymbols="false" legendVisible="false" maxHeight="200">
+    <xAxis>
+        <NumberAxis autoRanging="false"/>
+    </xAxis>
+    <yAxis>
+        <NumberAxis label="Fitness Value" upperBound="10.0"/>
+    </yAxis>
+</LineChart>

@@ -1,43 +1,58 @@
 package com.targus.ui.widgets;
 
-import javafx.scene.Group;
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Point2D;
+import javafx.scene.Parent;
 import javafx.scene.effect.BlendMode;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
-public class Sensor extends Group {
+public class Sensor extends Circle {
     private static double COMMUNICATION_RADIUS;
     private static double SENSING_RADIUS;
-    private static boolean STATIC_VARIABLES_INITIALIZED = false;
-    private static boolean communicationRangeVisible = true;
-    private static boolean sensingRangeVisible = true;
-    private static final ArrayList<Sensor> allSensors = new ArrayList<>();
-    private final Circle sensorDevice;
+    private static final ArrayList<Sensor> sensorArrayList = new ArrayList<>();
     private final Circle communicationRange;
     private final Circle sensingRange;
+    private static HashSet<Integer> turnedOnSensors = new HashSet<>();
 
     public Sensor(double centerX, double centerY) {
         if (!staticVariablesInitialized()) {
             throw new IllegalStateException("Radii are not initialized.");
         }
-        allSensors.add(this);
 
-        sensorDevice = new Circle(centerX, centerY, 4);
-        sensorDevice.setFill(Color.GREEN);
+        setCenterX(centerX);
+        setCenterY(centerY);
+        setRadius(4.0);
+        setFill(Color.GREEN);
 
         communicationRange = initializeCommunicationRange(centerX, centerY);
         sensingRange = initializeSensingRange(centerX, centerY);
 
-        getChildren().addAll(sensorDevice, sensingRange, communicationRange);
+        setVisible(false);
+        communicationRange.setVisible(false);
+        sensingRange.setVisible(false);
+
+        parentProperty().addListener(this::changed);
+    }
+
+    public static Collection<Sensor> fillPotentialPositions(Point2D[] potentialPositionArray) {
+        clearSensorArrayList();
+        for (Point2D point2D : potentialPositionArray) {
+            sensorArrayList.add(new Sensor(point2D.getX(), point2D.getY()));
+        }
+        return sensorArrayList;
     }
 
     public static void initializeRadii(double communicationRadius, double sensingRadius) {
         setCommunicationRadius(communicationRadius);
         setSensingRadius(sensingRadius);
-        STATIC_VARIABLES_INITIALIZED = true;
     }
 
     private static boolean staticVariablesInitialized() {
@@ -46,16 +61,14 @@ public class Sensor extends Group {
     }
 
     public static void setCommunicationRangeVisibility(boolean visible) {
-        communicationRangeVisible = visible;
-        for (Sensor sensor : allSensors) {
-            sensor.getCommunicationRange().setVisible(visible);
+        for (Integer index : turnedOnSensors) {
+            Platform.runLater(() -> sensorArrayList.get(index).communicationRange.setVisible(visible));
         }
     }
 
     public static void setSensingRangeVisibility(boolean visible) {
-        sensingRangeVisible = visible;
-        for (Sensor sensor : allSensors) {
-            sensor.getSensingRange().setVisible(visible);
+        for (Integer index : turnedOnSensors) {
+            Platform.runLater(() -> sensorArrayList.get(index).sensingRange.setVisible(visible));
         }
     }
 
@@ -65,7 +78,7 @@ public class Sensor extends Group {
         communicationRange.setFill(Paint.valueOf("#FFF5E6"));
         communicationRange.setBlendMode(BlendMode.SRC_OVER);
         communicationRange.setMouseTransparent(true);
-        communicationRange.setVisible(communicationRangeVisible);
+        communicationRange.setViewOrder(3);
         return communicationRange;
     }
 
@@ -75,16 +88,8 @@ public class Sensor extends Group {
         sensingRange.setFill(Paint.valueOf("#D1EAF2"));
         sensingRange.setBlendMode(BlendMode.SRC_OVER);
         sensingRange.setMouseTransparent(true);
-        sensingRange.setVisible(sensingRangeVisible);
+        sensingRange.setViewOrder(3);
         return sensingRange;
-    }
-
-    public double getCenterX() {
-        return sensorDevice.getCenterX();
-    }
-
-    public double getCenterY() {
-        return sensorDevice.getCenterY();
     }
 
     public double getCommunicationRadius() {
@@ -103,15 +108,49 @@ public class Sensor extends Group {
         SENSING_RADIUS = sensingRadius;
     }
 
-    public Circle getCommunicationRange() {
-        return communicationRange;
+    public static void setTurnedOnSensors(HashSet<Integer> turnedOnSensors) {
+        Sensor.turnedOnSensors = turnedOnSensors;
     }
 
-    public Circle getSensingRange() {
-        return sensingRange;
+    public static ArrayList<Sensor> getSensorArrayList() {
+        return sensorArrayList;
     }
 
-    public Circle getSensorDevice() {
-        return sensorDevice;
+    private void changed(ObservableValue<? extends Parent> observable, Parent oldParent, Parent newParent) {
+        if (newParent != null) {
+            Pane pane = (Pane) newParent;
+            pane.getChildren().add(communicationRange);
+            pane.getChildren().add(sensingRange);
+        }
+    }
+
+    public static Sensor retrieveSensorFromHashMapByIndex(int respectivePotentialPositionIndex) {
+        return sensorArrayList.get(respectivePotentialPositionIndex);
+    }
+
+    public void turnOn() {
+        Platform.runLater(() -> {
+            setVisible(true);
+            communicationRange.setVisible(true);
+            sensingRange.setVisible(true);
+        });
+    }
+
+    public void turnOff() {
+        Platform.runLater(() -> {
+            setVisible(false);
+            communicationRange.setVisible(false);
+            sensingRange.setVisible(false);
+        });
+    }
+
+    public static void clearSensorArrayList() {
+        sensorArrayList.clear();
+        turnedOnSensors.clear();
+    }
+
+    public void removeRangesFromPane(Pane pane) {
+        pane.getChildren().remove(communicationRange);
+        pane.getChildren().remove(sensingRange);
     }
 }

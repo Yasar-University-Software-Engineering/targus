@@ -3,6 +3,7 @@ package com.targus.algorithm.ga;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.experiment.FileOperations;
+import com.targus.utils.Constants;
 
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class StandardGA extends GA {
 
     @Override
     public String getName() {
-        return "Standard Genetic Algorithm";
+        return Constants.STANDARD_GA;
     }
 
 }

@@ -4,9 +4,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.lang.*?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.targus.ui.controllers.AlgorithmSelectionController">
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.targus.ui.controllers.AlgorithmSelectionController"
+      spacing="20">
 
     <ComboBox fx:id="algorithmComboBox" onAction="#handleAlgorithmSelection" value="Please select algorithm">
         <items>
@@ -21,7 +22,7 @@
     <StackPane fx:id="algorithmInputs" style="-fx-background-color: #f2f2f2;" visible="false">
         <VBox fx:id="GAInputs" spacing="20">
             <HBox alignment="CENTER_LEFT">
-                <Label text="Mutation Operator: " prefWidth="128"/>
+                <Label fx:id="mutationOperatorLabel" text="Mutation Operator: " prefWidth="128"/>
                 <ComboBox fx:id="mutationComboBox" value="OneBitMutation" prefWidth="128">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
@@ -32,7 +33,7 @@
                 </ComboBox>
             </HBox>
             <HBox>
-                <Label text="Mutation Rate (in %): " prefWidth="128"/>
+                <Label fx:id="mutationRateLabel" text="Mutation Rate (in %): " prefWidth="128"/>
                 <TextField fx:id="mutationRateTextField" prefWidth="128" alignment="CENTER"/>
             </HBox>
             <HBox alignment="CENTER_LEFT">
@@ -52,4 +53,4 @@
             </HBox>
         </VBox>
     </StackPane>
-</AnchorPane>
+</VBox>

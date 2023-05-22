@@ -1,5 +1,6 @@
 package com.targus.ui;
 
+import com.targus.algorithm.ga.TerminalState;
 import com.targus.base.OptimizationProblem;
 import com.targus.base.Solution;
 import com.targus.problem.wsn.WSNPrototype;
@@ -10,16 +11,19 @@ import com.targus.ui.widgets.Target;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.event.ActionEvent;
 
+import java.util.Collection;
+
 public class Mediator {
-    private MainController mainController;
     private InputsController inputsController;
     private SimplifiedObjectiveValueDisplayController simplifiedObjectiveValueDisplayController;
     private MapController mapController;
     private ProgressBarController progressBarController;
     private AlgorithmSelectionController algorithmSelectionController;
+    private ObjectiveValueDisplayController objectiveValueDisplayController;
+    private FitnessGraphController fitnessGraphController;
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    public void setObjectiveValueDisplayController(ObjectiveValueDisplayController objectiveValueDisplayController) {
+        this.objectiveValueDisplayController = objectiveValueDisplayController;
     }
 
     public void setInputsController(InputsController inputsController) {
@@ -51,48 +55,8 @@ public class Mediator {
 //        objectiveValueDisplayController.display();
     }
 
-    public void removeChild(Object child) {
-        mapController.removeChild(child);
-        display();
-    }
-
-    public void addTarget(Target target) {
-        inputsController.addTarget(target);
-        display();
-    }
-
-    public void addSensor(Sensor sensor) {
-        inputsController.addSensor(sensor);
-        display();
-    }
-
-    public void removeSensor(Sensor sensor) {
-        inputsController.removeSensor(sensor);
-        display();
-    }
-
     public void removeChildren() {
         mapController.removeChildren();
-        display();
-    }
-
-    public void addPotentialPosition(PotentialPosition potentialPosition) {
-        inputsController.addPotentialPosition(potentialPosition);
-        display();
-    }
-
-    public void clearTargets() {
-        inputsController.clearTargets();
-        display();
-    }
-
-    public void clearPotentialPositions() {
-        inputsController.clearPotentialPositions();
-        display();
-    }
-
-    public void clearSensors() {
-        inputsController.clearSensors();
         display();
     }
 
@@ -108,28 +72,29 @@ public class Mediator {
         progressBarController.bindProgressBar(property);
     }
 
-    public Solution getSolution() {
-        return inputsController.getSolution();
-    }
-
     public OptimizationProblem getOptimizationProblem() {
         return inputsController.getWsnOptimizationProblem();
     }
 
     public void loadFromFile(ActionEvent event) {
-        inputsController.handleLoadFromFile(event);
+        inputsController.loadFromFile(event);
     }
 
     public void exportToFile(ActionEvent event) {
-        inputsController.handleExportToFile(event);
+        inputsController.exportToFile(event);
     }
 
     public void solve() {
-        inputsController.handleSolve();
+        inputsController.solve(
+                algorithmSelectionController.getAlgorithm(),
+                algorithmSelectionController.getMutation(),
+                algorithmSelectionController.getMutationRate(),
+                algorithmSelectionController.getTermination(),
+                algorithmSelectionController.getTerminationValue());
     }
 
-    public void clean() {
-        inputsController.handleCleanSolution();
+    public void cleanSolution() {
+        inputsController.cleanSolution();
     }
 
     public void simplifiedDisplay(double weightedSensorValue, double weightedMConnValue, double weightedKCovValue) {
@@ -144,7 +109,6 @@ public class Mediator {
         progressBarController.setProgressBarVisible(visible);
     }
 
-
     public void addTargetToPane(Target target) {
         mapController.addTargetToPane(target);
     }
@@ -153,50 +117,63 @@ public class Mediator {
         mapController.addPotentialPositionToPane(potentialPosition);
     }
 
-    public void addSensorToPane(Sensor sensor) {
-        mapController.addSensorToPane(sensor);
-    }
-
-    public void bringTargetsToFront() {
-        mapController.bringTargetsToFront();
-    }
-
-    public void bringPotentialPositionsToFront() {
-        mapController.bringPotentialPositionsToFront();
-    }
-
-    public void bringSensorDevicesToFront() {
-        mapController.bringSensorDevicesToFront();
-    }
-
     public void displayNonApplicable() {
-//        objectiveValueDisplayController.displayNonApplicable();
+        objectiveValueDisplayController.displayNonApplicable();
     }
 
     public void simplifiedDisplayNonApplicable() {
         simplifiedObjectiveValueDisplayController.simplifiedDisplayNonApplicable();
     }
 
-    public String getAlgorithm() {
-        return algorithmSelectionController.getAlgorithm();
+    public ObjectiveValueDisplayController getObjectiveValueDisplayController() {
+        return objectiveValueDisplayController;
     }
 
-    public String getMutation() {
-        return algorithmSelectionController.getMutation();
+    public void setFitnessGraphController(FitnessGraphController fitnessGraphController) {
+        this.fitnessGraphController = fitnessGraphController;
     }
 
-    public Double getMutationRate() {
-        return algorithmSelectionController.getMutationRate();
+    public void configureChart(TerminalState terminalState, String terminationType) {
+        fitnessGraphController.configureChart(terminalState, terminationType);
     }
 
-    public String getTermination() {
-        return algorithmSelectionController.getTermination();
+    public void turnOffAllSensors() {
+        mapController.turnOffAllSensors();
     }
 
-    public int getTerminationValue() {
-        return algorithmSelectionController.getTerminationValue();
+    public void displaySolution(Solution solution) {
+        inputsController.displaySolution(solution);
     }
 
-    public void setToolBarController(ToolBarController toolBarController) {
+    public FitnessGraphController getFitnessGraphController() {
+        return fitnessGraphController;
+    }
+
+    public void addSensorsToPane(Collection<Sensor> sensors) {
+        mapController.addSensorsToPane(sensors);
+    }
+
+    public void updateGraph(long currentState, double totalResult) {
+        fitnessGraphController.updateFitness(currentState, totalResult);
+    }
+
+    public void disableTextField(boolean bool) {
+        inputsController.disableTextField(bool);
+    }
+
+    public void removeSensorsFromPane() {
+        mapController.removeSensorsFromPane();
+    }
+
+    public void clearChart() {
+        fitnessGraphController.clearChart();
+    }
+
+    public void clearTargetsFromPrototype() {
+        inputsController.clearTargetsFromPrototype();
+    }
+
+    public void clearPotentialPositionsFromPrototype() {
+        inputsController.clearPotentialPositionsFromPrototype();
     }
 }

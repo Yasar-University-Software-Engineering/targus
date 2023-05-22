@@ -8,16 +8,19 @@ import com.targus.represent.BitString;
 import com.targus.ui.Main;
 import com.targus.ui.Mediator;
 import com.targus.utils.Constants;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class ObjectiveValueDisplayController {
     @FXML
@@ -45,9 +48,13 @@ public class ObjectiveValueDisplayController {
     private Parent root;
     private Stage stage;
 
+    private long currentState;
+    private Solution solution;
+
     public ObjectiveValueDisplayController() {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/targus/objectiveValueDisplay.fxml"));
         loader.setController(this);
+        Image logoImage = new Image(Objects.requireNonNull(getClass().getResource("/icons/logo.png")).toExternalForm());
 
         try {
             root = loader.load();
@@ -57,6 +64,10 @@ public class ObjectiveValueDisplayController {
             Scene scene = new Scene(root);
             scene.getStylesheets().add("/css/fitness-window.css");
             stage.setScene(scene);
+            stage.setResizable(false);
+            stage.setTitle("targus");
+            stage.getIcons().add(logoImage);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,11 +79,6 @@ public class ObjectiveValueDisplayController {
 
     public void display() {
         WSNOptimizationProblem wsnOptimizationProblem = (WSNOptimizationProblem) mediator.getOptimizationProblem();
-        Solution solution = mediator.getSolution();
-
-        if (wsnOptimizationProblem == null || solution == null) {
-            return;
-        }
 
         WSN wsn = (WSN) wsnOptimizationProblem.model();
         WSNMinimumSensorObjective wsnMinimumSensorObjective = (WSNMinimumSensorObjective) wsnOptimizationProblem.getObjectiveFunction();
@@ -84,35 +90,46 @@ public class ObjectiveValueDisplayController {
         double weightedKCovValue = kCoverageValue(wsnMinimumSensorObjective, wsn, indexes);
 
         double totalResult = weightedSensorValue + weightedMConnValue + weightedKCovValue;
-        setText(lblTotalResult, totalResult);
 
+        Platform.runLater(() -> setText(lblTotalResult, totalResult));
+
+        mediator.displaySolution(solution);
         mediator.simplifiedDisplay(weightedSensorValue, weightedMConnValue, weightedKCovValue);
+        if (currentState != -1) {
+            mediator.updateGraph(currentState, totalResult);
+        }
     }
 
     private double sensorValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, BitString bitString) {
         double sensorValueScaled = wsnMinimumSensorObjective.getSensorPenValueScaled(wsn, bitString.getBitSet());
         double weightedSensorValue = sensorValueScaled * WSNMinimumSensorObjective.WEIGHT_SENSOR;
-        setText(lblSensorObjective, sensorValueScaled);
-        setText(lblWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
-        setText(lblWeightSensorObjectiveResult, weightedSensorValue);
+        Platform.runLater(() -> {
+            setText(lblSensorObjective, sensorValueScaled);
+            setText(lblWeightSensorObjective, WSNMinimumSensorObjective.WEIGHT_SENSOR);
+            setText(lblWeightSensorObjectiveResult, weightedSensorValue);
+        });
         return weightedSensorValue;
     }
 
     private double mConnectivityValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
         double mConnectivityValueScaled = wsnMinimumSensorObjective.getMConnPenValueScaled(wsn, indexes);
         double weightedMConnectivityValue = mConnectivityValueScaled * WSNMinimumSensorObjective.WEIGHT_M_COMM;
-        setText(lblConnectivityObjective, mConnectivityValueScaled);
-        setText(lblWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
-        setText(lblWeightConnectivityObjectiveResult, weightedMConnectivityValue);
+        Platform.runLater(() -> {
+            setText(lblConnectivityObjective, mConnectivityValueScaled);
+            setText(lblWeightConnectivityObjective, WSNMinimumSensorObjective.WEIGHT_M_COMM);
+            setText(lblWeightConnectivityObjectiveResult, weightedMConnectivityValue);
+        });
         return weightedMConnectivityValue;
     }
 
     private double kCoverageValue(WSNMinimumSensorObjective wsnMinimumSensorObjective, WSN wsn, HashSet<Integer> indexes) {
         double kCoverageValueScaled = wsnMinimumSensorObjective.getKCoverPenValueScaled(wsn, indexes);
         double weightedKCoverageValue = kCoverageValueScaled * WSNMinimumSensorObjective.WEIGHT_K_COV;
-        setText(lblCoverageObjective, kCoverageValueScaled);
-        setText(lblWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
-        setText(lblWeightCoverageObjectiveResult, weightedKCoverageValue);
+        Platform.runLater(() -> {
+            setText(lblCoverageObjective, kCoverageValueScaled);
+            setText(lblWeightCoverageObjective, WSNMinimumSensorObjective.WEIGHT_K_COV);
+            setText(lblWeightCoverageObjectiveResult, weightedKCoverageValue);
+        });
         return weightedKCoverageValue;
     }
 
@@ -132,6 +149,7 @@ public class ObjectiveValueDisplayController {
             try {
                 root = loader.load();
                 stage = new Stage();
+
                 stage.initModality(Modality.NONE);
                 stage.initOwner(owner);
                 stage.setScene(new Scene(root));
@@ -167,5 +185,11 @@ public class ObjectiveValueDisplayController {
         setText(lblTotalResult, Constants.NON_APPLICABLE);
 
         mediator.simplifiedDisplayNonApplicable();
+    }
+
+    public void updateCurrentSolution(long currentState, Solution solution) {
+        this.currentState = currentState;
+        this.solution = solution;
+        display();
     }
 }

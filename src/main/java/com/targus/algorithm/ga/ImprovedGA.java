@@ -101,7 +101,7 @@ public class ImprovedGA extends GA {
 
     @Override
     public String getName() {
-        return "Improved Genetic Algorithm";
+        return Constants.IMPROVED_GA;
     }
 
 }

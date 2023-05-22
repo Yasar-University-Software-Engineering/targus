@@ -4,18 +4,15 @@ import com.targus.ui.Mediator;
 import com.targus.ui.widgets.PotentialPosition;
 import com.targus.ui.widgets.Sensor;
 import com.targus.ui.widgets.Target;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class MapController {
     @FXML
@@ -34,7 +31,7 @@ public class MapController {
         mainPane.setClip(clip);
 
         BorderStroke borderStroke = new BorderStroke(
-                Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
+                Color.web("#d3d3d3"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT);
         Border border = new Border(borderStroke);
 
         // Set the border on the pane
@@ -43,46 +40,46 @@ public class MapController {
 
     @FXML
     void paneClicked(javafx.scene.input.MouseEvent event) {
-        ContextMenu context = new ContextMenu(createTarget, createPotentialPosition, createSensor, removeSensor);
-
-        if (event.getButton() == MouseButton.SECONDARY) {
-            context.show(mainPane, event.getScreenX(), event.getScreenY());
-            createTarget.setOnAction(actionEvent -> {
-                addTargetToPane(new Target(event.getX(), event.getY()));
-                mediator.addTarget(new Target(event.getX(), event.getY()));
-            });
-
-            createPotentialPosition.setOnAction(actionEvent -> {
-                addPotentialPositionToPane(new PotentialPosition(event.getX(), event.getY()));
-                mediator.addPotentialPosition(new PotentialPosition(event.getX(), event.getY()));
-            });
-
-            createSensor.setOnAction(actionEvent -> {
-                PotentialPosition potentialPosition = (PotentialPosition) event.getTarget();
-                Sensor sensor = new Sensor(potentialPosition.getCenterX(), potentialPosition.getCenterY());
-                addSensorToPane(sensor);
-                mediator.addSensor(sensor);
-            });
-
-            removeSensor.setOnAction(actionEvent -> {
-                Circle circle = (Circle) event.getTarget();
-
-                Sensor sensor = null;
-
-                for (Node node : mainPane.getChildren()) {
-                    if (node instanceof Sensor) {
-                        if (circle.getCenterX() == ((Sensor) node).getCenterX()
-                                && circle.getCenterY() == ((Sensor) node).getCenterY()) {
-                            sensor = (Sensor) node;
-                        }
-                    }
-                }
-
-                removeChild(sensor);
-                mediator.removeSensor(sensor);
-            });
-
-        }
+//        ContextMenu context = new ContextMenu(createTarget, createPotentialPosition, createSensor, removeSensor);
+//
+//        if (event.getButton() == MouseButton.SECONDARY) {
+//            context.show(mainPane, event.getScreenX(), event.getScreenY());
+//            createTarget.setOnAction(actionEvent -> {
+//                addTargetToPane(new Target(event.getX(), event.getY()));
+//                mediator.addTarget(new Target(event.getX(), event.getY()));
+//            });
+//
+//            createPotentialPosition.setOnAction(actionEvent -> {
+//                addPotentialPositionToPane(new PotentialPosition(event.getX(), event.getY()));
+//                mediator.addPotentialPosition(new PotentialPosition(event.getX(), event.getY()));
+//            });
+//
+//            createSensor.setOnAction(actionEvent -> {
+//                PotentialPosition potentialPosition = (PotentialPosition) event.getTarget();
+//                Sensor sensor = new Sensor(potentialPosition.getCenterX(), potentialPosition.getCenterY());
+//                addSensorToPane(sensor);
+//                mediator.addSensor(sensor);
+//            });
+//
+//            removeSensor.setOnAction(actionEvent -> {
+//                Circle circle = (Circle) event.getTarget();
+//
+//                Sensor sensor = null;
+//
+//                for (Node node : mainPane.getChildren()) {
+//                    if (node instanceof Sensor) {
+//                        if (circle.getCenterX() == ((Sensor) node).getCenterX()
+//                                && circle.getCenterY() == ((Sensor) node).getCenterY()) {
+//                            sensor = (Sensor) node;
+//                        }
+//                    }
+//                }
+//
+//                removeChild(sensor);
+//                mediator.removeSensor(sensor);
+//            });
+//
+//        }
     }
 
     public void setMediator(Mediator mediator) {
@@ -90,78 +87,52 @@ public class MapController {
     }
 
     public void removeChildren() {
-        mainPane.getChildren().removeAll(mainPane.getChildren());
-        mediator.clearTargets();
-        mediator.clearPotentialPositions();
-        mediator.clearSensors();
+        mediator.clearTargetsFromPrototype();
+        mediator.clearPotentialPositionsFromPrototype();
+        Sensor.clearSensorArrayList();
+        mainPane.getChildren().clear();
     }
 
-    public void removeChild(Object child) {
-        mainPane.getChildren().remove(child);
+    public void turnOffAllSensors() {
+        ArrayList<Sensor> sensorsToTurnOff = Sensor.getSensorArrayList();
+        for (Sensor sensor : sensorsToTurnOff) {
+            sensor.turnOff();
+        }
+    }
+
+    public void removeSensorsFromPane() {
+        ArrayList<Sensor> sensorsToRemove = Sensor.getSensorArrayList();
+        for (Sensor sensor : sensorsToRemove) {
+            sensor.removeRangesFromPane(mainPane);
+            mainPane.getChildren().remove(sensor);
+        }
+        Sensor.clearSensorArrayList();
     }
 
     public void resetRegion() {
         removeChildren();
+        mainPane.setPrefSize(0, 0);
         mainPane.setMaxSize(0, 0);
         mediator.displayNonApplicable();
+        mediator.clearChart();
     }
 
     public void resizePane(double width, double height) {
         mainPane.setPrefSize(width, height);
+        mainPane.setMaxSize(width, height);
         mainPane.setStyle("-fx-background-color: #e0e0e0;");
-        mainPane.setMaxWidth(1000);
-        mainPane.setMaxHeight(1000);
     }
 
     public void addTargetToPane(Target target) {
-        mainPane.getChildren().add(target);
+        Platform.runLater(() -> mainPane.getChildren().add(target));
     }
 
     public void addPotentialPositionToPane(PotentialPosition potentialPosition) {
-        mainPane.getChildren().add(potentialPosition);
+        Platform.runLater(() -> mainPane.getChildren().add(potentialPosition));
     }
 
-    public void addSensorToPane(Sensor sensor) {
-        mainPane.getChildren().add(sensor);
-    }
-
-    public void bringTargetsToFront() {
-        List<Node> nodesToMoveToFront = new ArrayList<>();
-        for (Node node : mainPane.getChildren()) {
-            if (node instanceof Target) {
-                nodesToMoveToFront.add(node);
-            }
-        }
-        for (Node node : nodesToMoveToFront) {
-            mainPane.getChildren().remove(node);
-            mainPane.getChildren().add(node);
-        }
-    }
-
-    public void bringPotentialPositionsToFront() {
-        List<Node> nodesToMoveToFront = new ArrayList<>();
-        for (Node node : mainPane.getChildren()) {
-            if (node instanceof PotentialPosition) {
-                nodesToMoveToFront.add(node);
-            }
-        }
-        for (Node node : nodesToMoveToFront) {
-            mainPane.getChildren().remove(node);
-            mainPane.getChildren().add(node);
-        }
-    }
-
-    public void bringSensorDevicesToFront() {
-        List<Node> nodesToMoveToFront = new ArrayList<>();
-        for (Node node : mainPane.getChildren()) {
-            if (node instanceof Sensor) {
-                nodesToMoveToFront.add(((Sensor) node).getSensorDevice());
-            }
-        }
-        for (Node node : nodesToMoveToFront) {
-            mainPane.getChildren().remove(node);
-            mainPane.getChildren().add(node);
-        }
+    public void addSensorsToPane(Collection<Sensor> sensors) {
+        mainPane.getChildren().addAll(sensors);
     }
 }
 
