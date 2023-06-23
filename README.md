@@ -4,7 +4,7 @@ TARGUS is a tool that solves target coverage problems in Wireless Sensor Network
 
 ## Research Paper
 
-The research paper is currently under review for publication. You can read the pdf from [here](research_paper/research_paper.pdf).
+The research paper is currently under review for publication. You can read the pdf from [here](src/main/resources/pdf/research_paper.pdf).
 
 ### Dependencies
 
